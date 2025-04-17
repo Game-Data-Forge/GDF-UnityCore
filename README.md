@@ -5,7 +5,7 @@ GDF core features implementation for Unity 3D.
 ## Installation
 
 - Create your Unity Project
-- Go to menu "Window > ¨Package Manager"
+- Go to menu "Window > Package Manager"
 - Click on "+" and "Add package from Git URL"
 - Enter this URL :
 ```
