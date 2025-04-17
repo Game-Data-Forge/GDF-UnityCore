@@ -1,0 +1,18 @@
+{
+    "name": "GDFUnityRuntime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:427467386bc7a00459a1e49377c76463",
+        "GUID:7d147c508e543004d8994101d9165182",
+        "GUID:e96f83c368b21964c98bfd7f8af00bff"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

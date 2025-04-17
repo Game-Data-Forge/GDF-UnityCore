@@ -1,0 +1,23 @@
+{
+    "name": "GDFUnityEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7d147c508e543004d8994101d9165182",
+        "GUID:427467386bc7a00459a1e49377c76463",
+        "GUID:4aaa26f5999c4484bb11384e1f175b95",
+        "GUID:0df9dfb0e649e534893c11d86babb628",
+        "GUID:e96f83c368b21964c98bfd7f8af00bff",
+        "GUID:69448af7b92c7f342b298e06a37122aa"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

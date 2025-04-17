@@ -1,0 +1,10 @@
+{
+  "name": "com.game-data-forge.unity-core",
+  "version": "0.1.0a",
+  "displayName": "GDF Unity Core",
+  "description": "GDF core features implementation for Unity 3D.",
+  "unity": "2020.3",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
+}
