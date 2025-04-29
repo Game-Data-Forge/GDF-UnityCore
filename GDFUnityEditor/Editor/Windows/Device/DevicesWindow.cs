@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GDFUnity.Editor.ServiceProviders;
 using UnityEditor;
@@ -19,7 +20,7 @@ namespace GDFUnity.Editor
 
         public void CreateGUI()
         {
-            providers = AuthenticationSelection.GetSettingsProviders();
+            providers = AuthenticationSelection.Providers;
 
             mainView = new LoadingView();
             
@@ -30,6 +31,11 @@ namespace GDFUnity.Editor
             mainView.AddBody(deviceView);
 
             rootVisualElement.Add(mainView);
+        }
+        
+        public void OnDestroy()
+        {
+            deviceView.OnDestroy();
         }
     }
 }

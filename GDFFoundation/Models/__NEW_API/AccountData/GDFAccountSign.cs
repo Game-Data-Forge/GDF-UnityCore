@@ -287,14 +287,14 @@ namespace GDFFoundation
             CheckProject(projectReference);
             CheckOAuthAccessToken(userIdentifier);
             CheckOAuthKind(authKind);
-            GDFAccountSign rReturn = new GDFAccountSign();
-            rReturn.Project = projectReference;
-            rReturn.SignType = (GDFAccountSignType) authKind;
-            rReturn.Name = GDFSecurityTools.CryptAes(rReturn.SignType.ToString(), projectReference.ToString(), projectReference.ToString());
-            string tType = DeviceTypeObfuscation(rReturn.SignType);
-            rReturn.RescueHash = "";
-            rReturn.SignHash = tType + "-" + GDFSecurityTools.GenerateSha(userIdentifier + projectReference) + "-" + GDFSecurityTools.GenerateSha(userIdentifier);
-            return rReturn;
+            GDFAccountSign result = new GDFAccountSign();
+            result.Project = projectReference;
+            result.SignType = (GDFAccountSignType) authKind;
+            result.Name = GDFSecurityTools.CryptAes(result.SignType.ToString(), projectReference.ToString(), projectReference.ToString());
+            string signKind = DeviceTypeObfuscation(result.SignType);
+            result.RescueHash = "";
+            result.SignHash = signKind + "-" + GDFSecurityTools.GenerateSha(userIdentifier + projectReference) + "-" + GDFSecurityTools.GenerateSha(userIdentifier);
+            return result;
         }
         
         /// <summary>

@@ -5,15 +5,24 @@ namespace GDFFoundation
 {
     static public class GDFDataAreaExtension
     {
+        public static string ToDNS(GDFDataArea area)
+        {
+            return area.ToString().ToLower().Replace("_", "-");
+        }
+        public static string ToDNS(GDFDataArea area, string domain)
+        {
+            return ToDNS(area) + "." + domain;
+        }
         static public string ToServerPrefix(this GDFDataArea self)
         {
+            return ToDNS(self);
             switch (self)
             {
                 case GDFDataArea.Unknown:
                     return "u";
                 case GDFDataArea.European:
                     return "eu";
-                case GDFDataArea.European_GDPR_EU:
+                case GDFDataArea.European_GDPR:
                     return "gdpr";
                 case GDFDataArea.NorthAmerica:
                     return "na";
@@ -55,6 +64,8 @@ namespace GDFFoundation
                     return "nw";
                 case GDFDataArea.Antarctica:
                     return "an";
+                case GDFDataArea.Tesseract:
+                    return "ts";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(self), self, null);
             }

@@ -11,6 +11,7 @@ namespace GDFUnity.Editor
     {
         static public event Action<AuthenticationSettingsProvider, AuthenticationSettingsProvider> onSelectionChanged;
         static internal AuthenticationSettingsProvider selection = null;
+        static private List<AuthenticationSettingsProvider> _providers = null;
 
         static public AuthenticationSettingsProvider Selection
         {
@@ -22,28 +23,35 @@ namespace GDFUnity.Editor
                 onSelectionChanged?.Invoke(last, value);
             }
         }
-
-        static internal List<AuthenticationSettingsProvider> GetSettingsProviders()
+        static public List<AuthenticationSettingsProvider> Providers
         {
-            Type providerType = typeof(AuthenticationSettingsProvider);
-            List<AuthenticationSettingsProvider> providers = new List<AuthenticationSettingsProvider>();
-
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            get
             {
-                providers.AddRange(assembly.GetTypes().Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType && providerType.IsAssignableFrom(x)).Select(x => {
-                    try
-                    {
-                        return Activator.CreateInstance(x) as AuthenticationSettingsProvider;
-                    }
-                    catch
-                    {
-                        GDFLogger.Warning($"Authentication settings provider {x.Name} does not have a default constructor !");
-                    }
-                    return null;
-                }).Where(x => x != null));
-            }
+                if (_providers != null)
+                {
+                    return _providers;
+                }
 
-            return providers;
+                Type providerType = typeof(AuthenticationSettingsProvider);
+                _providers = new List<AuthenticationSettingsProvider>();
+
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    _providers.AddRange(assembly.GetTypes().Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType && providerType.IsAssignableFrom(x)).Select(x => {
+                        try
+                        {
+                            return Activator.CreateInstance(x) as AuthenticationSettingsProvider;
+                        }
+                        catch
+                        {
+                            GDFLogger.Warning($"Authentication settings provider {x.Name} does not have a default constructor !");
+                        }
+                        return null;
+                    }).Where(x => x != null));
+                }
+
+                return _providers;
+            }
         }
     }
 }

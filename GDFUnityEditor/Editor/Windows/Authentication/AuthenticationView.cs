@@ -110,6 +110,14 @@ namespace GDFUnity.Editor
 
             OnSelectionChanged(null, AuthenticationSelection.Selection);
             OnAuthenticationChanged(GDF.Authentication.Token);
+
+            _window.onDestroying += OnDestroy;
+        }
+
+        public void OnDestroy()
+        {
+            AuthenticationSelection.onSelectionChanged -= OnSelectionChanged;
+            GDF.Authentication.AccountChangedEvent.onMainThread -= OnAuthenticationChanged;
         }
 
         private void OnSelectionChanged(AuthenticationSettingsProvider last, AuthenticationSettingsProvider selection)

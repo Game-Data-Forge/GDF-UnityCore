@@ -16,7 +16,7 @@ namespace GDFFoundation.Tasks
             System.Threading.Tasks.Task.Run(() => task.Process(action));
             return task;
         }
-        static public Task Run(Func<ITaskHandler, Task> action, [CallerMemberName] string name = "Unknown")
+        static public Task Run(Func<ITaskHandler, System.Threading.Tasks.Task> action, [CallerMemberName] string name = "Unknown")
         {
             Task task = _pool.Get();
             task._name = name;
@@ -40,6 +40,11 @@ namespace GDFFoundation.Tasks
             task._error = error;
             task._state = TaskState.Failure;
             return task;
+        }
+
+        static public YieldAwaitable Yield()
+        {
+            return System.Threading.Tasks.Task.Yield();
         }
 
         internal CancellationTokenSource source;
@@ -123,7 +128,7 @@ namespace GDFFoundation.Tasks
             }
         }
 
-        private async void Process(Func<ITaskHandler, Task> action)
+        private async void Process(Func<ITaskHandler, System.Threading.Tasks.Task> action)
         {
             using(ITaskHandler handler = TaskHandler.Get(this))
             {
@@ -161,7 +166,7 @@ namespace GDFFoundation.Tasks
             System.Threading.Tasks.Task.Run(() => task.Process(action));
             return task;
         }
-        static public Task<T> Run(Func<ITaskHandler, Task<T>> action, [CallerMemberName] string name = "Unknown")
+        static public Task<T> Run(Func<ITaskHandler, System.Threading.Tasks.Task<T>> action, [CallerMemberName] string name = "Unknown")
         {
             Task<T> task = _pool.Get();
             task._name = name;
@@ -241,7 +246,7 @@ namespace GDFFoundation.Tasks
             }
         }
 
-        private async void Process(Func<ITaskHandler, Task<T>> action)
+        private async void Process(Func<ITaskHandler, System.Threading.Tasks.Task<T>> action)
         {
             using(ITaskHandler handler = TaskHandler.Get(this))
             {

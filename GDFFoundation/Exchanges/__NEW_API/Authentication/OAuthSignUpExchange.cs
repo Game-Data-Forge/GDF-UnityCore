@@ -8,6 +8,7 @@ namespace GDFFoundation
     {
         public GDFOAuthKind OAuth { get; set; }
         public string AccessToken { get; set; } = string.Empty;
+        public string ClientID { get; set; }
         public short Channel { get; set; }
         public bool Consent { set; get; }
         public string ConsentVersion { set; get; }

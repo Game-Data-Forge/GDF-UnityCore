@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using GDFUnity.Editor.ServiceProviders;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
@@ -16,10 +18,11 @@ namespace GDFUnity.Editor
 
         internal List<AuthenticationSettingsProvider> providers = new List<AuthenticationSettingsProvider>();
         internal LoadingView mainView;
+        internal event Action onDestroying;
 
         public void CreateGUI()
         {
-            providers = AuthenticationSelection.GetSettingsProviders();
+            providers = AuthenticationSelection.Providers;
 
             VisualElement mainViewBody = new VisualElement();
             mainViewBody.style.flexGrow = 1;
@@ -33,6 +36,11 @@ namespace GDFUnity.Editor
             mainView.AddBody(splitView);
 
             rootVisualElement.Add(mainView);
+        }
+        
+        public void OnDestroy()
+        {
+            onDestroying?.Invoke();
         }
     }
 }

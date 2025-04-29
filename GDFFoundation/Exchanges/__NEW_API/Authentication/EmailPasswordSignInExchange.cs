@@ -8,5 +8,6 @@ namespace GDFFoundation
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public short Channel { get; set; }
+        public string CountryIso { get; set; } = string.Empty;
     }
 }

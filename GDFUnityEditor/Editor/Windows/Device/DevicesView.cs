@@ -16,8 +16,18 @@ namespace GDFUnity.Editor
             _toolbar = toolbar;
             _devices = GDFEditor.Device.Devices;
 
-            GDFEditor.Device.onDeviceChanged += (_) => UpdateList();
+            GDFEditor.Device.onDeviceChanged += UpdateList;
 
+            UpdateList();
+        }
+
+        public void OnDestroy()
+        {
+            GDFEditor.Device.onDeviceChanged -= UpdateList;
+        }
+
+        private void UpdateList(Device device)
+        {
             UpdateList();
         }
 

@@ -33,6 +33,8 @@ namespace GDFFoundation.Tasks
 
         public void Step()
         {
+            ThrowIfCancelled();
+
             _step++;
             _task.progress = Lerp(_minGlobal, _maxGlobal, (float)_step / _stepAmount);
         }
@@ -68,6 +70,8 @@ namespace GDFFoundation.Tasks
 
         public ITaskHandler Split(int steps = 1)
         {
+            ThrowIfCancelled();
+            
             if (steps <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(steps), "Cannot be inferior or equal to 0 !");

@@ -2,34 +2,37 @@
 {
     public enum GDFDataArea
     {
-        Unknown, 
-        European,
-        European_GDPR_EU, // Countries need to respect GDPR
+        Unknown = 0,
 
-        NorthAmerica,
-        NorthAmerica_Canada_PIPEDA, // Canada PIPEDA
-        NorthAmerica_California_CCPA, // USA California CCPA
+        European = 100,
+        European_GDPR = 101, // Countries need to respect GDPR
 
-        SouthAmerica,
-        SouthAmerica_Brazil_LGPD, // Brazil LGPD
-        SouthAmerica_Argentina_LPDP, // Argentina LPDP
+        NorthAmerica = 200,
+        NorthAmerica_Canada_PIPEDA = 201, // Canada PIPEDA
+        NorthAmerica_California_CCPA = 202, // USA California CCPA
 
-        Africa,
-        Africa_SouthAfrica_POPIA, // South Africa POPIA
-        Africa_Nigeria_NDPR, // Nigeria NDPR
+        SouthAmerica = 300,
+        SouthAmerica_Brazil_LGPD = 301, // Brazil LGPD
+        SouthAmerica_Argentina_LPDP = 302, // Argentina LPDP
 
-        Asia,
-        Asia_Russia, // Russia Federal Law No. 152-FZ 
-        Asia_India_PDPB, // India PDPB
-        Asia_China_PIPL, // China PIPL
-        Asia_Japan_APPI, // Japan APPI
-        Asia_SouthKorea_PIPA, // South Korea PIPA
-        Asia_Singapore_PDPA, // Singapore PDPA
+        Africa = 400,
+        Africa_SouthAfrica_POPIA = 401, // South Africa POPIA
+        Africa_Nigeria_NDPR = 402, // Nigeria NDPR
 
-        Oceania, 
-        Oceania_Australia, // Australia Privacy Act 1988
-        Oceania_NewZealand, // New Zealand Privacy Act
+        Asia = 500,
+        Asia_Russia = 501, // Russia Federal Law No. 152-FZ 
+        Asia_India_PDPB = 502, // India PDPB
+        Asia_China_PIPL = 503, // China PIPL
+        Asia_Japan_APPI = 504, // Japan APPI
+        Asia_SouthKorea_PIPA = 506, // South Korea PIPA
+        Asia_Singapore_PDPA = 507, // Singapore PDPA
 
-        Antarctica
+        Oceania = 600,
+        Oceania_Australia = 601, // Australia Privacy Act 1988
+        Oceania_NewZealand = 602, // New Zealand Privacy Act
+
+        Antarctica = 700,
+
+        Tesseract = 999
     }
 }

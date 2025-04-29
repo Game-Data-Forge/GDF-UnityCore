@@ -99,7 +99,8 @@ namespace GDFUnity
                     DeviceSignInExchange signInPayload = new DeviceSignInExchange()
                     {
                         Channel = _engine.Configuration.Channel,
-                        UniqueIdentifier = _engine.DeviceManager.Id
+                        UniqueIdentifier = _engine.DeviceManager.Id,
+                        CountryIso = country.TwoLetterCode
                     };
                     try
                     {
@@ -187,9 +188,10 @@ namespace GDFUnity
                     string bearer;
                     EmailPasswordSignInExchange payload = new EmailPasswordSignInExchange()
                     {
-                        Channel = _engine.Configuration.Channel,
                         Email = email,
-                        Password = password
+                        Password = password,
+                        Channel = _engine.Configuration.Channel,
+                        CountryIso = country.TwoLetterCode
                     };
 
                     _engine.ServerManager.FillHeaders(_headers);

@@ -85,8 +85,15 @@ namespace GDFUnity.Editor
             Add(toolbar);
             Add(_authentications);
 
-            OnSelectionChanged(null, AuthenticationSelection.Selection);
             OnSearchChanged();
+            OnSelectionChanged(null, AuthenticationSelection.Selection);
+
+            _window.onDestroying += OnDestroy;
+        }
+
+        private void OnDestroy()
+        {
+            AuthenticationSelection.onSelectionChanged -= OnSelectionChanged;
         }
 
         private void OnListSelectionChanged(IEnumerable<object> objects)
@@ -112,7 +119,7 @@ namespace GDFUnity.Editor
             }
             else
             {
-                _authentications.SetSelection(index);
+                _authentications.selectedIndex = index;
             }
         }
 

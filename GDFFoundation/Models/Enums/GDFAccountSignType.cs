@@ -28,7 +28,7 @@ namespace GDFFoundation
         /// <summary>
         /// The sign type for an old email/password account to allow migration from Game-Data-Forge 2 or Dicolatin service.
         /// </summary>
-        [Obsolete("Use to migration from Game-Data-Forge 2 or Dicolatin service")]
+        [Obsolete("Use to migration from Game-Data-Forge 2 or DicoLatin service")]
         OldEmailPassword = 75, // NEVER CHANGE INT VALUE !
 
         /// <summary>

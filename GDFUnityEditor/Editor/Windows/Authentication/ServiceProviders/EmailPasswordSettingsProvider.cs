@@ -165,13 +165,14 @@ namespace GDFUnity.Editor.ServiceProviders
         {
             if (_body == null)
             {
-                _view = view;
                 _body = new VisualElement();
-                _buttons = buttons;
 
                 _register = new RegisterState(this);
                 _login = new LoginState(this);
             }
+            
+            _view = view;
+            _buttons = buttons;
 
             rootElement.Add(_body);
             

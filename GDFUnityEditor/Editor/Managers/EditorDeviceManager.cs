@@ -128,20 +128,29 @@ namespace GDFUnity.Editor
 
         public bool Delete(Device device)
         {
-            bool result = _configuration.Devices.Remove(device);
-            if (device == _currentDevice)
+            int index = _configuration.Devices.IndexOf(device);
+            if (index < 0)
+            {
+                return false;
+            }
+
+            _configuration.Devices.RemoveAt(index);
+
+            if (index == _configuration.Current)
             {
                 _currentDevice = _actualDevice;
                 _configuration.Current = -1;
             }
-
-            if (result)
+            else if (index < _configuration.Current)
             {
-                _cache.Remove(device);
-                onDeviceChanged?.Invoke(Current);
-                Save();
+                _configuration.Current--;
             }
-            return result;
+
+            _cache.Remove(device);
+            onDeviceChanged?.Invoke(Current);
+            Save();
+
+            return true;
         }
 
         public bool IsDefault(Device device)

@@ -38,7 +38,7 @@ namespace GDFUnity.Editor
             
             _reset = new Button();
             _reset.tooltip = "Reset the role token.";
-            _reset.style.IconContent("winbtn_win_close");
+            _reset.style.IconContent("clear");
             _reset.style.marginLeft = 0;
             _reset.style.width = 20;
             _reset.clicked += OnReset;
