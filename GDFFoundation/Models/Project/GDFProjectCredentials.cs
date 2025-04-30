@@ -30,7 +30,7 @@ namespace GDFFoundation
         public object GetReference() => Reference;
         [GDFDbAccess(updateAccess = GDFDbColumnAccess.Deny)]
         public long Reference { get; set; }
-        public short Range { get; set; }
+        public int Range { get; set; }
     }
     
     [Serializable]

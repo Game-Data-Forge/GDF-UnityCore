@@ -2,7 +2,7 @@ namespace GDFFoundation
 {
     public interface IGDFRangedData : IGDFWritableData
     {
-        public short Range { get; set; }
+        public int Range { get; set; }
     }
 }
 

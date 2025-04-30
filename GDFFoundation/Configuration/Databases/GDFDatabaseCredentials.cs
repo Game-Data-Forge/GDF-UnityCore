@@ -19,7 +19,7 @@ namespace GDFFoundation
         /// Represents the range property of the GDFDatabaseCredentials class.
         /// </summary>
         // [Obsolete("It will be removed as soon as possible! Please use Range Credentials instead.")]
-        public short Range { set; get; } = 1;
+        public int Range { set; get; } = 1;
 
         /// <summary>
         /// Represents the kind of database used in the application.

@@ -172,7 +172,7 @@ namespace GDFFoundation
         public bool Trashed { get; set; }
         [GDFDbAccess(updateAccess = GDFDbColumnAccess.Deny)]
         public long Account { get; set; }
-        public short Range { get; set; }
+        public int Range { get; set; }
         public long RowId { get; set; }
         [GDFDbAccess(updateAccess = GDFDbColumnAccess.Deny)]
         public long Reference { get; set; }

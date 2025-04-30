@@ -35,7 +35,7 @@ namespace GDFFoundation
 
         #region From interface IGDFRangedData
 
-        public short Range { get; set; }
+        public int Range { get; set; }
 
         #endregion
 

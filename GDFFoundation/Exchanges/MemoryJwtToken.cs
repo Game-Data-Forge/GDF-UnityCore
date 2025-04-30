@@ -11,7 +11,7 @@ namespace GDFFoundation
         public long Project { get; set; }
         public short Channel { get; set; }
         public long Account { get; set; }
-        public short Range { get; set; }
+        public int Range { get; set; }
         public string Token { get; set; }
         public string Country { get; set; }
 

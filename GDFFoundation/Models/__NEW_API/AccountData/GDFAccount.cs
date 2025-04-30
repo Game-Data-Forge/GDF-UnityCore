@@ -25,7 +25,7 @@ namespace GDFFoundation
         /// <remarks>
         /// This property represents the range of an account. The range is a short value that determines the level or tier of the account.
         /// </remarks>
-        public short Range { set; get; }
+        public int Range { set; get; }
 
         /// <summary>
         /// Represents the ban property of an account.

@@ -26,7 +26,7 @@ namespace GDFFoundation
 
         public DateTime Modification { get; set; }
         public bool Trashed { get; set; }
-        public short Range { get; set; }
+        public int Range { get; set; }
 
         public object GetReference() => Reference;
     }
