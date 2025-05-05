@@ -21,15 +21,14 @@ namespace GDFRuntime
             _threadManager.RunOnMainThread(() => onMainThread?.Invoke());
 
             Delegate[] methods = onBackgroundThread?.GetInvocationList();
-            handler.StepAmount = methods.Length > 0 ? methods.Length : 1;
-            if (methods.Length > 0)
+            if (methods == null || methods.Length == 0) return;
+
+            handler.StepAmount = methods.Length;
+            Action<ITaskHandler> invokable;
+            foreach(Delegate method in methods)
             {
-                Action<ITaskHandler> invokable;
-                foreach(Delegate method in methods)
-                {
-                    invokable = method as Action<ITaskHandler>;
-                    invokable?.Invoke(handler.Split());
-                }
+                invokable = method as Action<ITaskHandler>;
+                invokable?.Invoke(handler.Split());
             }
         }
     }
@@ -52,15 +51,14 @@ namespace GDFRuntime
             _threadManager.RunOnMainThread(() => onMainThread?.Invoke(value1));
 
             Delegate[] methods = onBackgroundThread?.GetInvocationList();
-            handler.StepAmount = onBackgroundThread != null ? methods.Length : 1;
-            if (onBackgroundThread != null)
+            if (methods == null || methods.Length == 0) return;
+
+            handler.StepAmount = methods.Length;
+            Action<ITaskHandler, T> invokable;
+            foreach(Delegate method in methods)
             {
-                Action<ITaskHandler, T> invokable;
-                foreach(Delegate method in methods)
-                {
-                    invokable = method as Action<ITaskHandler, T>;
-                    invokable?.Invoke(handler.Split(), value1);
-                }
+                invokable = method as Action<ITaskHandler, T>;
+                invokable?.Invoke(handler.Split(), value1);
             }
         }
     }
@@ -83,15 +81,14 @@ namespace GDFRuntime
             _threadManager.RunOnMainThread(() => onMainThread?.Invoke(value1, value2));
 
             Delegate[] methods = onBackgroundThread?.GetInvocationList();
-            handler.StepAmount = methods.Length > 0 ? methods.Length : 1;
-            if (methods.Length > 0)
+            if (methods == null || methods.Length == 0) return;
+
+            handler.StepAmount = methods.Length;
+            Action<ITaskHandler, T, U> invokable;
+            foreach(Delegate method in methods)
             {
-                Action<ITaskHandler, T, U> invokable;
-                foreach(Delegate method in methods)
-                {
-                    invokable = method as Action<ITaskHandler, T, U>;
-                    invokable?.Invoke(handler.Split(), value1, value2);
-                }
+                invokable = method as Action<ITaskHandler, T, U>;
+                invokable?.Invoke(handler.Split(), value1, value2);
             }
         }
     }

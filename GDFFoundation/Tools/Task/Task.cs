@@ -119,6 +119,11 @@ namespace GDFFoundation.Tasks
                     _state = TaskState.Cancelled;
                     GDFLogger.Error(e);
                 }
+                catch (OperationCanceledException e)
+                {
+                    _state = TaskState.Cancelled;
+                    GDFLogger.Error(e);
+                }
                 catch (Exception e)
                 {
                     _error = e;
@@ -141,6 +146,11 @@ namespace GDFFoundation.Tasks
                     _state = TaskState.Success;
                 }
                 catch (TaskCanceledException e)
+                {
+                    _state = TaskState.Cancelled;
+                    GDFLogger.Error(e);
+                }
+                catch (OperationCanceledException e)
                 {
                     _state = TaskState.Cancelled;
                     GDFLogger.Error(e);
@@ -237,6 +247,11 @@ namespace GDFFoundation.Tasks
                     _state = TaskState.Cancelled;
                     GDFLogger.Error(e);
                 }
+                catch (OperationCanceledException e)
+                {
+                    _state = TaskState.Cancelled;
+                    GDFLogger.Error(e);
+                }
                 catch (Exception e)
                 {
                     _error = e;
@@ -259,6 +274,11 @@ namespace GDFFoundation.Tasks
                     _state = TaskState.Success;
                 }
                 catch (TaskCanceledException e)
+                {
+                    _state = TaskState.Cancelled;
+                    GDFLogger.Error(e);
+                }
+                catch (OperationCanceledException e)
                 {
                     _state = TaskState.Cancelled;
                     GDFLogger.Error(e);

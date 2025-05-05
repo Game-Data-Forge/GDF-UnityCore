@@ -1,4 +1,7 @@
-public class EditorBase64Tests : Base64Tests
+namespace EditorTools
 {
-    
+    public class Base64Tests : Tools.Base64Tests
+    {
+        
+    }
 }

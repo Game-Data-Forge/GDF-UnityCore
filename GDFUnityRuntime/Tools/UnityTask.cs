@@ -8,7 +8,7 @@ namespace GDFUnity
 {
     public class UnityTask : CustomYieldInstruction, ITask
     {
-        private ITask _task;
+        protected ITask _task;
 
         public string Name => _task.Name;
 
@@ -48,7 +48,17 @@ namespace GDFUnity
 
     public class UnityTask<T> : UnityTask, ITask<T>
     {
-        private ITask<T> _task;
+        private new ITask<T> _task
+        {
+            get
+            {
+                return (ITask<T>)base._task;
+            }
+            set
+            {
+                base._task = value;
+            }
+        }
 
         public T Result => _task.Result;
 

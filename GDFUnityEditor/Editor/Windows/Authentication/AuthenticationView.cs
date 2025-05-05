@@ -74,42 +74,49 @@ namespace GDFUnity.Editor
 
             _message.Add(helpBox);
 
-            _body = new VisualElement();
-            _body.style.justifyContent = Justify.Center;
-            _body.style.flexGrow = 1;
-            _body.style.paddingLeft = 50;
-            _body.style.paddingRight = 50;
-            
-            _buttons = new ButtonList();
-            _buttons.style.flexDirection = FlexDirection.Row;
-            _buttons.style.marginTop = 50;
+            window.mainView.onDisplayChanged += display => {
+                if (display == LoadingView.Display.PreLoader) return;
 
-            _title = new Label();
-            _title.style.fontSize = 19;
-            _title.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Bold;
-            _title.style.marginBottom = 20;
-            _title.style.marginLeft = 3;
-            _title.style.marginRight = 3;
+                _body = new VisualElement();
+                _body.style.justifyContent = Justify.Center;
+                _body.style.flexGrow = 1;
+                _body.style.paddingLeft = 50;
+                _body.style.paddingRight = 50;
+                
+                _buttons = new ButtonList();
+                _buttons.style.flexDirection = FlexDirection.Row;
+                _buttons.style.marginTop = 50;
 
-            _environment = new Environment(window.mainView);
-            _environment.style.marginBottom = 20;
-            _environment.style.marginLeft = 0;
+                _title = new Label();
+                _title.style.fontSize = 19;
+                _title.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Bold;
+                _title.style.marginBottom = 20;
+                _title.style.marginLeft = 3;
+                _title.style.marginRight = 3;
 
-            country = new CountryField();
-            country.style.marginBottom = 10;
+                _environment = new Environment(window.mainView);
+                _environment.style.marginBottom = 20;
+                _environment.style.marginLeft = 0;
 
-            consent = new Toggle("Agree to the TOS");
-            consent.style.marginTop = 40;
+                country = new CountryField();
+                country.style.marginBottom = 10;
 
-            AuthenticationSelection.onSelectionChanged += OnSelectionChanged;
-            GDF.Authentication.AccountChangedEvent.onMainThread += OnAuthenticationChanged;
+                consent = new Toggle("Agree to the TOS");
+                consent.style.marginTop = 40;
+                
+                AuthenticationSelection.onSelectionChanged -= OnSelectionChanged;
+                AuthenticationSelection.onSelectionChanged += OnSelectionChanged;
+                GDF.Authentication.AccountChangedEvent.onMainThread -= OnAuthenticationChanged;
+                GDF.Authentication.AccountChangedEvent.onMainThread += OnAuthenticationChanged;
+                
+                OnSelectionChanged(null, AuthenticationSelection.Selection);
+                OnAuthenticationChanged(GDF.Authentication.Token);
+                
+                Add(_logoutView);
+                Add(_body);
+            };
 
             Add(_message);
-            Add(_logoutView);
-            Add(_body);
-
-            OnSelectionChanged(null, AuthenticationSelection.Selection);
-            OnAuthenticationChanged(GDF.Authentication.Token);
 
             _window.onDestroying += OnDestroy;
         }

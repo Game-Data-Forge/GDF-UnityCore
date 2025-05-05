@@ -10,7 +10,7 @@ namespace GDFUnity
     public class RuntimeAuthenticationManager : APIManager, IRuntimeAuthenticationManager
     {
         private readonly object _taskLock = new object();
-
+        
         private class TokenStorage
         {
             [JsonIgnore]
@@ -61,7 +61,6 @@ namespace GDFUnity
         }
         public Event<MemoryJwtToken> AccountChangingEvent => _accountChangingEvent;
         public Event<MemoryJwtToken> AccountChangedEvent => _accountChangedEvent;
-        public GDFCountryISO Country => _token == null ? null : GDFCountryISO.GetFromTwoLetterCode(_token?.Country);
         public string Bearer => _token?.Bearer;
 
         private string _SaveContainer => $"{_engine.Configuration.Reference}/{_engine.EnvironmentManager.Environment.ToLongString()}";
@@ -83,6 +82,13 @@ namespace GDFUnity
             _engine = engine;
             _accountChangingEvent = new Event<MemoryJwtToken>(_engine.ThreadManager);
             _accountChangedEvent = new Event<MemoryJwtToken>(_engine.ThreadManager);
+
+            _engine.AccountManager.DeletedEvent.onBackgroundThread += SignOutRunner;
+        }
+
+        ~RuntimeAuthenticationManager()
+        {
+            _engine.AccountManager.DeletedEvent.onBackgroundThread -= SignOutRunner;
         }
 
         public Task SignInDevice(GDFCountryISO country)
@@ -277,6 +283,7 @@ namespace GDFUnity
                 _engine.ServerManager.FillHeaders(_headers, storage.Bearer);
                 Put<int>(handler.Split(), _engine.ServerManager.BuildAuthURL(storage.Country, "/api/v1/authentication/close-session"), _headers);
             }
+            catch { }
             finally
             {
                 SetToken(handler.Split(), null);

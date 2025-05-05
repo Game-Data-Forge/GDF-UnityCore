@@ -32,26 +32,50 @@ namespace GDFUnity.Editor
             }
         }
 
+        static private IEditorEngine StartedEngine
+        {
+            get
+            {
+                IEditorEngine engine = Engine;
+                if (!engine.Launch.IsDone)
+                {
+                    throw GDF.Exceptions.NotLaunched;
+                }
+                
+                if (engine.Launch.State != TaskState.Success)
+                {
+                    throw GDF.Exceptions.LaunchFailed;
+                }
+
+                return engine;
+            }
+        }
+
+        static private IEditorEngine AuthenticatedEngine
+        {
+            get
+            {
+                IEditorEngine engine = StartedEngine;
+                if (engine.AuthenticationManager.Token == null)
+                {
+                    throw GDF.Exceptions.NotConnected;
+                }
+
+                return engine;
+            }
+        }
+
         static public Task Launch => Engine.Launch;
 
         static public IEditorConfiguration Configuration => Engine.Configuration;
         
-        static public IEditorThreadManager Thread => Engine.ThreadManager;
-        static public IEditorEnvironmentManager Environment => Engine.EnvironmentManager;
-        static public IEditorDeviceManager Device => Engine.DeviceManager;
-        static public IEditorAuthenticationManager Authentication => Engine.AuthenticationManager;
-        static public IEditorTypeManager Types => Engine.TypeManager;
-        static public IEditorPlayerDataManager Player
-        {
-            get
-            {
-                if (Engine.AuthenticationManager.Token == null)
-                {
-                    throw GDF.Exceptions.NotConnected;
-                }
-                return Engine.PlayerDataManager;
-            }
-        }
+        static public IEditorThreadManager Thread => StartedEngine.ThreadManager;
+        static public IEditorEnvironmentManager Environment => StartedEngine.EnvironmentManager;
+        static public IEditorDeviceManager Device => StartedEngine.DeviceManager;
+        static public IEditorAuthenticationManager Authentication => StartedEngine.AuthenticationManager;
+        static public IEditorTypeManager Types => StartedEngine.TypeManager;
+        static public IEditorAccountManager Account => AuthenticatedEngine.AccountManager;
+        static public IEditorPlayerDataManager Player => AuthenticatedEngine.PlayerDataManager;
 
         static public Task Stop()
         {

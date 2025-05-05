@@ -26,12 +26,11 @@ namespace GDFUnity.Editor
             mainView.AddPreloader(new EnginePreLoader());
             
             _loginView = new AccountLoginView();
-            _information = new AccountInformation();
+            _information = new AccountInformation(this);
 
             mainView.AddBody(_loginView);
             mainView.AddBody(_information);
 
-            GDFEditor.Authentication.AccountChangedEvent.onMainThread += OnAccountChanged;
             mainView.onDisplayChanged += OnMainViewStateChanged;
 
             OnMainViewStateChanged(mainView.MainDisplay);
@@ -58,12 +57,20 @@ namespace GDFUnity.Editor
         {
             if (display == LoadingView.Display.Body)
             {
+                GDFEditor.Authentication.AccountChangedEvent.onMainThread -= OnAccountChanged;
+                GDFEditor.Authentication.AccountChangedEvent.onMainThread += OnAccountChanged;
+
                 OnAccountChanged(GDFEditor.Authentication.Token);
             }
             else
             {
                 OnAccountChanged(null);
             }
+        }
+        
+        public void OnDestroy()
+        {
+            GDFEditor.Authentication.AccountChangedEvent.onMainThread -= OnAccountChanged;
         }
     }
 }

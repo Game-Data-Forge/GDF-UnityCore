@@ -351,6 +351,7 @@ namespace GDFUnity
             _engine = engine;
             _engine.AuthenticationManager.AccountChangingEvent.onBackgroundThread += OnAccountChanging;
             _engine.AuthenticationManager.AccountChangedEvent.onBackgroundThread += OnAccountChanged;
+            _engine.AccountManager.DeletingEvent.onBackgroundThread += PurgeRunner;
 
             _gameSaveCache = new Cache(this);
             _commonCache = new Cache(this);
@@ -358,6 +359,7 @@ namespace GDFUnity
 
         ~RuntimePlayerDataManager()
         {
+            _engine.AccountManager.DeletingEvent.onBackgroundThread -= PurgeRunner;
             _engine.AuthenticationManager.AccountChangedEvent.onBackgroundThread -= OnAccountChanged;
             _engine.AuthenticationManager.AccountChangingEvent.onBackgroundThread -= OnAccountChanging;
         }
@@ -846,6 +848,8 @@ namespace GDFUnity
         {
             using(_lock.Use(_engine))
             {
+                handler.StepAmount = 2;
+
                 _references.Clear();
                 _commonCache.Clear();
                 _gameSaveCache.Clear();
@@ -854,7 +858,13 @@ namespace GDFUnity
                 _syncQueue.Clear();
                 _syncTime = DateTime.MinValue;
 
-                _engine.PersistanceManager.Purge(handler);
+                _engine.PersistanceManager.Purge(handler.Split());
+
+                string country = _engine.AuthenticationManager.Token.Country;
+
+                _headers.Clear();
+                _engine.ServerManager.FillHeaders(_headers, _engine.AuthenticationManager.Bearer);
+                Delete<int>(handler.Split(), _engine.ServerManager.BuildAuthURL(country, "/api/v1/player-data"), _headers);
             }
         }
 
@@ -946,7 +956,7 @@ namespace GDFUnity
                 _engine.ServerManager.FillHeaders(_headers, _engine.AuthenticationManager.Bearer);
                 try
                 {
-                    Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(_engine.AuthenticationManager.Country.TwoLetterCode, "/api/v1/player-data"), _headers, exchange);
+                    Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(_engine.AuthenticationManager.Token.Country, "/api/v1/player-data"), _headers, exchange);
                 }
                 catch (APIException e)
                 {
@@ -979,7 +989,7 @@ namespace GDFUnity
                 _engine.ServerManager.FillHeaders(_headers, _engine.AuthenticationManager.Bearer);
 
                 pagination = Get<PlayerDataPagination>(handler.Split(),
-                    _engine.ServerManager.BuildAuthURL(_engine.AuthenticationManager.Country.TwoLetterCode,
+                    _engine.ServerManager.BuildAuthURL(_engine.AuthenticationManager.Token.Country,
                     "/api/v1/player-data/" + _syncTime.ToISO8601().ToBase64URL()),
                     _headers);
 

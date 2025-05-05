@@ -52,21 +52,5 @@ namespace GDFFoundation.Tasks
         {
             return this;
         }
-
-        private float Lerp(float min, float max, float value)
-        {
-            float result = min + (max - min) * value;
-            if (result < min)
-            {
-                return min;
-            }
-
-            if (result > max)
-            {
-                return max;
-            }
-
-            return result;
-        }
     }
 }

@@ -18,12 +18,12 @@ namespace GDFUnity.Editor
             buttonContainer.style.flexDirection = FlexDirection.Row;
             buttonContainer.style.justifyContent = Justify.Center;
 
-            Button logout = new Button();
-            logout.text = "Autentication window";
-            logout.style.width = 200;
-            logout.clicked += AuthenticationWindow.Display;
+            Button authentication = new Button();
+            authentication.text = "Autentication window";
+            authentication.style.width = 200;
+            authentication.clicked += AuthenticationWindow.Display;
 
-            buttonContainer.Add(logout);
+            buttonContainer.Add(authentication);
 
             Add(helpBox);
             Add(buttonContainer);

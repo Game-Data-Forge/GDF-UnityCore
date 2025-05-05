@@ -33,25 +33,27 @@ namespace GDFUnity
 
         private GameObject _gameObject = null;
 
-        private Task _launchOperation = null;
+        private Task _launch = null;
         private IRuntimeConfiguration _configuration;
 
         private IRuntimeThreadManager _threadManager;
         private IRuntimeServerManager _serverManager;
         private IRuntimeEnvironmentManager _environmentManager;
         private IRuntimeDeviceManager _deviceManager;
+        private IRuntimeAccountManager _accountManager;
         private IRuntimeAuthenticationManager _authenticationManager;
         private IRuntimePlayerDataManager _playerDataManager;
         private IRuntimeTypeManager _typeManager;
         private IRuntimePlayerPersistanceManager _persistanceManager;
 
-        public Task Launch => _launchOperation;
+        public Task Launch => _launch;
         public IRuntimeConfiguration Configuration => _configuration;
 
         public IRuntimeThreadManager ThreadManager => _threadManager;
         public IRuntimeServerManager ServerManager => _serverManager;
         public IRuntimeEnvironmentManager EnvironmentManager => _environmentManager;
         public IRuntimeDeviceManager DeviceManager => _deviceManager;
+        public IRuntimeAccountManager AccountManager => _accountManager;
         public IRuntimeAuthenticationManager AuthenticationManager => _authenticationManager;
         public IRuntimePlayerDataManager PlayerDataManager => _playerDataManager;
         public IRuntimeTypeManager TypeManager => _typeManager;
@@ -68,14 +70,16 @@ namespace GDFUnity
             _serverManager = new RuntimeServerManager(this);
             _environmentManager = new RuntimeEnvironmentManager(this);
             _deviceManager = new RuntimeDeviceManager();
+            _accountManager = new RuntimeAccountManager(this);
             _authenticationManager = new RuntimeAuthenticationManager(this);
             _typeManager = new RuntimeTypeManager();
             _persistanceManager = new RuntimePlayerPersistanceManager(this);
             _playerDataManager = new RuntimePlayerDataManager(this);
 
-            _launchOperation = Task.Run((handler) => {
+            _launch = Task.Run((handler) => {
                 _typeManager.LoadRunner(handler);
             }, "Start engine");
+            _launch.Pool = null; // Makes the launch task is never recycled.
         }
 
         public Task Stop()

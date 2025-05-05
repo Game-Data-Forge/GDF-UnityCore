@@ -7,6 +7,6 @@ namespace GDFFoundation
     {
         public GDFOAuthKind OAuth { set; get; }
         public string AccessToken { set; get; }
-        public string ClientID { set; get; }
+        public string ClientId { set; get; }
     }
 }

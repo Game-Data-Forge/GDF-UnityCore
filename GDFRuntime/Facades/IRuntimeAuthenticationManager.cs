@@ -8,7 +8,6 @@ namespace GDFRuntime
         public bool IsConnected { get; }
         public bool CanAutoReSignIn { get; }
         public MemoryJwtToken Token { get; }
-        public GDFCountryISO Country { get; }
         public string Bearer { get; }
 
         public Event<MemoryJwtToken> AccountChangingEvent { get; }

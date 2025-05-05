@@ -29,8 +29,14 @@ namespace GDFUnity.Editor
             logout.clicked += () => {
                 Load(GDF.Authentication.SignOut());
             };
+            
+            Button account = new Button();
+            account.text = "Account Window";
+            account.style.width = 150;
+            account.clicked += AccountWindow.Display;
 
             buttonContainer.Add(logout);
+            buttonContainer.Add(account);
 
             Add(helpBox);
             Add(buttonContainer);

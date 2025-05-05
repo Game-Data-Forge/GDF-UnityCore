@@ -11,7 +11,9 @@ namespace GDFUnity
         {
             static public GDFException EngineCannotChangeInstance => new GDFException("ENG", 1, "Cannot changed engine instance ! Instance already set...");
             static public GDFException BuilderMissing => new GDFException("ENG", 2, "Cannot fetch engine ! Instance missing...");
-            static public GDFException NotConnected => new GDFException("ENG", 3, "Not connected to an account ! Feature inaccessible...");
+            static public GDFException NotLaunched => new GDFException("ENG", 3, "The engine is not launched ! Feature inaccessible...");
+            static public GDFException LaunchFailed => new GDFException("ENG", 4, "The engine failed to lauch ! Feature inaccessible...");
+            static public GDFException NotConnected => new GDFException("ENG", 5, "Not connected to an account ! Feature inaccessible...");
         }
 
         static private Func<IRuntimeEngine> _instance = null;
@@ -40,25 +42,49 @@ namespace GDFUnity
             }
         }
 
+        static private IRuntimeEngine StartedEngine
+        {
+            get
+            {
+                IRuntimeEngine engine = Engine;
+                if (!engine.Launch.IsDone)
+                {
+                    throw Exceptions.NotLaunched;
+                }
+                
+                if (engine.Launch.State != TaskState.Success)
+                {
+                    throw Exceptions.LaunchFailed;
+                }
+
+                return engine;
+            }
+        }
+
+        static private IRuntimeEngine AuthenticatedEngine
+        {
+            get
+            {
+                IRuntimeEngine engine = StartedEngine;
+                if (engine.AuthenticationManager.Token == null)
+                {
+                    throw Exceptions.NotConnected;
+                }
+
+                return engine;
+            }
+        }
+
         static public Task Launch => Engine.Launch;
 
         static public IRuntimeConfiguration Configuration => Engine.Configuration;
         
-        static public IRuntimeThreadManager Thread => Engine.ThreadManager;
-        static public IRuntimeEnvironmentManager Environment => Engine.EnvironmentManager;
-        static public IRuntimeDeviceManager Device => Engine.DeviceManager;
-        static public IRuntimeAuthenticationManager Authentication => Engine.AuthenticationManager;
-        static public IRuntimePlayerDataManager Player
-        {
-            get
-            {
-                if (Engine.AuthenticationManager.Token == null)
-                {
-                    throw Exceptions.NotConnected;
-                }
-                return Engine.PlayerDataManager;
-            }
-        }
+        static public IRuntimeThreadManager Thread => StartedEngine.ThreadManager;
+        static public IRuntimeEnvironmentManager Environment => StartedEngine.EnvironmentManager;
+        static public IRuntimeDeviceManager Device => StartedEngine.DeviceManager;
+        static public IRuntimeAuthenticationManager Authentication => StartedEngine.AuthenticationManager;
+        static public IRuntimeAccountManager Account => AuthenticatedEngine.AccountManager;
+        static public IRuntimePlayerDataManager Player => AuthenticatedEngine.PlayerDataManager;
 
         static public Task Stop()
         {
