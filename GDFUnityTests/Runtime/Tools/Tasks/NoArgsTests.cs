@@ -2,9 +2,10 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
 using GDFUnity;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 using System.Threading;
 using System;
+using System.Threading.Tasks;
 
 namespace Tools.Tasks
 {
@@ -26,7 +27,7 @@ namespace Tools.Tasks
         [UnityTest]
         public IEnumerator CanRun()
         {
-            UnityTask task = Task.Run(Runner);
+            UnityJob task = Job.Run(Runner);
             Assert.IsFalse(done);
             yield return task;
             Assert.IsTrue(done);
@@ -35,7 +36,7 @@ namespace Tools.Tasks
         [UnityTest]
         public IEnumerator CanRunAsync()
         {
-            UnityTask task = Task.Run(AsyncRunner);
+            UnityJob task = Job.Run(AsyncRunner);
             Assert.IsFalse(done);
             yield return task;
             Assert.IsTrue(done);
@@ -44,7 +45,7 @@ namespace Tools.Tasks
         [UnityTest]
         public IEnumerator CanRunLambda()
         {
-            UnityTask task = Task.Run(_ => {
+            UnityJob task = Job.Run(_ => {
                 Thread.Sleep(500);
                 done = true;
             });
@@ -56,8 +57,8 @@ namespace Tools.Tasks
         [UnityTest]
         public IEnumerator CanRunAsyncLambda()
         {
-            UnityTask task = Task.Run(async _ => {
-                await System.Threading.Tasks.Task.Delay(500);
+            UnityJob task = Job.Run(async _ => {
+                await Task.Delay(500);
                 done = true;
             });
             Assert.IsFalse(done);
@@ -68,10 +69,10 @@ namespace Tools.Tasks
         [Test]
         public void CanAutoGenerateName()
         {
-            Task task = Task.Run(_ => {});
+            Job task = Job.Run(_ => {});
             Assert.AreEqual(task.Name, nameof(CanAutoGenerateName));
 
-            task = Task.Run(async _ => await System.Threading.Tasks.Task.Delay(500));
+            task = Job.Run(async _ => await Task.Delay(500));
             Assert.AreEqual(task.Name, nameof(CanAutoGenerateName));
         }
 
@@ -79,17 +80,17 @@ namespace Tools.Tasks
         public void CanGiveName()
         {
             string name = "Test";
-            Task task = Task.Run(_ => {}, name);
+            Job task = Job.Run(_ => {}, name);
             Assert.AreEqual(task.Name, name);
 
-            task = Task.Run(async _ => await System.Threading.Tasks.Task.Delay(500), name);
+            task = Job.Run(async _ => await Task.Delay(500), name);
             Assert.AreEqual(task.Name, name);
         }
 
         [UnityTest]
         public IEnumerator CanWaitInCoroutine()
         {
-            UnityTask task = Task.Run(Runner);
+            UnityJob task = Job.Run(Runner);
             Assert.IsFalse(done);
             yield return task;
             Assert.IsTrue(done);
@@ -98,7 +99,7 @@ namespace Tools.Tasks
         [Test]
         public void CanWaitSync()
         {
-            UnityTask task = Task.Run(Runner);
+            UnityJob task = Job.Run(Runner);
             Assert.IsFalse(done);
             task.Wait();
             Assert.IsTrue(done);
@@ -107,31 +108,31 @@ namespace Tools.Tasks
         [UnityTest]
         public IEnumerator CanCheckState()
         {
-            UnityTask task = Task.Run(_ => {
+            UnityJob task = Job.Run(_ => {
                 Thread.Sleep(200);
             });
 
-            Assert.Contains(task.State, new TaskState[] { TaskState.Pending, TaskState.Running});
+            Assert.Contains(task.State, new JobState[] { JobState.Pending, JobState.Running});
 
             yield return null;
 
-            Assert.AreEqual(task.State, TaskState.Running);
+            Assert.AreEqual(task.State, JobState.Running);
 
             yield return task;
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
         }
 
         [UnityTest]
         public IEnumerator CanCatchExceptions()
         {
-            UnityTask task = Task.Run(_ => {
+            UnityJob task = Job.Run(_ => {
                 Thread.Sleep(200);
                 throw new TestException("Boop !");
             });
 
             yield return task;
-            Assert.AreEqual(task.State, TaskState.Failure);
+            Assert.AreEqual(task.State, JobState.Failure);
             Assert.AreEqual(task.Error.GetType(), typeof(TestException));
             Assert.IsNotNull(task.Error);
         }
@@ -139,7 +140,7 @@ namespace Tools.Tasks
         [UnityTest]
         public IEnumerator CanCancel()
         {
-            UnityTask task = Task.Run(_ => {
+            UnityJob task = Job.Run(_ => {
                 Thread.Sleep(200);
                 done = true;
             });
@@ -148,28 +149,28 @@ namespace Tools.Tasks
             yield return null;
             task.Cancel();
             yield return task;
-            Assert.AreEqual(task.State, TaskState.Cancelled);
+            Assert.AreEqual(task.State, JobState.Cancelled);
             Assert.IsTrue(done);
         }
 
         [UnityTest]
         public IEnumerator CanAutoDetectCancel()
         {
-            UnityTask task = Task.Run(Runner);
+            UnityJob task = Job.Run(Runner);
 
             Assert.IsFalse(done);
             yield return null;
             task.Cancel();
             Assert.IsTrue(task.IsCancelled);
             yield return task;
-            Assert.AreEqual(task.State, TaskState.Cancelled);
+            Assert.AreEqual(task.State, JobState.Cancelled);
             Assert.IsFalse(done);
         }
 
         [UnityTest]
         public IEnumerator CanManualDetectCancel()
         {
-            UnityTask task = Task.Run(handler => {
+            UnityJob task = Job.Run(handler => {
                 for(int i = 0; i < 100; i++)
                 {
                     Thread.Sleep(10);
@@ -183,36 +184,36 @@ namespace Tools.Tasks
             task.Cancel();
             yield return task;
             Assert.IsFalse(done);
-            Assert.AreEqual(task.State, TaskState.Cancelled);
+            Assert.AreEqual(task.State, JobState.Cancelled);
         }
 
         [UnityTest]
         public IEnumerator CanCreateASuccessfulTask()
         {
-            UnityTask task = Task.Success();
+            UnityJob task = Job.Success();
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
 
             yield return task;
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
         }
 
         [UnityTest]
         public IEnumerator CanCreateAFailedTask()
         {
-            UnityTask task = Task.Failure(new TestException("Boop !"));
+            UnityJob task = Job.Failure(new TestException("Boop !"));
 
-            Assert.AreEqual(task.State, TaskState.Failure);
+            Assert.AreEqual(task.State, JobState.Failure);
 
             yield return task;
 
-            Assert.AreEqual(task.State, TaskState.Failure);
+            Assert.AreEqual(task.State, JobState.Failure);
             Assert.AreEqual(task.Error.GetType(), typeof(TestException));
             Assert.IsNotNull(task.Error);
         }
 
-        private void Runner(ITaskHandler handler)
+        private void Runner(IJobHandler handler)
         {
             handler.StepAmount = 50;
             for (int i = 0; i < 50; i++)
@@ -223,12 +224,12 @@ namespace Tools.Tasks
             done = true;
         }
 
-        private async System.Threading.Tasks.Task AsyncRunner(ITaskHandler handler)
+        private async Task AsyncRunner(IJobHandler handler)
         {
             handler.StepAmount = 10;
             for (int i = 0; i < 10; i++)
             {
-                await System.Threading.Tasks.Task.Delay(50);
+                await Task.Delay(50);
                 handler.Step();
             }
             done = true;

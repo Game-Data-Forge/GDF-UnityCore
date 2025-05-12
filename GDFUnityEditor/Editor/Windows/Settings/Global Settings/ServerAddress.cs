@@ -1,4 +1,4 @@
-using GDFFoundation.Tasks;
+using GDFFoundation;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
@@ -82,7 +82,7 @@ namespace GDFUnity.Editor
 
         private void OnConnect()
         {
-            ITask operation = EditorConfigurationEngine.Instance.ContactDashboard(_provider.dashboardAddress);
+            IJob operation = EditorConfigurationEngine.Instance.ContactDashboard(_provider.dashboardAddress);
             _provider.mainView.AddLoader(operation, OnServerConnectionDone);
             _provider.ProviderState = GlobalSettingsProvider.State.CheckingAddress;
         }
@@ -96,9 +96,9 @@ namespace GDFUnity.Editor
             _provider.ProviderState = GlobalSettingsProvider.State.NoAddress;
         }
 
-        private void OnServerConnectionDone(ITask operation)
+        private void OnServerConnectionDone(IJob operation)
         {
-            if (operation.State == TaskState.Success)
+            if (operation.State == JobState.Success)
             {
                 _provider.ProviderState = GlobalSettingsProvider.State.NoRole;
             }

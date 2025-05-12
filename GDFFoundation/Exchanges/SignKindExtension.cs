@@ -2,28 +2,30 @@ namespace  GDFFoundation
 {
     static class SignKindExtension
     {
-        public static string Obfuscation(this SignKind kind)
+        public static string Obfuscation(this GDFAccountSignType kind)
         {
             switch (kind)
             {
-                case SignKind.EmailPassword:
+                case GDFAccountSignType.EmailPassword:
                     return "M";
-                case SignKind.Device:
+                case GDFAccountSignType.DeviceId:
                     return "P";
-                case SignKind.Facebook:
+                case GDFAccountSignType.Facebook:
                     return "E";
-                case SignKind.Google:
+                case GDFAccountSignType.Google:
                     return "R";
-                case SignKind.Apple:
+                case GDFAccountSignType.Apple:
                     return "D";
-                case SignKind.Microsoft:
+                case GDFAccountSignType.Microsoft:
                     return "I";
-                case SignKind.Twitter:
+                case GDFAccountSignType.Twitter:
                     return "Q";
-                case SignKind.LinkedIn:
+                case GDFAccountSignType.LinkedIn:
                     return "U";
-                case SignKind.Discord:
+                case GDFAccountSignType.Discord:
                     return "A";
+                case GDFAccountSignType.None:
+                    return "?";
                 default:
                     return "W";
             }

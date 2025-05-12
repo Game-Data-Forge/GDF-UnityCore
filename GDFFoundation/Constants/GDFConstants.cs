@@ -492,7 +492,7 @@ namespace GDFFoundation
         public const int K_STORAGE_BLOCK_SIZE_LENGTH = 2048;
         
         public const int K_DEVICE_IDENTIFIER_LENGTH_MIN = 32;
-        public const int K_O_AUTH_ACCESS_TOKEN_LENGTH_MIN = 12;
+        public const int K_O_AUTH_ACCESS_TOKEN_LENGTH_MIN = 10;
         public const int K_PASSWORD_LENGTH_MIN = 12;
         public const int K_PASSWORD_LENGTH_MAX = 128;
         public const int K_EMAIL_LENGTH_MIN = 6;

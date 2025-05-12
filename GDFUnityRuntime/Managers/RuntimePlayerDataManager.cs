@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFRuntime;
 using Newtonsoft.Json;
 
@@ -329,7 +328,7 @@ namespace GDFUnity
         private readonly Lock _lock = new Lock();
         private byte _gameSave = 0;
         private IRuntimeEngine _engine;
-        private Task _task = null;
+        private Job _task = null;
         private Dictionary<string, PlayerReferenceStorage> _references = new Dictionary<string, PlayerReferenceStorage>();
         private Cache _commonCache;
         private Cache _gameSaveCache;
@@ -349,9 +348,9 @@ namespace GDFUnity
         public RuntimePlayerDataManager(IRuntimeEngine engine)
         {
             _engine = engine;
-            _engine.AuthenticationManager.AccountChangingEvent.onBackgroundThread += OnAccountChanging;
-            _engine.AuthenticationManager.AccountChangedEvent.onBackgroundThread += OnAccountChanged;
-            _engine.AccountManager.DeletingEvent.onBackgroundThread += PurgeRunner;
+            _engine.AuthenticationManager.AccountChangingNotif.onBackgroundThread += OnAccountChanging;
+            _engine.AuthenticationManager.AccountChangedNotif.onBackgroundThread += OnAccountChanged;
+            _engine.AccountManager.DeletingNotif.onBackgroundThread += PurgeRunner;
 
             _gameSaveCache = new Cache(this);
             _commonCache = new Cache(this);
@@ -359,17 +358,17 @@ namespace GDFUnity
 
         ~RuntimePlayerDataManager()
         {
-            _engine.AccountManager.DeletingEvent.onBackgroundThread -= PurgeRunner;
-            _engine.AuthenticationManager.AccountChangedEvent.onBackgroundThread -= OnAccountChanged;
-            _engine.AuthenticationManager.AccountChangingEvent.onBackgroundThread -= OnAccountChanging;
+            _engine.AccountManager.DeletingNotif.onBackgroundThread -= PurgeRunner;
+            _engine.AuthenticationManager.AccountChangedNotif.onBackgroundThread -= OnAccountChanged;
+            _engine.AuthenticationManager.AccountChangingNotif.onBackgroundThread -= OnAccountChanging;
         }
 
-        public Task LoadCommonGameSave()
+        public Job LoadCommonGameSave()
         {
             return LoadGameSave(0);
         }
 
-        public Task LoadGameSave(byte gameSave)
+        public Job LoadGameSave(byte gameSave)
         {
             lock (_taskLock)
             {
@@ -560,12 +559,12 @@ namespace GDFUnity
             }
         }
 
-        public Task DeleteGameSave()
+        public Job DeleteGameSave()
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
-                _task = Task.Run(DeleteGameSaveRunner, "Delete GameSave");
+                _task = Job.Run(DeleteGameSaveRunner, "Delete GameSave");
                 return _task;
             }
         }
@@ -612,32 +611,32 @@ namespace GDFUnity
             }
         }
 
-        public Task Save()
+        public Job Save()
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
-                _task = Task.Run(SaveRunner, "Player data save");
+                _task = Job.Run(SaveRunner, "Player data save");
                 return _task;
             }
         }
         
-        public Task Sync()
+        public Job Sync()
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
-                _task = Task.Run(SyncRunner, "Player data sync");
+                _task = Job.Run(SyncRunner, "Player data sync");
                 return _task;
             }
         }
 
-        public Task Purge()
+        public Job Purge()
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
-                _task = Task.Run(PurgeRunner, "Purge data");
+                _task = Job.Run(PurgeRunner, "Purge data");
                 return _task;
             }
         }
@@ -669,9 +668,9 @@ namespace GDFUnity
             }
         }
 
-        private Task LoadTask(byte gameSave)
+        private Job LoadTask(byte gameSave)
         {
-            return Task.Run(handler => LoadRunner(handler, gameSave), $"Load gamesave {gameSave}");
+            return Job.Run(handler => LoadRunner(handler, gameSave), $"Load gamesave {gameSave}");
         }
 
         private GDFPlayerData FromCache(string reference, bool defaultGameSave)
@@ -802,7 +801,7 @@ namespace GDFUnity
             return reference;
         }
 
-        private void SaveRunner(ITaskHandler handler)
+        private void SaveRunner(IJobHandler handler)
         {
             using(_lock.Use(_engine))
             {
@@ -810,7 +809,7 @@ namespace GDFUnity
             }
         }
 
-        private void SyncRunner(ITaskHandler handler)
+        private void SyncRunner(IJobHandler handler)
         {
             handler.StepAmount = 2;
             using(_lock.Use(_engine))
@@ -820,7 +819,7 @@ namespace GDFUnity
             }
         }
 
-        private void DeleteGameSaveRunner(ITaskHandler handler)
+        private void DeleteGameSaveRunner(IJobHandler handler)
         {
             using(_lock.Use(_engine))
             {
@@ -830,7 +829,7 @@ namespace GDFUnity
             }
         }
 
-        private void DeleteGameSaveRunnerUnsafe(ITaskHandler handler)
+        private void DeleteGameSaveRunnerUnsafe(IJobHandler handler)
         {
             Cache cache = _gameSave == 0 ? _commonCache : _gameSaveCache;
             handler.StepAmount = cache.Count;
@@ -844,7 +843,7 @@ namespace GDFUnity
             }
         }
 
-        private void PurgeRunner(ITaskHandler handler)
+        private void PurgeRunner(IJobHandler handler)
         {
             using(_lock.Use(_engine))
             {
@@ -868,7 +867,7 @@ namespace GDFUnity
             }
         }
 
-        private void LoadRunner(ITaskHandler handler, byte gameSave)
+        private void LoadRunner(IJobHandler handler, byte gameSave)
         {
             using(_lock.Use(_engine))
             {
@@ -906,7 +905,7 @@ namespace GDFUnity
             }
         }
 
-        private void LoadRunnerUnsafe(ITaskHandler handler, Cache cache, byte gameSave)
+        private void LoadRunnerUnsafe(IJobHandler handler, Cache cache, byte gameSave)
         {
             handler.StepAmount = 2;
 
@@ -916,7 +915,7 @@ namespace GDFUnity
             UpdateStorage(handler.Split(), cache);
         }
 
-        private void SaveRunnerUnsafe(ITaskHandler handler)
+        private void SaveRunnerUnsafe(IJobHandler handler)
         {
             List<GDFPlayerDataStorage> storages = _saveQueue.ToList();
 
@@ -932,7 +931,7 @@ namespace GDFUnity
             _referenceSaveQueue.Clear();
         }
 
-        private void SyncRunnerUnsafe(ITaskHandler handler)
+        private void SyncRunnerUnsafe(IJobHandler handler)
         {
             handler.StepAmount = 2;
 
@@ -940,7 +939,7 @@ namespace GDFUnity
             GetFromServerUnsafe(handler.Split());
         }
 
-        private void SendToServerUnsafe(ITaskHandler handler)
+        private void SendToServerUnsafe(IJobHandler handler)
         {
             PlayerDataExchange exchange = new PlayerDataExchange();
 
@@ -970,12 +969,12 @@ namespace GDFUnity
             }
         }
 
-        private void GetFromServerUnsafe(ITaskHandler handler)
+        private void GetFromServerUnsafe(IJobHandler handler)
         {
             PlayerDataPagination pagination;
             List<PlayerReferenceStorage> references = new List<PlayerReferenceStorage>();
             
-            ITaskHandler rootHandler = handler;
+            IJobHandler rootHandler = handler;
             handler.StepAmount = 2;
 
             do
@@ -1047,7 +1046,7 @@ namespace GDFUnity
             _engine.PersistanceManager.SaveSyncDate(rootHandler.Split(), _syncTime);
         }
 
-        private void UpdateStorage(ITaskHandler handler, Cache cache)
+        private void UpdateStorage(IJobHandler handler, Cache cache)
         {
             handler.StepAmount = _loadDataBuffer.Count + _loadDataToSyncBuffer.Count;
             foreach (GDFPlayerDataStorage storage in _loadDataBuffer)
@@ -1112,7 +1111,7 @@ namespace GDFUnity
             return playerReference;
         }
 
-        private void OnAccountChanging(ITaskHandler handler, MemoryJwtToken token)
+        private void OnAccountChanging(IJobHandler handler, MemoryJwtToken token)
         {
             using(_lock.Use(_engine))
             {
@@ -1130,7 +1129,7 @@ namespace GDFUnity
             }
         }
 
-        private void OnAccountChanged(ITaskHandler handler, MemoryJwtToken token)
+        private void OnAccountChanged(IJobHandler handler, MemoryJwtToken token)
         {
             using(_lock.Use(_engine))
             {

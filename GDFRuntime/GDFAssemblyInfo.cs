@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using GDFFoundation;
 
-namespace GDFFoundation
+namespace GDFRuntime
 {
-    [Obsolete("Rename ... but by what?")]
-    public class GDFVersionDll : IGDFVersionDll
+    public class GDFAssemblyInfo : IGDFAssemblyInfo
     {
-        public static readonly GDFVersionDll VersionDll = new GDFVersionDll();
+        public static readonly GDFAssemblyInfo AssemblyInfo = new GDFAssemblyInfo();
 
-        public GDFVersionDll()
+        public GDFAssemblyInfo()
         {
-            LibrariesWorkflow.AddVersionDefinition(this);
+            LibrariesWorkflow.AddAssemblyInfo(this);
         }
 
         public bool Printed { set; get; } = false;
@@ -22,10 +21,10 @@ namespace GDFFoundation
         public string PipelineJob { set; get; } = string.Empty;
         public string Version { set; get; } = "1.0.0";
         public bool NuGet { set; get; } = false;
-        public string Title { set; get; } = typeof(GDFVersionDll).Assembly.GetName().Name ?? string.Empty;
+        public string Title { set; get; } = typeof(GDFAssemblyInfo).Assembly.GetName().Name ?? string.Empty;
         public string Description { set; get; } = "Game-Data-Forge module.";
         public bool Localized { set; get; } = false;
-        public List<IGDFVersionDll> Dependencies { set; get; } = new List<IGDFVersionDll>() {GDFFoundation.GDFVersionDll.VersionDll};
+        public List<IGDFAssemblyInfo> Dependencies { set; get; } = new List<IGDFAssemblyInfo>() {GDFFoundation.GDFAssemblyInfo.AssemblyInfo};
 
         public bool DebugStatus()
         {

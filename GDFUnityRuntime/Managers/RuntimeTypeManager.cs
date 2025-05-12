@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFRuntime;
 
 namespace GDFUnity
@@ -14,7 +13,7 @@ namespace GDFUnity
 
         private Dictionary<string, Type> _player;
 
-        public virtual void LoadRunner(ITaskHandler handler)
+        public virtual void LoadRunner(IJobHandler handler)
         {
             _player = new Dictionary<string, Type>();
 

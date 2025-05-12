@@ -1,7 +1,5 @@
 using GDFEditor;
 using GDFFoundation;
-using GDFFoundation.Tasks;
-using UnityEngine;
 
 namespace GDFUnity.Editor
 {
@@ -13,15 +11,15 @@ namespace GDFUnity.Editor
         {
             _engine = engine;
             
-            _engine.EnvironmentManager.EnvironmentChangingEvent.onBackgroundThread += OnEnvironmentChanging;
+            _engine.EnvironmentManager.EnvironmentChangingNotif.onBackgroundThread += OnEnvironmentChanging;
         }
 
         ~EditorAuthenticationManager()
         {
-            _engine.EnvironmentManager.EnvironmentChangingEvent.onBackgroundThread -= OnEnvironmentChanging;
+            _engine.EnvironmentManager.EnvironmentChangingNotif.onBackgroundThread -= OnEnvironmentChanging;
         }
 
-        private void OnEnvironmentChanging(ITaskHandler handler, GDFEnvironmentKind kind)
+        private void OnEnvironmentChanging(IJobHandler handler, GDFEnvironmentKind kind)
         {
             if (!IsConnected)
             {

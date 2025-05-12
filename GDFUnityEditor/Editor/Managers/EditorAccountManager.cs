@@ -1,7 +1,4 @@
 using GDFEditor;
-using GDFFoundation;
-using GDFFoundation.Tasks;
-using UnityEngine;
 
 namespace GDFUnity.Editor
 {

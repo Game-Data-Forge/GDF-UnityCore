@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GDFEditor;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 
 namespace GDFUnity.Editor
 {
@@ -11,7 +11,7 @@ namespace GDFUnity.Editor
     {
         public Dictionary<string, TypeHierarchy> Player { get; private set; }
 
-        public override void LoadRunner(ITaskHandler handler)
+        public override void LoadRunner(IJobHandler handler)
         {
             Player = new Dictionary<string, TypeHierarchy>();
 

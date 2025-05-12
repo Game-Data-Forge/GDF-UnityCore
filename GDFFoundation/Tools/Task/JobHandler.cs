@@ -1,22 +1,22 @@
 using System;
 
-namespace GDFFoundation.Tasks
+namespace GDFFoundation
 {
-    public class TaskHandler : ITaskHandler
+    public class JobHandler : IJobHandler
     {
-        static private Pool<TaskHandler> _pool = new Pool<TaskHandler>();
+        static private Pool<JobHandler> _pool = new Pool<JobHandler>();
 
-        static public TaskHandler Get(Task task)
+        static public JobHandler Get(Job task)
         {
-            TaskHandler handler = _pool.Get();
+            JobHandler handler = _pool.Get();
             handler._task = task;
             handler._minGlobal = 0;
             handler._maxGlobal = 1;
             return handler;
         }
 
-        private TaskHandler _handler = null;
-        private Task _task;
+        private JobHandler _handler = null;
+        private Job _task;
         private int _step;
         private int _stepAmount;
         private float _minGlobal;
@@ -68,7 +68,7 @@ namespace GDFFoundation.Tasks
             PoolItem.Release(this);
         }
 
-        public ITaskHandler Split(int steps = 1)
+        public IJobHandler Split(int steps = 1)
         {
             ThrowIfCancelled();
             

@@ -1,6 +1,6 @@
 ﻿using System;
 using GDFEditor;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 
 namespace GDFUnity.Editor
 {
@@ -42,7 +42,7 @@ namespace GDFUnity.Editor
                     throw GDF.Exceptions.NotLaunched;
                 }
                 
-                if (engine.Launch.State != TaskState.Success)
+                if (engine.Launch.State != JobState.Success)
                 {
                     throw GDF.Exceptions.LaunchFailed;
                 }
@@ -65,7 +65,7 @@ namespace GDFUnity.Editor
             }
         }
 
-        static public Task Launch => Engine.Launch;
+        static public Job Launch => Engine.Launch;
 
         static public IEditorConfiguration Configuration => Engine.Configuration;
         
@@ -77,7 +77,7 @@ namespace GDFUnity.Editor
         static public IEditorAccountManager Account => AuthenticatedEngine.AccountManager;
         static public IEditorPlayerDataManager Player => AuthenticatedEngine.PlayerDataManager;
 
-        static public Task Stop()
+        static public Job Stop()
         {
             return Engine.Stop();
         }

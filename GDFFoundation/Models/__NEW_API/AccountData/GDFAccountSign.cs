@@ -1,9 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace GDFFoundation
 {
+    [Serializable]
+    public class SignListExchange :IApiResult
+    {
+        public List<GDFAccountSign> Signs { get; set; }
+        public string Status { get; set; }
+        public bool Success { get; set; }
+    }
     /// <summary>
     /// Represents an account sign information.
     /// </summary>
@@ -318,61 +326,6 @@ namespace GDFFoundation
             rReturn.SignHash = tType + "-" +GDFSecurityTools.GenerateSha(email + password + projectReference) + "-" + GDFSecurityTools.GenerateSha(password + email);
             return rReturn;
         }
-
-        /// <summary>
-        /// Create a sign with login, email, and password.
-        /// </summary>
-        /// <param name="sLogin">The login for the account.</param>
-        /// <param name="sEmail">The email for the account.</param>
-        /// <param name="sPassword">The password for the account.</param>
-        /// <param name="sProject">The project ID.</param>
-        /// <returns>A new GDFAccountSign object with the specified login, email, and password.</returns>
-        public static GDFAccountSign CreateLoginEmailPassword(string login, string email, string password, long projectReference)
-        {
-            CheckProject(projectReference);
-            CheckEmail(email);
-            CheckPassword(password);
-            
-            GDFAccountSign rReturn = new GDFAccountSign();
-            rReturn.Project = projectReference;
-            rReturn.Name = GDFSecurityTools.CryptAes(login + " " + EmailToPartialString(email), projectReference.ToString(), projectReference.ToString());
-            rReturn.SignType = GDFAccountSignType.LoginEmailPassword;
-            rReturn.LoginHash = GDFSecurityTools.GenerateSha(login + projectReference) + "-" +
-                                GDFSecurityTools.GenerateSha(login);
-            rReturn.RescueHash = GDFSecurityTools.GenerateSha(email + projectReference) + "-" +
-                                 GDFSecurityTools.GenerateSha(email);
-            rReturn.SignHash = GDFSecurityTools.GenerateSha(password + email + login + projectReference) + "-" +
-                               GDFSecurityTools.GenerateSha(password + login);
-            rReturn.SignStatus = GDFAccountSignAction.None;
-            return rReturn;
-        }
-
-        /// <summary>
-        /// Create a sign with login and password
-        /// </summary>
-        /// <param name="sLogin">The user login</param>
-        /// <param name="sPassword">The user password</param>
-        /// <param name="sProject">The project ID</param>
-        /// <returns>The created GDFAccountSign object</returns>
-        public static GDFAccountSign CreateLoginPassword(string login, string password, long projectReference)
-        {
-            CheckProject(projectReference);
-            CheckLogin(login);
-            CheckPassword(password);
-            GDFAccountSign rReturn = new GDFAccountSign();
-            rReturn.Project = projectReference;
-            rReturn.Name = GDFSecurityTools.CryptAes(login, projectReference.ToString(), projectReference.ToString());
-            rReturn.SignType = GDFAccountSignType.LoginPassword;
-            rReturn.LoginHash = GDFSecurityTools.GenerateSha(login + projectReference) + "-" +
-                                GDFSecurityTools.GenerateSha(login);
-            rReturn.RescueHash = GDFSecurityTools.GenerateSha(login + projectReference) + "-" +
-                                 GDFSecurityTools.GenerateSha(login);
-            rReturn.SignHash = GDFSecurityTools.GenerateSha(password + login + projectReference) + "-" +
-                               GDFSecurityTools.GenerateSha(password + login);
-            rReturn.SignStatus = GDFAccountSignAction.None;
-            return rReturn;
-        }
-
         /// <summary>
         /// Creates a sign with social id (Facebook).
         /// </summary>
@@ -566,12 +519,6 @@ namespace GDFFoundation
             {
                 case GDFAccountSignType.EmailPassword:
                     rResult = "A";
-                    break;
-                case GDFAccountSignType.LoginPassword:
-                    rResult = "B";
-                    break;
-                case GDFAccountSignType.LoginEmailPassword:
-                    rResult = "C";
                     break;
                 case GDFAccountSignType.DeviceId:
                     rResult = "D";

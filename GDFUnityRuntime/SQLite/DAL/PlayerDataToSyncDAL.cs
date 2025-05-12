@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 
 namespace GDFUnity
 {
@@ -36,22 +35,22 @@ namespace GDFUnity
             };
         }
 
-        public void Validate(ITaskHandler handler, IDBConnection connection)
+        public void Validate(IJobHandler handler, IDBConnection connection)
         {
             ValidateTable(handler, connection, _dummy);
         }
 
-        public void Get(ITaskHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
+        public void Get(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
         {
             Select(handler, connection, _dummy, data);
         }
 
-        public void Record(ITaskHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
+        public void Record(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
         {
             InsertOrUpdate(handler, connection, _dummy, data);
         }
 
-        public void Delete(ITaskHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
+        public void Delete(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
         {
             Delete(handler, connection, _dummy, data);
         }

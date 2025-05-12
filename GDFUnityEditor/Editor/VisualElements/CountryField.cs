@@ -6,22 +6,22 @@ namespace GDFUnity.Editor
 {
     public class CountryField : VisualElement
     {
-        public event Action<GDFCountryISO> changed;
+        public event Action<Country> changed;
         private DropdownField _dropdown;
 
-        public GDFCountryISO value
+        public Country value
         {
-            get => GDFCountryISO.Countries[_dropdown.index];
+            get => Country.COUNTRIES[_dropdown.index];
             set => _dropdown.value = value.Name;
         }
 
         public CountryField()
         {
-            _dropdown = new DropdownField("Country", GDFCountryISO.GetNames(), 0);
+            _dropdown = new DropdownField("Country", Country.GetNames(), 0);
 
             Add(_dropdown);
 
-            value = GDFCountryISO.Countries[_dropdown.index];
+            value = Country.COUNTRIES[_dropdown.index];
 
             _dropdown.RegisterValueChangedCallback(ev => {
                 changed?.Invoke(value);

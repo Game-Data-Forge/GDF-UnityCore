@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFRuntime;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -39,11 +38,11 @@ namespace GDFUnity
 
         static private TokenStorage _Token => new TokenStorage(null, null);
 
-        private Event<MemoryJwtToken> _accountChangingEvent;
-        private Event<MemoryJwtToken> _accountChangedEvent;
+        private Notification<MemoryJwtToken> _accountChangingEvent;
+        private Notification<MemoryJwtToken> _accountChangedEvent;
         private TokenStorage _token;
         private TokenStorage _autoToken;
-        private Task _task = null;
+        private Job _task = null;
         private IRuntimeEngine _engine;
         private Dictionary<string, string> _headers = new Dictionary<string, string>();
 
@@ -59,8 +58,8 @@ namespace GDFUnity
                 return _token.data;
             }
         }
-        public Event<MemoryJwtToken> AccountChangingEvent => _accountChangingEvent;
-        public Event<MemoryJwtToken> AccountChangedEvent => _accountChangedEvent;
+        public Notification<MemoryJwtToken> AccountChangingNotif => _accountChangingEvent;
+        public Notification<MemoryJwtToken> AccountChangedNotif => _accountChangedEvent;
         public string Bearer => _token?.Bearer;
 
         private string _SaveContainer => $"{_engine.Configuration.Reference}/{_engine.EnvironmentManager.Environment.ToLongString()}";
@@ -80,24 +79,24 @@ namespace GDFUnity
         public RuntimeAuthenticationManager(IRuntimeEngine engine)
         {
             _engine = engine;
-            _accountChangingEvent = new Event<MemoryJwtToken>(_engine.ThreadManager);
-            _accountChangedEvent = new Event<MemoryJwtToken>(_engine.ThreadManager);
+            _accountChangingEvent = new Notification<MemoryJwtToken>(_engine.ThreadManager);
+            _accountChangedEvent = new Notification<MemoryJwtToken>(_engine.ThreadManager);
 
-            _engine.AccountManager.DeletedEvent.onBackgroundThread += SignOutRunner;
+            _engine.AccountManager.DeletedNotif.onBackgroundThread += SignOutRunner;
         }
 
         ~RuntimeAuthenticationManager()
         {
-            _engine.AccountManager.DeletedEvent.onBackgroundThread -= SignOutRunner;
+            _engine.AccountManager.DeletedNotif.onBackgroundThread -= SignOutRunner;
         }
 
-        public Task SignInDevice(GDFCountryISO country)
+        public Job SignInDevice(Country country)
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
 
-                _task = Task.Run(handler => {
+                _task = Job.Run(handler => {
                     handler.StepAmount = 4;
                     
                     ResetToken(handler.Split());
@@ -146,13 +145,13 @@ namespace GDFUnity
             }
         }
 
-        public Task RegisterEmailPassword(GDFCountryISO country, string email, string password, string confirmPassword)
+        public Job RegisterEmailPassword(Country country, string email, string password, string confirmPassword)
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
 
-                _task = Task.Run(handler => {
+                _task = Job.Run(handler => {
                     handler.StepAmount = 3;
                     long projectId = _engine.Configuration.Reference;
                     
@@ -180,13 +179,13 @@ namespace GDFUnity
             }
         }
 
-        public Task SignInEmailPassword(GDFCountryISO country, string email, string password)
+        public Job SignInEmailPassword(Country country, string email, string password)
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
 
-                _task = Task.Run(handler => {
+                _task = Job.Run(handler => {
                     handler.StepAmount = 3;
                     long projectId = _engine.Configuration.Reference;
                     
@@ -209,19 +208,19 @@ namespace GDFUnity
             }
         }
 
-        public Task SignOut()
+        public Job SignOut()
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
 
-                _task = Task.Run(SignOutRunner, "Sign out");
+                _task = Job.Run(SignOutRunner, "Sign out");
 
                 return _task;
             }
         }
 
-        public Task ReSignIn()
+        public Job ReSignIn()
         {
             lock (_taskLock)
             {
@@ -233,23 +232,23 @@ namespace GDFUnity
             }
         }
 
-        private Task AutoSignInTask()
+        private Job AutoSignInTask()
         {
             string taskName = "Auto sign in";
             if (!CanAutoReSignIn)
             {
-                return Task.Failure(new GDFException("ACC", 1, ""), taskName);
+                return Job.Failure(new GDFException("ACC", 1, ""), taskName);
             }
 
             TokenStorage token = _autoToken;
 
-            return Task.Run(handler => {
+            return Job.Run(handler => {
                 ResetToken(handler);
                 SetToken(handler, token);
             });
         }
 
-        private void ResetToken(ITaskHandler handler)
+        private void ResetToken(IJobHandler handler)
         {
             handler.StepAmount = 2;
 
@@ -262,10 +261,10 @@ namespace GDFUnity
 
             handler.Step();
 
-            AccountChangingEvent.Invoke(handler.Split(), lastValue?.data);
+            AccountChangingNotif.Invoke(handler.Split(), lastValue?.data);
         }
 
-        protected void SignOutRunner(ITaskHandler handler)
+        protected void SignOutRunner(IJobHandler handler)
         {
             if (!IsConnected)
             {
@@ -290,7 +289,7 @@ namespace GDFUnity
             }
         }
 
-        private void SetToken(ITaskHandler handler, TokenStorage value)
+        private void SetToken(IJobHandler handler, TokenStorage value)
         {
             handler.StepAmount = 2;
             _token = value;
@@ -303,7 +302,7 @@ namespace GDFUnity
 
             handler.Step();
 
-            AccountChangedEvent?.Invoke(handler.Split(), _token?.data);
+            AccountChangedNotif?.Invoke(handler.Split(), _token?.data);
         }
     }
 }

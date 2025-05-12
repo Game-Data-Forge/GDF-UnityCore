@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using GDFUnity.Editor.ServiceProviders;
 using UnityEditor;
@@ -16,16 +15,17 @@ namespace GDFUnity.Editor
 
         internal List<AuthenticationSettingsProvider> providers = new List<AuthenticationSettingsProvider>();
         internal LoadingView mainView;
-        internal DevicesView deviceView;
+        private DevicesView deviceView;
 
         public void CreateGUI()
         {
             providers = AuthenticationSelection.Providers;
 
             mainView = new LoadingView();
+            mainView.AddPreloader(new EnginePreLoader());
             
             DevicesToolbar toolbar = new DevicesToolbar();
-            deviceView = new DevicesView(toolbar);
+            deviceView = new DevicesView(this, toolbar);
 
             mainView.AddBody(toolbar);
             mainView.AddBody(deviceView);

@@ -1,6 +1,5 @@
 using System.Collections;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -9,14 +8,14 @@ namespace Account
 {
     public class CommonTests
     {
-        GDFCountryISO country = GDFCountryISO.GetFromTwoLetterCode("FR");
+        Country country = Country.FromTwoLetterCode("FR");
 
         [UnityTest]
         public IEnumerator CanDelete()
         {
             long lastAccount = GDF.Authentication.Token.Account;
 
-            UnityTask task = GDF.Account.Delete();
+            UnityJob task = GDF.Account.Delete();
             yield return WaitTask(task);
 
             task = GDF.Authentication.SignInDevice(country);
@@ -28,7 +27,7 @@ namespace Account
         [UnitySetUp]
         public IEnumerator Setup()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return WaitTask(task);
             
             task = GDF.Authentication.SignInDevice(country);
@@ -38,13 +37,13 @@ namespace Account
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            UnityTask task = GDF.Authentication.SignOut();
+            UnityJob task = GDF.Authentication.SignOut();
             yield return WaitTask(task);
 
             GDF.Kill();
         }
 
-        private IEnumerator WaitTask(UnityTask task, TaskState expectedState = TaskState.Success)
+        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

@@ -1,4 +1,4 @@
-using GDFFoundation.Tasks;
+using GDFFoundation;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
@@ -27,7 +27,7 @@ namespace GDFUnity.Editor
             _view = view;
             try
             {
-                ITask task = GDFEditor.Launch;
+                IJob task = GDFEditor.Launch;
                 _helpBox.text = "Loading engine...";
                 _helpBox.messageType = HelpBoxMessageType.Info;
 
@@ -54,7 +54,7 @@ namespace GDFUnity.Editor
             }
         }
 
-        private void OnEngineLoaded (ITask task)
+        private void OnEngineLoaded (IJob task)
         {
             _view.MainDisplay = LoadingView.Display.Body;
         }

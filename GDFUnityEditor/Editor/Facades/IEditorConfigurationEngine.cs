@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using GDFEditor;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFRuntime;
 
 namespace GDFUnity.Editor
@@ -17,7 +16,7 @@ namespace GDFUnity.Editor
         public void Validate(IEditorConfiguration configuration);
         public IEditorConfiguration LoadWithoutValidation();
         public bool IsValidDashboardAddress(string address);
-        public ITask<DateTime> ContactDashboard(string dashboardAddress);
-        public ITask<GDFProjectConfiguration> RequestConfigurationUpdate(string dashboardAddress, string role);
+        public IJob<DateTime> ContactDashboard(string dashboardAddress);
+        public IJob<GDFProjectConfiguration> RequestConfigurationUpdate(string dashboardAddress, string role);
     }
 }

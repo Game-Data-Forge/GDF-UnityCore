@@ -1,6 +1,5 @@
 using System.Collections;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -12,24 +11,24 @@ namespace Authentication
         string login1 = "unit.test1@test.test";
         string login2 = "unit.test2@test.test";
         string password = "UnitTest_123456789";
-        GDFCountryISO country = GDFCountryISO.GetFromTwoLetterCode("FR");
+        Country country = Country.FromTwoLetterCode("FR");
 
         [UnityTest]
         public IEnumerator CanRegister()
         {
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
-            UnityTask task = GDF.Authentication.RegisterEmailPassword(country, login1, password, password);
+            UnityJob task = GDF.Authentication.RegisterEmailPassword(country, login1, password, password);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
         }
 
         [UnityTest]
         public IEnumerator CanSignIn()
         {
-            UnityTask task = GDF.Authentication.RegisterEmailPassword(country, login1, password, password);
+            UnityJob task = GDF.Authentication.RegisterEmailPassword(country, login1, password, password);
             yield return WaitTask(task);
 
             task = GDF.Authentication.SignOut();
@@ -40,7 +39,7 @@ namespace Authentication
             task = GDF.Authentication.SignInEmailPassword(country, login1, password);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
         }
         
@@ -49,22 +48,22 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
-            UnityTask task = GDF.Authentication.RegisterEmailPassword(country, login1, password, password);
+            UnityJob task = GDF.Authentication.RegisterEmailPassword(country, login1, password, password);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignOut();
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.RegisterEmailPassword(country, login2, password, password);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
             
             task = GDF.Account.Delete();
@@ -79,29 +78,29 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
-            UnityTask task = GDF.Authentication.RegisterEmailPassword(country, login1, password, password);
+            UnityJob task = GDF.Authentication.RegisterEmailPassword(country, login1, password, password);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignOut();
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignInEmailPassword(country, login1, password);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
         }
         
         [UnitySetUp]
         public IEnumerator Setup()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return WaitTask(task);
         }
 
@@ -110,14 +109,14 @@ namespace Authentication
         {
             if (GDF.Authentication.IsConnected)
             {
-                UnityTask task = GDF.Account.Delete();
+                UnityJob task = GDF.Account.Delete();
                 yield return WaitTask(task);
             }
             
             GDF.Kill();
         }
 
-        private IEnumerator WaitTask(UnityTask task, TaskState expectedState = TaskState.Success)
+        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

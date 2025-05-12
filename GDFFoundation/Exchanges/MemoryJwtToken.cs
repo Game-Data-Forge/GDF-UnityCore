@@ -30,9 +30,9 @@ namespace GDFFoundation
             return Project != 0 && Channel > 0 && Account != 0 && Range != 0 && !string.IsNullOrEmpty(Token);
         }
 
-        public GDFCountryISO GetCountry()
+        public Country GetCountry()
         {
-            return GDFCountryISO.GetFromTwoLetterCode(Country);
+            return GDFFoundation.Country.FromTwoLetterCode(Country);
         }
     }
 }

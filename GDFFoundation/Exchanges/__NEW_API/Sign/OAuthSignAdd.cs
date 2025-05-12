@@ -4,7 +4,7 @@ using GDFFoundation;
 namespace GDFFoundation
 {
     [Serializable]
-    public class OAuthSignAddExchange : IOAuthSign
+    public class OAuthSignAdd : IOAuthSign
     {
         public GDFOAuthKind OAuth { get; set; }
         public string AccessToken { get; set; } = string.Empty;

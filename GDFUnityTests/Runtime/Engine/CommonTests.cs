@@ -1,6 +1,5 @@
 using System.Collections;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -39,41 +38,41 @@ namespace Engine
         [UnityTest]
         public IEnumerator CanStart()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
 
-            Assert.Contains(task.State, new TaskState[] { TaskState.Pending, TaskState.Running});
+            Assert.Contains(task.State, new JobState[] { JobState.Pending, JobState.Running});
 
             yield return task;
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
         }
         
         [UnityTest]
         public IEnumerator CanStop()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return task;
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             
-            Task awaitedTask = GDF.Authentication.SignInDevice(GDFCountryISO.GetFromTwoLetterCode("FR"));
+            Job awaitedTask = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
             task = GDF.Stop();
 
             yield return task;
 
             Assert.IsTrue(awaitedTask.IsDone);
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
         }
         
         [UnityTest]
         public IEnumerator CanKill()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return task;
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             
-            Task awaitedTask = GDF.Authentication.SignInDevice(GDFCountryISO.GetFromTwoLetterCode("FR"));
+            Job awaitedTask = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
             GDF.Kill();
 
             Assert.IsFalse(awaitedTask.IsDone);
@@ -82,27 +81,27 @@ namespace Engine
         [UnityTest]
         public IEnumerator CanRestart()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
 
-            Assert.Contains(task.State, new TaskState[] { TaskState.Pending, TaskState.Running});
+            Assert.Contains(task.State, new JobState[] { JobState.Pending, JobState.Running});
 
             yield return task;
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             
             task = GDF.Stop();
 
             yield return task;
             
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
 
             task = GDF.Launch;
 
-            Assert.Contains(task.State, new TaskState[] { TaskState.Pending, TaskState.Running});
+            Assert.Contains(task.State, new JobState[] { JobState.Pending, JobState.Running});
 
             yield return task;
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
         }
         
         [SetUp]

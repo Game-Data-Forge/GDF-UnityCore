@@ -13,7 +13,7 @@ namespace GDFFoundation
         /// <summary>
         /// Represents a basic exchange object.
         /// </summary>
-        public string Dll { set; get; } = GDFFoundation.GDFVersionDll.VersionDll.Version;
+        public string Dll { set; get; } = GDFFoundation.GDFAssemblyInfo.AssemblyInfo.Version;
 
         /// <summary>
         /// Represents the IdName property of the GDFBasicExchange class.

@@ -1,6 +1,5 @@
 using System;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity.Editor.ServiceProviders;
 using UnityEngine.UIElements;
 
@@ -106,8 +105,8 @@ namespace GDFUnity.Editor
                 
                 AuthenticationSelection.onSelectionChanged -= OnSelectionChanged;
                 AuthenticationSelection.onSelectionChanged += OnSelectionChanged;
-                GDF.Authentication.AccountChangedEvent.onMainThread -= OnAuthenticationChanged;
-                GDF.Authentication.AccountChangedEvent.onMainThread += OnAuthenticationChanged;
+                GDF.Authentication.AccountChangedNotif.onMainThread -= OnAuthenticationChanged;
+                GDF.Authentication.AccountChangedNotif.onMainThread += OnAuthenticationChanged;
                 
                 OnSelectionChanged(null, AuthenticationSelection.Selection);
                 OnAuthenticationChanged(GDF.Authentication.Token);
@@ -124,7 +123,7 @@ namespace GDFUnity.Editor
         public void OnDestroy()
         {
             AuthenticationSelection.onSelectionChanged -= OnSelectionChanged;
-            GDF.Authentication.AccountChangedEvent.onMainThread -= OnAuthenticationChanged;
+            GDF.Authentication.AccountChangedNotif.onMainThread -= OnAuthenticationChanged;
         }
 
         private void OnSelectionChanged(AuthenticationSettingsProvider last, AuthenticationSettingsProvider selection)
@@ -162,7 +161,7 @@ namespace GDFUnity.Editor
             _State |= State.LoggedIn;
         }
 
-        public void Load(ITask load, Action<ITask> onDone = null)
+        public void Load(IJob load, Action<IJob> onDone = null)
         {
             _window.mainView.AddLoader(load, (task) => {
                 try

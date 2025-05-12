@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace GDFFoundation
 {
-    public interface IGDFVersionDll
+    public interface IGDFAssemblyInfo
     {
         public bool Printed { set; get; }
         public string DotNet { set; get; }
@@ -17,16 +17,16 @@ namespace GDFFoundation
         public string Title { set; get; }
         public string Description { set; get; }
         public bool Localized { set; get; }
-        public List<IGDFVersionDll> Dependencies { set; get; }
+        public List<IGDFAssemblyInfo> Dependencies { set; get; }
         public bool DebugStatus();
         public bool DebugTrace();
         public void PrintLogo()
         {
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.WriteLine(GenerateAsciiArt(Title.Replace("GDF", "°GDF ") + "4"));
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(Title);
-            Console.ResetColor();
+            // Console.ForegroundColor = ConsoleColor.DarkRed;
+            // Console.WriteLine(Title);
+            // Console.ResetColor();
         }
 
         public void PrintVersion()
@@ -36,10 +36,24 @@ namespace GDFFoundation
 
         public void PrintInformation()
         {
-            Console.WriteLine(@$"NuGet : {NuGet.ToString().ToLower()}
-Source information : {GitCommit} {PipelineJob} {PipelineDate}
-Description : {Description}
-___________________________________________________________________________________________________");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.Write(Title);
+            Console.ResetColor();
+            if (NuGet == true)
+            {
+                Console.Write(@$"  v{Version}
+NuGet built by CICD ({GitCommit} {PipelineJob} {PipelineDate})");
+            }
+            else
+            {
+                Console.Write(@$" CsProj integration");
+            }
+            Console.WriteLine();
+//             Console.ForegroundColor = ConsoleColor.Gray;
+//             Console.WriteLine(@$"
+// {Description}");
+//             Console.ResetColor();
+            Console.WriteLine(@$"____________________________________________________________________________________________________________");
         }
 
         static readonly Dictionary<char, string[]> RectangleFont = new()
@@ -1342,15 +1356,17 @@ ________________________________________________________________________________
             {
                 if (RectangleFont.ContainsKey(c))
                 {
-                    //Console.WriteLine(c);
                     for (int i = 0; i < 9; i++)
                     {
                         output[i] += RectangleFont[c][i] + "";
                     }
                 }
             }
-
-            return string.Join("\n", output);
+            List<string> result = new List<string>();
+            result.AddRange(output);
+            result.RemoveAt(result.Count - 1);
+            result.RemoveAt(result.Count - 1);
+            return string.Join("\n", result);
         }
     }
 }

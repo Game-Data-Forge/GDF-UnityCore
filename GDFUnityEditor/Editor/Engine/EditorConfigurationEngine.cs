@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using GDFEditor;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFRuntime;
 using Newtonsoft.Json;
 using UnityEditor;
@@ -111,12 +110,12 @@ namespace GDFUnity.Editor
             return _manager.IsValidAddress(address);
         }
 
-        public ITask<DateTime> ContactDashboard(string dashboardAddress)
+        public IJob<DateTime> ContactDashboard(string dashboardAddress)
         {
             return _manager.ContactDashboard(dashboardAddress);
         }
 
-        public ITask<GDFProjectConfiguration> RequestConfigurationUpdate(string dashboardAddress, string role)
+        public IJob<GDFProjectConfiguration> RequestConfigurationUpdate(string dashboardAddress, string role)
         {
             return _manager.RequestConfigurationUpdate(dashboardAddress, role);
         }

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -50,10 +49,10 @@ namespace PlayerData
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            UnityTask task = (Task)GDF.Launch;
+            UnityJob task = (Job)GDF.Launch;
             yield return WaitTask(task);
 
-            task = (Task)GDF.Authentication.SignOut();
+            task = (Job)GDF.Authentication.SignOut();
             yield return WaitTask(task);
         }
 
@@ -63,7 +62,7 @@ namespace PlayerData
             GDF.Kill();
         }
         
-        private IEnumerator WaitTask(UnityTask task, TaskState expectedState = TaskState.Success)
+        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

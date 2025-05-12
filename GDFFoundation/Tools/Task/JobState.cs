@@ -1,6 +1,6 @@
-namespace GDFFoundation.Tasks
+namespace GDFFoundation
 {
-    public enum TaskState
+    public enum JobState
     {
         Pending = 0,
         Running = 1,

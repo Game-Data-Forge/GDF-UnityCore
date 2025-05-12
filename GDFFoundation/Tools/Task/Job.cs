@@ -3,58 +3,53 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GDFFoundation.Tasks
+namespace GDFFoundation
 {
-    public class Task : ITask
+    public class Job : IJob
     {
-        static private Pool<Task> _pool = new Pool<Task>();
-        static public Task Run(Action<ITaskHandler> action, [CallerMemberName] string name = "Unknown")
+        static private Pool<Job> _pool = new Pool<Job>();
+        static public Job Run(Action<IJobHandler> action, [CallerMemberName] string name = "Unknown")
         {
-            Task task = _pool.Get();
+            Job task = _pool.Get();
             task._name = name;
 
-            System.Threading.Tasks.Task.Run(() => task.Process(action));
+            Task.Run(() => task.Process(action));
             return task;
         }
-        static public Task Run(Func<ITaskHandler, System.Threading.Tasks.Task> action, [CallerMemberName] string name = "Unknown")
+        static public Job Run(Func<IJobHandler, Task> action, [CallerMemberName] string name = "Unknown")
         {
-            Task task = _pool.Get();
+            Job task = _pool.Get();
             task._name = name;
 
             task.Process(action);
             return task;
         }
 
-        static public Task Success([CallerMemberName] string name = "Unknown")
+        static public Job Success([CallerMemberName] string name = "Unknown")
         {
-            Task task = _pool.Get();
+            Job task = _pool.Get();
             task._name = name;
-            task._state = TaskState.Success;
+            task._state = JobState.Success;
             return task;
         }
 
-        static public Task Failure(Exception error, [CallerMemberName] string name = "Unknown")
+        static public Job Failure(Exception error, [CallerMemberName] string name = "Unknown")
         {
-            Task task = _pool.Get();
+            Job task = _pool.Get();
             task._name = name;
             task._error = error;
-            task._state = TaskState.Failure;
+            task._state = JobState.Failure;
             return task;
-        }
-
-        static public YieldAwaitable Yield()
-        {
-            return System.Threading.Tasks.Task.Yield();
         }
 
         internal CancellationTokenSource source;
         internal float progress;
         protected string _name;
-        protected TaskState _state;
+        protected JobState _state;
         protected Exception _error;
 
         public string Name => _name;
-        public TaskState State
+        public JobState State
         {
             get => _state;
         }
@@ -62,7 +57,7 @@ namespace GDFFoundation.Tasks
         {
             get => progress;
         }
-        public bool IsDone => _state >= TaskState.Success;
+        public bool IsDone => _state >= JobState.Success;
         public Exception Error => _error;
         public bool IsCancelled => source.IsCancellationRequested;
 
@@ -75,7 +70,7 @@ namespace GDFFoundation.Tasks
 
         public TaskAwaiter GetAwaiter()
         {
-            return System.Threading.Tasks.Task.Run(Wait).GetAwaiter();
+            return Task.Run(Wait).GetAwaiter();
         }
 
         public void Wait()
@@ -86,7 +81,7 @@ namespace GDFFoundation.Tasks
         public virtual void OnPooled()
         {
             source = new CancellationTokenSource();
-            _state = TaskState.Pending;
+            _state = JobState.Pending;
             progress = 0;
             _error = null;
         }
@@ -102,105 +97,105 @@ namespace GDFFoundation.Tasks
             PoolItem.Release(this);
         }
 
-        private void Process(Action<ITaskHandler> action)
+        private void Process(Action<IJobHandler> action)
         {
-            using(ITaskHandler handler = TaskHandler.Get(this))
+            using(IJobHandler handler = JobHandler.Get(this))
             {
                 try
                 {
-                    _state = TaskState.Running;
+                    _state = JobState.Running;
                     action?.Invoke(handler);
                     handler.ThrowIfCancelled();
                     progress = 1;
-                    _state = TaskState.Success;
+                    _state = JobState.Success;
                 }
                 catch (TaskCanceledException e)
                 {
-                    _state = TaskState.Cancelled;
+                    _state = JobState.Cancelled;
                     GDFLogger.Error(e);
                 }
                 catch (OperationCanceledException e)
                 {
-                    _state = TaskState.Cancelled;
+                    _state = JobState.Cancelled;
                     GDFLogger.Error(e);
                 }
                 catch (Exception e)
                 {
                     _error = e;
-                    _state = TaskState.Failure;
+                    _state = JobState.Failure;
                     GDFLogger.Error(e);
                 }
             }
         }
 
-        private async void Process(Func<ITaskHandler, System.Threading.Tasks.Task> action)
+        private async void Process(Func<IJobHandler, Task> action)
         {
-            using(ITaskHandler handler = TaskHandler.Get(this))
+            using(IJobHandler handler = JobHandler.Get(this))
             {
                 try
                 {
-                    _state = TaskState.Running;
+                    _state = JobState.Running;
                     await action?.Invoke(handler);
                     handler.ThrowIfCancelled();
                     progress = 1;
-                    _state = TaskState.Success;
+                    _state = JobState.Success;
                 }
                 catch (TaskCanceledException e)
                 {
-                    _state = TaskState.Cancelled;
+                    _state = JobState.Cancelled;
                     GDFLogger.Error(e);
                 }
                 catch (OperationCanceledException e)
                 {
-                    _state = TaskState.Cancelled;
+                    _state = JobState.Cancelled;
                     GDFLogger.Error(e);
                 }
                 catch (Exception e)
                 {
                     _error = e;
-                    _state = TaskState.Failure;
+                    _state = JobState.Failure;
                     GDFLogger.Error(e);
                 }
             }
         }
     }
 
-    public class Task<T> : Task, ITask<T>
+    public class Job<T> : Job, IJob<T>
     {
-        static private Pool<Task<T>> _pool = new Pool<Task<T>>();
-        static public Task<T> Run(Func<ITaskHandler, T> action, [CallerMemberName] string name = "Unknown")
+        static private Pool<Job<T>> _pool = new Pool<Job<T>>();
+        static public Job<T> Run(Func<IJobHandler, T> action, [CallerMemberName] string name = "Unknown")
         {
-            Task<T> task = _pool.Get();
+            Job<T> task = _pool.Get();
             task._name = name;
 
-            System.Threading.Tasks.Task.Run(() => task.Process(action));
+            Task.Run(() => task.Process(action));
             return task;
         }
-        static public Task<T> Run(Func<ITaskHandler, System.Threading.Tasks.Task<T>> action, [CallerMemberName] string name = "Unknown")
+        static public Job<T> Run(Func<IJobHandler, Task<T>> action, [CallerMemberName] string name = "Unknown")
         {
-            Task<T> task = _pool.Get();
+            Job<T> task = _pool.Get();
             task._name = name;
 
             task.Process(action);
             return task;
         }
 
-        static public Task<T> Success(T value = default, [CallerMemberName] string name = "Unknown")
+        static public Job<T> Success(T value = default, [CallerMemberName] string name = "Unknown")
         {
-            Task<T> task = _pool.Get();
+            Job<T> task = _pool.Get();
             task._name = name;
             task._result = value;
-            task._state = TaskState.Success;
+            task._state = JobState.Success;
             return task;
         }
 
-        static public new Task<T> Failure(Exception error, [CallerMemberName] string name = "Unknown")
+        static public new Job<T> Failure(Exception error, [CallerMemberName] string name = "Unknown")
         {
-            Task<T> task = _pool.Get();
+            Job<T> task = _pool.Get();
             task._name = name;
             task._error = error;
             task._result = default;
-            task._state = TaskState.Failure;
+            task._state = JobState.Failure;
             return task;
         }
 
@@ -221,7 +216,7 @@ namespace GDFFoundation.Tasks
         }
         public new TaskAwaiter<T> GetAwaiter()
         {
-            return System.Threading.Tasks.Task.Run(Wait).GetAwaiter();
+            return Task.Run(Wait).GetAwaiter();
         }
 
         public override void OnPooled()
@@ -230,63 +225,63 @@ namespace GDFFoundation.Tasks
             _result = default;
         }
 
-        private void Process(Func<ITaskHandler, T> action)
+        private void Process(Func<IJobHandler, T> action)
         {
-            using(ITaskHandler handler = TaskHandler.Get(this))
+            using(IJobHandler handler = JobHandler.Get(this))
             {
                 try
                 {
-                    _state = TaskState.Running;
+                    _state = JobState.Running;
                     _result = action.Invoke(handler);
                     handler.ThrowIfCancelled();
                     progress = 1;
-                    _state = TaskState.Success;
+                    _state = JobState.Success;
                 }
                 catch (TaskCanceledException e)
                 {
-                    _state = TaskState.Cancelled;
+                    _state = JobState.Cancelled;
                     GDFLogger.Error(e);
                 }
                 catch (OperationCanceledException e)
                 {
-                    _state = TaskState.Cancelled;
+                    _state = JobState.Cancelled;
                     GDFLogger.Error(e);
                 }
                 catch (Exception e)
                 {
                     _error = e;
-                    _state = TaskState.Failure;
+                    _state = JobState.Failure;
                     GDFLogger.Error(e);
                 }
             }
         }
 
-        private async void Process(Func<ITaskHandler, System.Threading.Tasks.Task<T>> action)
+        private async void Process(Func<IJobHandler, Task<T>> action)
         {
-            using(ITaskHandler handler = TaskHandler.Get(this))
+            using(IJobHandler handler = JobHandler.Get(this))
             {
                 try
                 {
-                    _state = TaskState.Running;
+                    _state = JobState.Running;
                     _result = await action.Invoke(handler);
                     handler.ThrowIfCancelled();
                     progress = 1;
-                    _state = TaskState.Success;
+                    _state = JobState.Success;
                 }
                 catch (TaskCanceledException e)
                 {
-                    _state = TaskState.Cancelled;
+                    _state = JobState.Cancelled;
                     GDFLogger.Error(e);
                 }
                 catch (OperationCanceledException e)
                 {
-                    _state = TaskState.Cancelled;
+                    _state = JobState.Cancelled;
                     GDFLogger.Error(e);
                 }
                 catch (Exception e)
                 {
                     _error = e;
-                    _state = TaskState.Failure;
+                    _state = JobState.Failure;
                     GDFLogger.Error(e);
                 }
             }

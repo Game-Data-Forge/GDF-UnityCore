@@ -1,6 +1,5 @@
 using System.Collections;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -9,17 +8,17 @@ namespace Authentication
 {
     public class DeviceTests
     {
-        GDFCountryISO country = GDFCountryISO.GetFromTwoLetterCode("FR");
+        Country country = Country.FromTwoLetterCode("FR");
 
         [UnityTest]
         public IEnumerator CanSignIn()
         {
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
-            UnityTask task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Authentication.SignInDevice(country);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
         }
         
@@ -28,29 +27,29 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
-            UnityTask task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Authentication.SignInDevice(country);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignOut();
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignInDevice(country);
             yield return WaitTask(task);
 
-            Assert.AreEqual(task.State, TaskState.Success);
+            Assert.AreEqual(task.State, JobState.Success);
             Assert.IsTrue(GDF.Authentication.IsConnected);
         }
         
         [UnitySetUp]
         public IEnumerator Setup()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return WaitTask(task);
         }
 
@@ -59,14 +58,14 @@ namespace Authentication
         {
             if (GDF.Authentication.IsConnected)
             {
-                UnityTask task = GDF.Account.Delete();
+                UnityJob task = GDF.Account.Delete();
                 yield return WaitTask(task);
             }
             
             GDF.Kill();
         }
 
-        private IEnumerator WaitTask(UnityTask task, TaskState expectedState = TaskState.Success)
+        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

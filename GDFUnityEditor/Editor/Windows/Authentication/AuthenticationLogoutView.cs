@@ -1,5 +1,5 @@
 using System;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
@@ -42,7 +42,7 @@ namespace GDFUnity.Editor
             Add(buttonContainer);
         }
 
-        public void Load(ITask load, Action<ITask> onDone = null)
+        public void Load(IJob load, Action<IJob> onDone = null)
         {
             _window.mainView.AddLoader(load, (task) => {
                 try

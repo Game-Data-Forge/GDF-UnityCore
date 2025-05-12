@@ -1,6 +1,5 @@
 using System.Collections;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -20,14 +19,14 @@ namespace Account
         [UnitySetUp]
         public IEnumerator Setup()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return WaitTask(task);
 
             task = GDF.Authentication.SignOut();
             yield return WaitTask(task);
         }
 
-        private IEnumerator WaitTask(UnityTask task, TaskState expectedState = TaskState.Success)
+        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace GDFFoundation.Tasks
+namespace GDFFoundation
 {
-    public interface ITask : IPoolItem
+    public interface IJob : IPoolItem
     {
         static public class Exceptions
         {
@@ -11,7 +11,7 @@ namespace GDFFoundation.Tasks
         }
 
         public string Name { get; }
-        public TaskState State { get; }
+        public JobState State { get; }
         public float Progress { get; }
         public bool IsDone { get; }
         public Exception Error { get; }
@@ -23,7 +23,7 @@ namespace GDFFoundation.Tasks
         public void Cancel();
     }
     
-    public interface ITask<T> : ITask
+    public interface IJob<T> : IJob
     {
         public T Result { get; }
 

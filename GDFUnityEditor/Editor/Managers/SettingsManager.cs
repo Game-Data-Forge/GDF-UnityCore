@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Text.RegularExpressions;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 
 namespace GDFUnity.Editor
 {
@@ -27,15 +26,15 @@ namespace GDFUnity.Editor
             return ADDRESS_REGEX.IsMatch(address);
         }
 
-        public ITask<DateTime> ContactDashboard(string dashboardAddress)
+        public IJob<DateTime> ContactDashboard(string dashboardAddress)
         {
             string taskName = "Connect to dashboard";
             if (!IsValidAddress(dashboardAddress))
             {
-                return Task<DateTime>.Failure(Exceptions.InvalidDashboardAddress, taskName);
+                return Job<DateTime>.Failure(Exceptions.InvalidDashboardAddress, taskName);
             }
 
-            return Task<DateTime>.Run((handler) => {
+            return Job<DateTime>.Run((handler) => {
                 UriBuilder builder = new UriBuilder(dashboardAddress);
                 builder.Path = "/api/v1/date";
 
@@ -44,20 +43,20 @@ namespace GDFUnity.Editor
             }, taskName);
         }
         
-        public ITask<GDFProjectConfiguration> RequestConfigurationUpdate(string dashboardAddress, string role)
+        public IJob<GDFProjectConfiguration> RequestConfigurationUpdate(string dashboardAddress, string role)
         {
             string operationName = "Retrieve project configuration";
             if (!IsValidAddress(dashboardAddress))
             {
-                return Task<GDFProjectConfiguration>.Failure(Exceptions.InvalidDashboardAddress, operationName);
+                return Job<GDFProjectConfiguration>.Failure(Exceptions.InvalidDashboardAddress, operationName);
             }
 
             if (!ROLE_REGEX.IsMatch(role))
             {
-                return Task<GDFProjectConfiguration>.Failure(Exceptions.InvalidRoleTokenFormat, operationName);
+                return Job<GDFProjectConfiguration>.Failure(Exceptions.InvalidRoleTokenFormat, operationName);
             }
 
-            return Task<GDFProjectConfiguration>.Run((handler) => {
+            return Job<GDFProjectConfiguration>.Run((handler) => {
                 UriBuilder builder = new UriBuilder(dashboardAddress);
                 builder.Path = $"/api/v1/role/{role}";
 

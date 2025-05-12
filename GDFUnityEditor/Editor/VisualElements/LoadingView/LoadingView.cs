@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -40,12 +39,12 @@ namespace GDFUnity.Editor
 
         private struct Operation
         {
-            public ITask task;
-            public Action<ITask> onDone;
+            public IJob task;
+            public Action<IJob> onDone;
             public string Title => task.Name;
             public float Progress => task.Progress;
 
-            public Operation(ITask task, Action<ITask> onDone)
+            public Operation(IJob task, Action<IJob> onDone)
             {
                 this.task = task;
                 this.onDone = onDone;
@@ -65,7 +64,7 @@ namespace GDFUnity.Editor
 
             public void Display(ScrollView scrollView, Card card)
             {
-                if (task.State == TaskState.Success)
+                if (task.State == JobState.Success)
                 {
                     card.SetState(true, $"{Title}: Operation success !");
                 }
@@ -251,7 +250,7 @@ namespace GDFUnity.Editor
             _body.Add(element);
         }
 
-        public void AddLoader(ITask task, Action<ITask> onDone)
+        public void AddLoader(IJob task, Action<IJob> onDone)
         {
             _spinner.style.visibility = Visibility.Visible;
             _progress.style.visibility = Visibility.Visible;

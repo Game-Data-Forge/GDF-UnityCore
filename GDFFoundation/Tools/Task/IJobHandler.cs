@@ -1,6 +1,6 @@
-namespace GDFFoundation.Tasks
+namespace GDFFoundation
 {
-    public interface ITaskHandler : IPoolItem
+    public interface IJobHandler : IPoolItem
     {
         public int StepAmount { get; set; }
         public bool IsCanceled { get; }
@@ -10,6 +10,6 @@ namespace GDFFoundation.Tasks
         public void Cancel();
         public void ThrowIfCancelled();
 
-        public ITaskHandler Split(int steps = 1);
+        public IJobHandler Split(int steps = 1);
     }
 }

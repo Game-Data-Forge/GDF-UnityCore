@@ -1,5 +1,4 @@
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using UnityEditor;
 using UnityEngine.UIElements;
 
@@ -77,7 +76,7 @@ namespace GDFUnity.Editor
 
         internal void RequestConfigurationUpdate()
         {
-            ITask operation = EditorConfigurationEngine.Instance.RequestConfigurationUpdate(_provider.dashboardAddress, _provider.role.Token);
+            IJob operation = EditorConfigurationEngine.Instance.RequestConfigurationUpdate(_provider.dashboardAddress, _provider.role.Token);
             _provider.mainView.AddLoader(operation, OnServerConnectionDone);
             _provider.ProviderState = GlobalSettingsProvider.State.CheckingRole;
         }
@@ -87,9 +86,9 @@ namespace GDFUnity.Editor
             _provider.ProviderState = GlobalSettingsProvider.State.NoRole;
         }
 
-        private void OnServerConnectionDone(ITask operation)
+        private void OnServerConnectionDone(IJob operation)
         {
-            if (operation.State == TaskState.Success)
+            if (operation.State == JobState.Success)
             {
                 _provider.ProviderState = GlobalSettingsProvider.State.NoChannel;
             }
@@ -98,7 +97,7 @@ namespace GDFUnity.Editor
                 _provider.ProviderState = GlobalSettingsProvider.State.NoRole;
             }
 
-            _provider.Configuration = EditorConfiguration.CreateFrom(_provider.dashboardAddress, (operation as Task<GDFProjectConfiguration>).Result);
+            _provider.Configuration = EditorConfiguration.CreateFrom(_provider.dashboardAddress, (operation as Job<GDFProjectConfiguration>).Result);
         }
     }
 }

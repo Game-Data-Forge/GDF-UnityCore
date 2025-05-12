@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-namespace GDFFoundation.Tasks
+namespace GDFFoundation
 {
-    public class SimpleHandler : ITaskHandler
+    public class SimpleHandler : IJobHandler
     {
         private bool _cancelled = false;
 
@@ -48,7 +48,7 @@ namespace GDFFoundation.Tasks
             
         }
 
-        public ITaskHandler Split(int steps = 1)
+        public IJobHandler Split(int steps = 1)
         {
             return this;
         }

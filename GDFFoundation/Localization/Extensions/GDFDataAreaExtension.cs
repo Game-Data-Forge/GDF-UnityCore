@@ -26,9 +26,9 @@ namespace GDFFoundation
             {
                 case GDFDataArea.Unknown:
                     return "xx";
-                case GDFDataArea.European:
+                case GDFDataArea.Europe:
                     return "eu";
-                case GDFDataArea.European_GDPR:
+                case GDFDataArea.Europe_GDPR:
                     return "eu_gdpr";
                 case GDFDataArea.NorthAmerica:
                     return "na";

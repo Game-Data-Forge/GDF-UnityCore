@@ -1,10 +1,10 @@
-﻿using GDFFoundation.Tasks;
+﻿using GDFFoundation;
 
 namespace GDFRuntime
 {
     public interface IRuntimeEngine
     {
-        public Task Launch { get; }
+        public Job Launch { get; }
 
         public IRuntimeConfiguration Configuration { get; }
 
@@ -18,7 +18,7 @@ namespace GDFRuntime
         public IRuntimeTypeManager TypeManager { get; }
         public IRuntimePlayerPersistanceManager PersistanceManager { get; }
 
-        public Task Stop();
+        public Job Stop();
         public void Kill();
     }
 }

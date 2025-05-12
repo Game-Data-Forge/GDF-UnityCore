@@ -1,18 +1,17 @@
 using System;
 using System.Runtime.CompilerServices;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using UnityEngine;
 
 namespace GDFUnity
 {
-    public class UnityTask : CustomYieldInstruction, ITask
+    public class UnityJob : CustomYieldInstruction, IJob
     {
-        protected ITask _task;
+        protected IJob _task;
 
         public string Name => _task.Name;
 
-        public TaskState State => _task.State;
+        public JobState State => _task.State;
 
         public float Progress => _task.Progress;
 
@@ -38,21 +37,21 @@ namespace GDFUnity
 
         public void Wait() => _task.Wait();
 
-        static public implicit operator UnityTask(Task task)
+        static public implicit operator UnityJob(Job task)
         {
-            return new UnityTask{
+            return new UnityJob{
                 _task = task
             };
         }
     }
 
-    public class UnityTask<T> : UnityTask, ITask<T>
+    public class UnityJob<T> : UnityJob, IJob<T>
     {
-        private new ITask<T> _task
+        private new IJob<T> _task
         {
             get
             {
-                return (ITask<T>)base._task;
+                return (IJob<T>)base._task;
             }
             set
             {
@@ -65,13 +64,13 @@ namespace GDFUnity
         public new TaskAwaiter<T> GetAwaiter() => _task.GetAwaiter();
         public new T Wait() => _task.Wait();
 
-        TaskAwaiter ITask.GetAwaiter() => ((ITask)_task).GetAwaiter();
-        void ITask.Wait() => ((ITask)_task).Wait();
+        TaskAwaiter IJob.GetAwaiter() => ((IJob)_task).GetAwaiter();
+        void IJob.Wait() => ((IJob)_task).Wait();
         
 
-        static public implicit operator UnityTask<T>(Task<T> task)
+        static public implicit operator UnityJob<T>(Job<T> task)
         {
-            return new UnityTask<T> {
+            return new UnityJob<T> {
                 _task = task
             };
         }

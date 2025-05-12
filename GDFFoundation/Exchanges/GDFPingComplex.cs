@@ -36,7 +36,7 @@ namespace GDFFoundation
             ServerStatus = GDFServerStatus.Inactive;
             AnswerText = ServerStatus.ToString();
             Timestamp = GDFTimestamp.Timestamp();
-            Version = GDFFoundation.GDFVersionDll.VersionDll.Version;
+            Version = GDFFoundation.GDFAssemblyInfo.AssemblyInfo.Version;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace GDFFoundation
             ServerStatus = sServerStatus;
             AnswerText = ServerStatus.ToString();
             Timestamp = GDFTimestamp.Timestamp();
-            Version = GDFFoundation.GDFVersionDll.VersionDll.Version;
+            Version = GDFFoundation.GDFAssemblyInfo.AssemblyInfo.Version;
         }
     }
 }

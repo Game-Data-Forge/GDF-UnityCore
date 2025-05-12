@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 
 namespace GDFRuntime
 {
@@ -11,9 +10,9 @@ namespace GDFRuntime
         public bool HasDataToSave { get; }
         public bool HasDataToSync { get; }
 
-        public Task LoadCommonGameSave();
-        public Task LoadGameSave(byte gameSave);
-        public Task DeleteGameSave();
+        public Job LoadCommonGameSave();
+        public Job LoadGameSave(byte gameSave);
+        public Job DeleteGameSave();
 
         public void Add(GDFPlayerData data, bool defaultGameSave = false);
         public void Add(string reference, GDFPlayerData data, bool defaultGameSave = false);
@@ -31,9 +30,9 @@ namespace GDFRuntime
 
         public void Delete(GDFPlayerData data);
 
-        public Task Save();
-        public Task Sync();
+        public Job Save();
+        public Job Sync();
         
-        public Task Purge();
+        public Job Purge();
     }
 }

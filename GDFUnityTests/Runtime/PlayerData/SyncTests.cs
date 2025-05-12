@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -27,7 +26,7 @@ namespace PlayerData
 
             Assert.AreEqual(false, GDF.Player.HasDataToSync);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
             
             Assert.AreEqual(true, GDF.Player.HasDataToSync);
@@ -56,7 +55,7 @@ namespace PlayerData
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value1);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
 
             data.TestString = value2;
@@ -93,7 +92,7 @@ namespace PlayerData
                 GDF.Player.Add(data);
             }
 
-            UnityTask task = GDF.Player.Sync();
+            UnityJob task = GDF.Player.Sync();
             yield return WaitTask(task);
 
             List<GDFTestPlayerData> list = GDF.Player.Get<GDFTestPlayerData>();
@@ -132,7 +131,7 @@ namespace PlayerData
                 GDF.Player.Add(data);
             }
 
-            UnityTask task = GDF.Player.Sync();
+            UnityJob task = GDF.Player.Sync();
             yield return WaitTask(task);
             
             task = GDF.Player.LoadCommonGameSave();
@@ -145,7 +144,7 @@ namespace PlayerData
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return WaitTask(task);
 
             yield return Connect();
@@ -157,7 +156,7 @@ namespace PlayerData
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            UnityTask task = GDF.Authentication.SignOut();
+            UnityJob task = GDF.Authentication.SignOut();
             yield return WaitTask(task);
             
             GDF.Kill();
@@ -165,11 +164,11 @@ namespace PlayerData
         
         private IEnumerator Connect()
         {
-            UnityTask task = GDF.Authentication.SignInDevice(GDFCountryISO.GetFromTwoLetterCode("FR"));
+            UnityJob task = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
             yield return WaitTask(task);
         }
 
-        private IEnumerator WaitTask(UnityTask task, TaskState expectedState = TaskState.Success)
+        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

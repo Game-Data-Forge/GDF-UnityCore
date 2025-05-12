@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 using GDFRuntime;
 
 namespace GDFUnity
@@ -27,17 +27,17 @@ namespace GDFUnity
             _reference = _tableType.GetProperty(nameof(PlayerReferenceStorage.Reference));
         }
 
-        public void Validate(ITaskHandler handler, IDBConnection connection)
+        public void Validate(IJobHandler handler, IDBConnection connection)
         {
             ValidateTable(handler, connection, _dummy);
         }
 
-        public void Get(ITaskHandler handler, IDBConnection connection, List<PlayerReferenceStorage> data)
+        public void Get(IJobHandler handler, IDBConnection connection, List<PlayerReferenceStorage> data)
         {
             Select(handler, connection, _dummy, data);
         }
 
-        public void Record(ITaskHandler handler, IDBConnection connection, List<PlayerReferenceStorage> data)
+        public void Record(IJobHandler handler, IDBConnection connection, List<PlayerReferenceStorage> data)
         {
             InsertOrUpdate(handler, connection, _dummy, data);
         }

@@ -1,6 +1,6 @@
 ﻿using GDFRuntime;
 using UnityEngine;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 
 namespace GDFUnity
 {
@@ -24,7 +24,9 @@ namespace GDFUnity
             }
         }
 
+#if !UNITY_EDITOR
         [RuntimeInitializeOnLoadMethod]
+#endif
         static private void RuntimeStart()
         {
             string _ = FileStorage.ROOT;
@@ -33,7 +35,7 @@ namespace GDFUnity
 
         private GameObject _gameObject = null;
 
-        private Task _launch = null;
+        private Job _launch = null;
         private IRuntimeConfiguration _configuration;
 
         private IRuntimeThreadManager _threadManager;
@@ -46,7 +48,7 @@ namespace GDFUnity
         private IRuntimeTypeManager _typeManager;
         private IRuntimePlayerPersistanceManager _persistanceManager;
 
-        public Task Launch => _launch;
+        public Job Launch => _launch;
         public IRuntimeConfiguration Configuration => _configuration;
 
         public IRuntimeThreadManager ThreadManager => _threadManager;
@@ -76,17 +78,17 @@ namespace GDFUnity
             _persistanceManager = new RuntimePlayerPersistanceManager(this);
             _playerDataManager = new RuntimePlayerDataManager(this);
 
-            _launch = Task.Run((handler) => {
+            _launch = Job.Run((handler) => {
                 _typeManager.LoadRunner(handler);
             }, "Start engine");
             _launch.Pool = null; // Makes the launch task is never recycled.
         }
 
-        public Task Stop()
+        public Job Stop()
         {
             _instance = null;
             GameObject.Destroy(_gameObject);
-            return Task.Success("Stop engine");
+            return Job.Success("Stop engine");
         }
 
         public void Kill()

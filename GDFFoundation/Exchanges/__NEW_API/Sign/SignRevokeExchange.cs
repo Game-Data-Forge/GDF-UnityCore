@@ -1,0 +1,19 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj SignRevokeExchange.cs create at 2025/05/08 12:05:43
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+using System;
+
+namespace GDFFoundation
+{
+    [Serializable]
+    public class SignRevokeExchange : ISignReference
+    {
+        public long Reference { set; get; }
+    }
+}

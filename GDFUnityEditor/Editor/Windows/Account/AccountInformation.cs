@@ -93,7 +93,7 @@ namespace GDFUnity.Editor
 
         public void Update()
         {
-            GDFCountryISO countryISO = GDFEditor.Authentication.Token.GetCountry();
+            Country countryISO = GDFEditor.Authentication.Token.GetCountry();
             MemoryJwtToken token = GDFEditor.Authentication.Token;
 
             _environment.value = GDFEditor.Environment.Environment.ToLongString();

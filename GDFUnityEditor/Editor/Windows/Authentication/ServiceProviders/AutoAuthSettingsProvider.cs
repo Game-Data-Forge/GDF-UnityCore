@@ -24,8 +24,8 @@ namespace GDFUnity.Editor.ServiceProviders
                 };
                 _login.style.width = 100;
 
-                GDFEditor.Environment.EnvironmentChangedEvent.onMainThread += OnEnvironmentChanged;
-                GDF.Authentication.AccountChangedEvent.onMainThread += OnAccountChanged;
+                GDFEditor.Environment.EnvironmentChangedNotif.onMainThread += OnEnvironmentChanged;
+                GDF.Authentication.AccountChangedNotif.onMainThread += OnAccountChanged;
             }
             
             buttons.Add(_login);

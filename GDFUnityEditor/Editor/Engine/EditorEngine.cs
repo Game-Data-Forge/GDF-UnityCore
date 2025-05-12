@@ -1,7 +1,7 @@
 ﻿using GDFEditor;
 using GDFRuntime;
 using UnityEditor;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 
 namespace GDFUnity.Editor
 {
@@ -45,7 +45,7 @@ namespace GDFUnity.Editor
             GDFEditor.Instance = () => Instance;
         }
 
-        private Task _launch = null;
+        private Job _launch = null;
         private IEditorConfiguration _configuration;
         
         private IEditorThreadManager _threadManager;
@@ -58,7 +58,7 @@ namespace GDFUnity.Editor
         private IEditorTypeManager _typeManager;
         private IEditorPlayerPersistanceManager _persistanceManager;
 
-        public Task Launch => _launch;
+        public Job Launch => _launch;
         public IEditorConfiguration Configuration => _configuration;
 
         public IEditorThreadManager ThreadManager => _threadManager;
@@ -97,16 +97,16 @@ namespace GDFUnity.Editor
             _persistanceManager = new EditorPlayerPersistanceManager(this);
             _playerDataManager = new EditorPlayerDataManager(this);
 
-            _launch = Task.Run((handler) => {
+            _launch = Job.Run((handler) => {
                 _typeManager.LoadRunner(handler);
             }, "Start engine");
             _launch.Pool = null; // Makes the launch task is never recycled.
         }
 
-        public Task Stop()
+        public Job Stop()
         {
             _instance = null;
-            return Task.Success("Stop engine");
+            return Job.Success("Stop engine");
         }
 
         public void Kill()

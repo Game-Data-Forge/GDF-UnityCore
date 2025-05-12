@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 
 namespace GDFUnity
 {
@@ -26,12 +26,12 @@ namespace GDFUnity
             _reference = _tableType.GetProperty(nameof(SyncDateStorage.Reference));
         }
 
-        public void Validate(ITaskHandler handler, IDBConnection connection)
+        public void Validate(IJobHandler handler, IDBConnection connection)
         {
             ValidateTable(handler, connection, _dummy);
         }
 
-        public DateTime Get(ITaskHandler handler, IDBConnection connection)
+        public DateTime Get(IJobHandler handler, IDBConnection connection)
         {
             List<SyncDateStorage> data = new List<SyncDateStorage>();
             Select(handler, connection, _dummy, data);
@@ -44,7 +44,7 @@ namespace GDFUnity
             return data[0].SyncDate;
         }
 
-        public void Record(ITaskHandler handler, IDBConnection connection, DateTime syncTime)
+        public void Record(IJobHandler handler, IDBConnection connection, DateTime syncTime)
         {
             List<SyncDateStorage> data = new List<SyncDateStorage>()
             {

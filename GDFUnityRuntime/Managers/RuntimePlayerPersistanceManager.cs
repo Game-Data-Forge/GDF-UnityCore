@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFRuntime;
 
 namespace GDFUnity
@@ -16,15 +15,15 @@ namespace GDFUnity
         public RuntimePlayerPersistanceManager(IRuntimeEngine engine)
         {
             _engine = engine;
-            _engine.AuthenticationManager.AccountChangedEvent.onBackgroundThread += OnAccountChanged;
+            _engine.AuthenticationManager.AccountChangedNotif.onBackgroundThread += OnAccountChanged;
         }
         
         ~RuntimePlayerPersistanceManager()
         {
-            _engine.AuthenticationManager.AccountChangedEvent.onBackgroundThread -= OnAccountChanged;
+            _engine.AuthenticationManager.AccountChangedNotif.onBackgroundThread -= OnAccountChanged;
         }
 
-        public void LoadReference(ITaskHandler handler, List<PlayerReferenceStorage> references)
+        public void LoadReference(IJobHandler handler, List<PlayerReferenceStorage> references)
         {
             if (references == null)
             {
@@ -39,7 +38,7 @@ namespace GDFUnity
             }
         }
         
-        public void SaveReference(ITaskHandler handler, List<PlayerReferenceStorage> references)
+        public void SaveReference(IJobHandler handler, List<PlayerReferenceStorage> references)
         {
             if (references == null)
             {
@@ -54,7 +53,7 @@ namespace GDFUnity
             }
         }
 
-        public void Load(ITaskHandler handler, byte gameSave, List<GDFPlayerDataStorage> data, List<GDFPlayerDataStorage> dataToSync)
+        public void Load(IJobHandler handler, byte gameSave, List<GDFPlayerDataStorage> data, List<GDFPlayerDataStorage> dataToSync)
         {
             if (data == null)
             {
@@ -80,7 +79,7 @@ namespace GDFUnity
             }
         }
 
-        public void Save(ITaskHandler handler, List<GDFPlayerDataStorage> storages)
+        public void Save(IJobHandler handler, List<GDFPlayerDataStorage> storages)
         {
             if (storages == null)
             {
@@ -100,7 +99,7 @@ namespace GDFUnity
             }
         }
 
-        public void SaveDataToSync(ITaskHandler handler, List<GDFPlayerDataStorage> storages)
+        public void SaveDataToSync(IJobHandler handler, List<GDFPlayerDataStorage> storages)
         {
             handler.StepAmount = 2;
             using (IDBConnection connection = _connection.Open())
@@ -110,7 +109,7 @@ namespace GDFUnity
             }
         }
         
-        public void RemoveDataToSync(ITaskHandler handler, List<GDFPlayerDataStorage> storages)
+        public void RemoveDataToSync(IJobHandler handler, List<GDFPlayerDataStorage> storages)
         {
             if (storages == null)
             {
@@ -124,7 +123,7 @@ namespace GDFUnity
             }
         }
 
-        public DateTime LoadSyncDate(ITaskHandler handler)
+        public DateTime LoadSyncDate(IJobHandler handler)
         {
             using (IDBConnection connection = _connection.Open())
             {
@@ -133,7 +132,7 @@ namespace GDFUnity
             }
         }
 
-        public void SaveSyncDate(ITaskHandler handler, DateTime syncDate)
+        public void SaveSyncDate(IJobHandler handler, DateTime syncDate)
         {
             using (IDBConnection connection = _connection.Open())
             {
@@ -142,7 +141,7 @@ namespace GDFUnity
             }
         }
 
-        public void Purge(ITaskHandler handler)
+        public void Purge(IJobHandler handler)
         {
             string path = GetFilePath(_engine.AuthenticationManager.Token);
             if (File.Exists(path))
@@ -169,7 +168,7 @@ namespace GDFUnity
             return dictionary;
         }
 
-        private void OnAccountChanged(ITaskHandler handler, MemoryJwtToken token)
+        private void OnAccountChanged(IJobHandler handler, MemoryJwtToken token)
         {
             if (token == null)
             {

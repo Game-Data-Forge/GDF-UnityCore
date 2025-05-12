@@ -4,8 +4,8 @@
     {
         Unknown = 0,
 
-        European = 100,
-        European_GDPR = 101, // Countries need to respect GDPR
+        Europe = 100,
+        Europe_GDPR = 101, // Countries need to respect GDPR
 
         NorthAmerica = 200,
         NorthAmerica_Canada_PIPEDA = 201, // Canada PIPEDA

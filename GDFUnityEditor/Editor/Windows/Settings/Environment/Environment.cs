@@ -1,5 +1,4 @@
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
@@ -17,14 +16,14 @@ namespace GDFUnity.Editor
                 _field = new EnumField("Environment", GDFEditor.Environment.Environment);
                 _field.RegisterValueChangedCallback((evt) => {
                     _field.SetValueWithoutNotify(GDFEditor.Environment.Environment);
-                    ITask task = GDFEditor.Environment.SetEnvironment((GDFEnvironmentKind)evt.newValue);
+                    IJob task = GDFEditor.Environment.SetEnvironment((GDFEnvironmentKind)evt.newValue);
                     mainView.AddLoader(task, OnSetEnvironmentDone);
                     _field.SetEnabled(false);
                 });
 
                 Add(_field);
 
-                GDFEditor.Environment.EnvironmentChangedEvent.onMainThread += OnEnvironmentChanged;
+                GDFEditor.Environment.EnvironmentChangedNotif.onMainThread += OnEnvironmentChanged;
             }
             catch { }
         }
@@ -34,10 +33,10 @@ namespace GDFUnity.Editor
 
         ~Environment()
         {
-            GDFEditor.Environment.EnvironmentChangedEvent.onMainThread -= OnEnvironmentChanged;
+            GDFEditor.Environment.EnvironmentChangedNotif.onMainThread -= OnEnvironmentChanged;
         }
 
-        private void OnSetEnvironmentDone(ITask task)
+        private void OnSetEnvironmentDone(IJob task)
         {
             _field.SetEnabled(true);
         }

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -14,7 +13,7 @@ namespace PlayerData
 {
     public class CRUDTests
     {
-        GDFCountryISO country = GDFCountryISO.GetFromTwoLetterCode("FR");
+        Country country = Country.FromTwoLetterCode("FR");
 
         [Test]
         public void CannotAddNull()
@@ -312,7 +311,7 @@ namespace PlayerData
             Assert.AreEqual(true, state.state.HasFlag(DataState.Savable));
             Assert.AreEqual(false, state.state.HasFlag(DataState.Syncable));
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
             
             state = GDF.Player.GetState(data);
@@ -352,7 +351,7 @@ namespace PlayerData
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return WaitTask(task);
 
             yield return Connect();
@@ -364,7 +363,7 @@ namespace PlayerData
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            UnityTask task = GDF.Authentication.SignOut();
+            UnityJob task = GDF.Authentication.SignOut();
             yield return WaitTask(task);
             
             GDF.Kill();
@@ -372,11 +371,11 @@ namespace PlayerData
         
         private IEnumerator Connect()
         {
-            UnityTask task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Authentication.SignInDevice(country);
             yield return WaitTask(task);
         }
 
-        private IEnumerator WaitTask(UnityTask task, TaskState expectedState = TaskState.Success)
+        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

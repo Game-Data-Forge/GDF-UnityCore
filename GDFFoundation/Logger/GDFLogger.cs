@@ -199,9 +199,9 @@ namespace GDFFoundation
         /// <param name="sLogCategory">The <see cref="GDFLogCategory"/> indicating the category of the log.</param>
         /// <param name="sString">The string message to be logged.</param>
         /// <param name="sObject">The optional object to be logged.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         private static void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, string sString, object sObject)
         {
             if (CanWrite(sLogLevel))
@@ -218,9 +218,9 @@ namespace GDFFoundation
         /// <param name="sTitle">The title of the log.</param>
         /// <param name="sObject">The object associated with the log.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         private static void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, string sTitle, object sObject, params string[] sMessages)
         {
             if (CanWrite(sLogLevel))
@@ -236,9 +236,9 @@ namespace GDFFoundation
         /// <param name="sLogCategory">The <see cref="GDFLogCategory"/> indicating the category of the log.</param>
         /// <param name="sString">The string message to be logged.</param>
         /// <param name="sObject">The optional object to be logged.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         private static void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, Func<string> sString, object sObject)
         {
             if (CanWrite(sLogLevel))
@@ -255,9 +255,9 @@ namespace GDFFoundation
         /// <param name="sTitle">The title of the log.</param>
         /// <param name="sObject">The object associated with the log.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         private static void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, Func<string> sTitle, object sObject, params string[] sMessages)
         {
             if (CanWrite(sLogLevel))
@@ -271,9 +271,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The object associated with the log message (optional).</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Trace(string sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sMessage, sObject);
@@ -286,9 +286,9 @@ namespace GDFFoundation
         /// <param name="callerFile">The file path of the calling method. Automatically populated by the runtime.</param>
         /// <param name="callerMethod">The name of the calling method. Automatically populated by the runtime.</param>
         /// <param name="callerLine">The line number in the file where the method is called. Automatically populated by the runtime.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void TracePrint(string message = "", [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
             WriteLog(GDFLogLevel.Warning, GDFLogCategory.Attention, $"file {callerFile}, method {callerMethod}, line {callerLine}, message: {message}", "");
@@ -299,9 +299,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The object associated with the log message (optional).</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Trace(Func<string> sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sMessage, sObject);
@@ -311,9 +311,9 @@ namespace GDFFoundation
         /// Writes a trace log message for a todo item.
         /// </summary>
         /// <param name="sMessage">The message describing the todo item.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void TraceTodo(string sMessage)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.Todo, sMessage, null);
@@ -323,21 +323,29 @@ namespace GDFFoundation
         /// Logs a trace success message.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void TraceSuccess(string sMessage)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.Success, sMessage, null);
+        }
+
+        #if UNITY_EDITOR
+        [HideInCallstack]
+        #endif
+        public static void Success(string sMessage)
+        {
+            WriteLog(GDFLogLevel.None, GDFLogCategory.Success, sMessage, null);
         }
 
         /// <summary>
         /// Writes a log message with the specified message for a failed operation or event.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void TraceFailed(string sMessage)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.Failed, sMessage, null);
@@ -347,9 +355,9 @@ namespace GDFFoundation
         /// Logs an attention message to the GDFLogger with the specified message.
         /// </summary>
         /// <param name="sMessage">The message to log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void TraceAttention(string sMessage)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.Attention, sMessage, null);
@@ -359,9 +367,9 @@ namespace GDFFoundation
         /// Writes an error log message with a given message to the log file.
         /// </summary>
         /// <param name="sMessage">The error message to write.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void TraceError(string sMessage)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.Error, sMessage, null);
@@ -373,9 +381,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Trace(string sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sTitle, null, sMessages);
@@ -387,9 +395,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Trace(Func<string> sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sTitle, null, sMessages);
@@ -400,9 +408,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The optional object associated with the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Debug(string sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sMessage, sObject);
@@ -413,9 +421,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the debug log.</param>
         /// <param name="sMessages">The messages to be included in the debug log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Debug(string sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sTitle, null, sMessages);
@@ -426,9 +434,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The optional object associated with the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Debug(Func<string> sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sMessage, sObject);
@@ -439,9 +447,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the debug log.</param>
         /// <param name="sMessages">The messages to be included in the debug log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Debug(Func<string> sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sTitle, null, sMessages);
@@ -452,9 +460,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The log message.</param>
         /// <param name="sObject">Optional object related to the log message.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Information(string sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sMessage, sObject);
@@ -465,9 +473,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="title">The title of the log.</param>
         /// <param name="messages">Additional messages to include in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Information(string title, params string[] messages)
         {
             WriteLog(GDFLogLevel.Information, GDFLogCategory.No, title, null, messages);
@@ -478,9 +486,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The log message.</param>
         /// <param name="sObject">Optional object related to the log message.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Information(Func<string> sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sMessage, sObject);
@@ -491,9 +499,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the log.</param>
         /// <param name="sMessages">Additional messages to include in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Information(Func<string> sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sTitle, null, sMessages);
@@ -503,9 +511,9 @@ namespace GDFFoundation
         /// Logs an exception with the given error code and message.
         /// </summary>
         /// <param name="sObject">The exception object to be logged.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Exception(Exception sObject)
         {
             WriteLog(GDFLogLevel.Critical, GDFLogCategory.Exception, string.Empty, sObject);
@@ -516,9 +524,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The exception object to be logged.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Exception(string sMessage, Exception sObject)
         {
             WriteLog(GDFLogLevel.Critical, GDFLogCategory.Exception, sMessage, sObject);
@@ -529,9 +537,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">Optional object to be logged alongside the message.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Warning(string sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sMessage, sObject);
@@ -542,9 +550,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the warning log.</param>
         /// <param name="sMessages">An optional list of messages to include in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Warning(string sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sTitle, null, sMessages);
@@ -555,9 +563,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">Optional object to be logged alongside the message.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Warning(Func<string> sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sMessage, sObject);
@@ -568,9 +576,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the warning log.</param>
         /// <param name="sMessages">An optional list of messages to include in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Warning(Func<string> sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sTitle, null, sMessages);
@@ -580,9 +588,9 @@ namespace GDFFoundation
         /// Sends an error log using the GDFLogger.
         /// </summary>
         /// <param name="sException"></param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Error(object sException)
         {
             WriteLog(GDFLogLevel.Error, GDFLogCategory.Exception, string.Empty, sException);
@@ -594,9 +602,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The error message to be logged.</param>
         /// <param name="sObject">An optional object associated with the error log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Error(string sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sMessage, sObject);
@@ -607,9 +615,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the error log.</param>
         /// <param name="sMessages">The messages to be included in the error log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Error(string sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sTitle, null, sMessages);
@@ -620,9 +628,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The error message to be logged.</param>
         /// <param name="sObject">An optional object associated with the error log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Error(Func<string> sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sMessage, sObject);
@@ -633,9 +641,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the error log.</param>
         /// <param name="sMessages">The messages to be included in the error log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Error(Func<string> sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sTitle, null, sMessages);
@@ -646,9 +654,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to log.</param>
         /// <param name="sObject">The object associated with the log message (optional).</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Critical(string sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sMessage, sObject);
@@ -659,9 +667,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Critical(string sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sTitle, null, sMessages);
@@ -672,9 +680,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sMessage">The message to log.</param>
         /// <param name="sObject">The object associated with the log message (optional).</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Critical(Func<string> sMessage, object sObject = null)
         {
             WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sMessage, sObject);
@@ -685,9 +693,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [HideInCallstack]
-#endif
+        #endif
         public static void Critical(Func<string> sTitle, params string[] sMessages)
         {
             WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sTitle, null, sMessages);

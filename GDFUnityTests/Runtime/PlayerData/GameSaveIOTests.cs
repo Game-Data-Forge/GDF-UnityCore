@@ -1,6 +1,5 @@
 using System.Collections;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFUnity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -15,7 +14,7 @@ namespace PlayerData
         {
             byte gameSave = GDF.Player.GameSave;
 
-            UnityTask task = GDF.Player.LoadGameSave(1);
+            UnityJob task = GDF.Player.LoadGameSave(1);
             Assert.AreEqual(gameSave, GDF.Player.GameSave);
 
             yield return WaitTask(task);
@@ -28,7 +27,7 @@ namespace PlayerData
         {
             byte gameSave = GDF.Player.GameSave;
 
-            UnityTask task = GDF.Player.LoadGameSave(1);
+            UnityJob task = GDF.Player.LoadGameSave(1);
             Assert.AreEqual(gameSave, GDF.Player.GameSave);
 
             yield return WaitTask(task);
@@ -54,7 +53,7 @@ namespace PlayerData
             data1.TestString = value1;
             GDF.Player.Add(reference1, data1);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
 
             task = GDF.Player.LoadGameSave(1);
@@ -94,7 +93,7 @@ namespace PlayerData
             
             Assert.AreEqual(true, GDF.Player.HasDataToSave);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
             
             Assert.AreEqual(false, GDF.Player.HasDataToSave);
@@ -120,7 +119,7 @@ namespace PlayerData
             data.TestString = value1;
             GDF.Player.Add(reference, data);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
             
             data.TestString = value2;
@@ -154,7 +153,7 @@ namespace PlayerData
             Assert.AreEqual(true, GDF.Player.HasDataToSave);
             Assert.AreEqual(false, GDF.Player.HasDataToSync);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
             
             Assert.AreEqual(false, GDF.Player.HasDataToSave);
@@ -222,7 +221,7 @@ namespace PlayerData
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
@@ -253,7 +252,7 @@ namespace PlayerData
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
@@ -289,7 +288,7 @@ namespace PlayerData
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value1);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
 
             data.TestString = value2;
@@ -326,7 +325,7 @@ namespace PlayerData
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
 
             task = GDF.Authentication.SignOut();
@@ -355,7 +354,7 @@ namespace PlayerData
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value1);
 
-            UnityTask task = GDF.Player.Save();
+            UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
 
             data.TestString = value2;
@@ -378,7 +377,7 @@ namespace PlayerData
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return WaitTask(task);
 
             yield return Connect();
@@ -390,7 +389,7 @@ namespace PlayerData
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            UnityTask task = GDF.Authentication.SignOut();
+            UnityJob task = GDF.Authentication.SignOut();
             yield return WaitTask(task);
             
             GDF.Kill();
@@ -398,29 +397,29 @@ namespace PlayerData
         
         private IEnumerator Connect()
         {
-            UnityTask task = GDF.Authentication.SignInDevice(GDFCountryISO.GetFromTwoLetterCode("FR"));
+            UnityJob task = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
             yield return WaitTask(task);
         }
 
         private IEnumerator AlternateConnect()
         {
-            UnityTask task = GDF.Launch;
+            UnityJob task = GDF.Launch;
             yield return WaitTask(task);
 
             string address = "test-account-no-use-please@not-existing.plop";
             string password = "Super-seecret_Password+12357865";
             
-            task = GDF.Authentication.SignInEmailPassword(GDFCountryISO.GetFromTwoLetterCode("FR"), address, password);
+            task = GDF.Authentication.SignInEmailPassword(Country.FromTwoLetterCode("FR"), address, password);
             yield return task;
 
-            if (task.State == TaskState.Failure)
+            if (task.State == JobState.Failure)
             {
-                task = GDF.Authentication.RegisterEmailPassword(GDFCountryISO.GetFromTwoLetterCode("FR"), address, password, password);
+                task = GDF.Authentication.RegisterEmailPassword(Country.FromTwoLetterCode("FR"), address, password, password);
                 yield return WaitTask(task);
             }
         }
 
-        private IEnumerator WaitTask(UnityTask task, TaskState expectedState = TaskState.Success)
+        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

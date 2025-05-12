@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.TestTools;
 using GDFUnity;
 using GDFRuntime;
-using GDFFoundation.Tasks;
+using GDFFoundation;
 using System;
 
 namespace Tools.Events
@@ -18,20 +18,20 @@ namespace Tools.Events
         {
             immediate = 0;
             delayed = 0;
-            yield return (UnityTask)GDF.Launch;
+            yield return (UnityJob)GDF.Launch;
         }
 
         [Test]
         public void CanInvokeEmpty()
         {
-            Event ev = new Event(GDF.Thread);
+            Notification ev = new Notification(GDF.Thread);
             ev.Invoke(new SimpleHandler());
         }
 
         [Test]
         public void CannotInvokeNull()
         {
-            Event ev = null;
+            Notification ev = null;
             Assert.Throws<NullReferenceException> (() => {
                 ev.Invoke(new SimpleHandler());
             });
@@ -40,7 +40,7 @@ namespace Tools.Events
         [Test]
         public void CanInvokeImmediate()
         {
-            Event ev = new Event(GDF.Thread);
+            Notification ev = new Notification(GDF.Thread);
 
             Assert.AreEqual(0, immediate);
 
@@ -56,7 +56,7 @@ namespace Tools.Events
         [Test]
         public void CanSeveralInvokeImmediate()
         {
-            Event ev = new Event(GDF.Thread);
+            Notification ev = new Notification(GDF.Thread);
 
             Assert.AreEqual(0, immediate);
 
@@ -73,7 +73,7 @@ namespace Tools.Events
         [Test]
         public void CanUnsubscribeImmediate()
         {
-            Event ev = new Event(GDF.Thread);
+            Notification ev = new Notification(GDF.Thread);
 
             Assert.AreEqual(0, immediate);
 
@@ -95,7 +95,7 @@ namespace Tools.Events
         [UnityTest]
         public IEnumerator CanInvokeDelayed()
         {
-            Event ev = new Event(GDF.Thread);
+            Notification ev = new Notification(GDF.Thread);
 
             Assert.AreEqual(0, delayed);
 
@@ -114,7 +114,7 @@ namespace Tools.Events
         [UnityTest]
         public IEnumerator CanSeveralInvokeDelayed()
         {
-            Event ev = new Event(GDF.Thread);
+            Notification ev = new Notification(GDF.Thread);
 
             Assert.AreEqual(0, delayed);
 
@@ -141,7 +141,7 @@ namespace Tools.Events
         [UnityTest]
         public IEnumerator CanUnsubscribeDelayed()
         {
-            Event ev = new Event(GDF.Thread);
+            Notification ev = new Notification(GDF.Thread);
 
             Assert.AreEqual(0, delayed);
 
@@ -166,7 +166,7 @@ namespace Tools.Events
             Assert.AreEqual(1, delayed);
         }
 
-        private void Runner(ITaskHandler handler)
+        private void Runner(IJobHandler handler)
         {
             immediate++;
         }

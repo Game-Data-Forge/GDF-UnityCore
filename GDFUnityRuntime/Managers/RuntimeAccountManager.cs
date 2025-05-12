@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFRuntime;
 
 namespace GDFUnity
@@ -9,29 +8,29 @@ namespace GDFUnity
     {
         private readonly object _taskLock = new object();
         
-        private Event _deletingEvent;
-        private Event _deletedEvent;
-        private Task _task = null;
+        private Notification _deletingEvent;
+        private Notification _deletedEvent;
+        private Job _task = null;
         private IRuntimeEngine _engine;
         private Dictionary<string, string> _headers = new Dictionary<string, string>();
 
-        public Event DeletingEvent => _deletingEvent;
-        public Event DeletedEvent => _deletedEvent;
+        public Notification DeletingNotif => _deletingEvent;
+        public Notification DeletedNotif => _deletedEvent;
 
         public RuntimeAccountManager(IRuntimeEngine engine)
         {
             _engine = engine;
-            _deletingEvent = new Event(_engine.ThreadManager);
-            _deletedEvent = new Event(_engine.ThreadManager);
+            _deletingEvent = new Notification(_engine.ThreadManager);
+            _deletedEvent = new Notification(_engine.ThreadManager);
         }
 
-        public Task Delete()
+        public Job Delete()
         {
             lock (_taskLock)
             {
                 _task.EnsureNotInUse();
 
-                _task = Task.Run(handler => {
+                _task = Job.Run(handler => {
                     handler.StepAmount = 3;
 
                     _deletingEvent.Invoke(handler.Split());

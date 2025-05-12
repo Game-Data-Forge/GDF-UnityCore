@@ -1,5 +1,4 @@
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -80,7 +79,7 @@ namespace GDFUnity
             return _tableType.Name;
         }
 
-        protected void ValidateTable (ITaskHandler handler, IDBConnection connection, IDALData dalData)
+        protected void ValidateTable (IJobHandler handler, IDBConnection connection, IDALData dalData)
         {
             handler.StepAmount = 3;
 
@@ -201,7 +200,7 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected void Select(ITaskHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
+        protected void Select(IJobHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
         {
             string tableName = GenerateTableName(dalData);
             int count = connection.ExecScalar<int>(Count(dalData, tableName));
@@ -294,7 +293,7 @@ namespace GDFUnity
             }
         }
 
-        protected void InsertOrUpdate(ITaskHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
+        protected void InsertOrUpdate(IJobHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
         {
             string tableName = GenerateTableName(dalData);
 
@@ -360,7 +359,7 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected void Delete(ITaskHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
+        protected void Delete(IJobHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
         {
             string tableName = GenerateTableName(dalData);
 

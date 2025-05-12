@@ -1,6 +1,5 @@
 ﻿using System;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using GDFRuntime;
 
 namespace GDFUnity
@@ -52,7 +51,7 @@ namespace GDFUnity
                     throw Exceptions.NotLaunched;
                 }
                 
-                if (engine.Launch.State != TaskState.Success)
+                if (engine.Launch.State != JobState.Success)
                 {
                     throw Exceptions.LaunchFailed;
                 }
@@ -75,7 +74,7 @@ namespace GDFUnity
             }
         }
 
-        static public Task Launch => Engine.Launch;
+        static public Job Launch => Engine.Launch;
 
         static public IRuntimeConfiguration Configuration => Engine.Configuration;
         
@@ -86,7 +85,7 @@ namespace GDFUnity
         static public IRuntimeAccountManager Account => AuthenticatedEngine.AccountManager;
         static public IRuntimePlayerDataManager Player => AuthenticatedEngine.PlayerDataManager;
 
-        static public Task Stop()
+        static public Job Stop()
         {
             return Engine.Stop();
         }

@@ -10,7 +10,7 @@ namespace GDFUnityEditor
         /// <summary>
         /// Represents the version information for the GDFUnityEditor DLL.
         /// </summary>
-        public static GDFReleaseVersion Version = GDFVersionDll.Version;
+        public static GDFReleaseVersion Version = GDFAssemblyInfo.Version;
 
         /// <summary>
         /// Provides information about the GDFUnityEditor DLL version.

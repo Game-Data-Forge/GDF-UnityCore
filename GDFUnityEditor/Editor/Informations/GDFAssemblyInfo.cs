@@ -4,9 +4,9 @@ using GDFFoundation;
 namespace GDFUnityEditor
 {
     /// <summary>
-    /// Represents the GDFVersionDll class.
+    /// Represents the GDFAssemblyInfo class.
     /// </summary>
-    public abstract class GDFVersionDll
+    public abstract class GDFAssemblyInfo
     {
         /// <summary>
         /// Represents the version of the GDF project.

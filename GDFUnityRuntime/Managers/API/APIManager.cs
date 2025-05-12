@@ -16,7 +16,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 using Newtonsoft.Json;
 
 #endregion
@@ -76,7 +75,7 @@ namespace GDFUnity
         /// <param name="url">The full URL of the request.</param>
         /// <param name="headers">The headers of the request.</param>
         /// <returns>The recieved data.</returns>
-        protected RES Delete<RES>(ITaskHandler handler, string url, Dictionary<string, string> headers = null)
+        protected RES Delete<RES>(IJobHandler handler, string url, Dictionary<string, string> headers = null)
         {
             return Send<RES>(handler, url, HttpMethod.Delete, headers, null);
         }
@@ -88,7 +87,7 @@ namespace GDFUnity
         /// <param name="url">The full URL of the request.</param>
         /// <param name="headers">The headers of the request.</param>
         /// <returns>The recieved data.</returns>
-        protected RES Get<RES>(ITaskHandler handler, string url, Dictionary<string, string> headers = null)
+        protected RES Get<RES>(IJobHandler handler, string url, Dictionary<string, string> headers = null)
         {
             return Send<RES>(handler, url, HttpMethod.Get, headers, null);
         }
@@ -101,7 +100,7 @@ namespace GDFUnity
         /// <param name="headers">The headers of the request.</param>
         /// <param name="payload">The payload of the request.</param>
         /// <returns>The recieved data.</returns>
-        protected RES Post<RES>(ITaskHandler handler, string url, Dictionary<string, string> headers = null, object payload = null)
+        protected RES Post<RES>(IJobHandler handler, string url, Dictionary<string, string> headers = null, object payload = null)
         {
             return Send<RES>(handler, url, HttpMethod.Post, headers, payload);
         }
@@ -114,7 +113,7 @@ namespace GDFUnity
         /// <param name="headers">The headers of the request.</param>
         /// <param name="payload">The payload of the request.</param>
         /// <returns>The recieved data.</returns>
-        protected RES Put<RES>(ITaskHandler handler, string url, Dictionary<string, string> headers = null, object payload = null)
+        protected RES Put<RES>(IJobHandler handler, string url, Dictionary<string, string> headers = null, object payload = null)
         {
             return Send<RES>(handler, url, HttpMethod.Put, headers, payload);
         }
@@ -146,7 +145,7 @@ namespace GDFUnity
         /// <param name="headers">The headers of the request.</param>
         /// <param name="payload">The payload of the request.</param>
         /// <returns>The recieved data.</returns>
-        protected RES Send<RES>(ITaskHandler handler, string url, HttpMethod method, Dictionary<string, string> headers, object payload)
+        protected RES Send<RES>(IJobHandler handler, string url, HttpMethod method, Dictionary<string, string> headers, object payload)
         {
             string response = SendRequest(handler, url, method, headers, payload);
             handler.Step();
@@ -167,7 +166,7 @@ namespace GDFUnity
         /// <param name="headers">The headers of the request.</param>
         /// <param name="payload">The payload of the request.</param>
         /// <returns>The HTTP response.</returns>
-        private string SendRequest(ITaskHandler handler, string url, HttpMethod method, Dictionary<string, string> headers, object payload)
+        private string SendRequest(IJobHandler handler, string url, HttpMethod method, Dictionary<string, string> headers, object payload)
         {
             handler.StepAmount = 6;
             using HttpClient client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });

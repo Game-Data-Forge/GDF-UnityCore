@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -8,7 +9,7 @@ namespace GDFFoundation
     public static class LibrariesWorkflow
     {
         private static readonly List<Assembly> InstalledAssemblies = new List<Assembly>();
-        private static readonly List<IGDFVersionDll> NuGetDefinition = new List<IGDFVersionDll>();
+        private static readonly List<IGDFAssemblyInfo> AssemblyInfoList = new List<IGDFAssemblyInfo>();
 
         /// <summary>
         /// Represents a private, static, and readonly dictionary that stores information about
@@ -16,104 +17,100 @@ namespace GDFFoundation
         /// The key of the dictionary indicates the installed item, while the value
         /// corresponds to the installer identifier.
         /// </summary>
-        private static readonly Dictionary<string, string> Installed = new Dictionary<string,string>();
+        private static readonly Dictionary<string, string> Installed = new Dictionary<string, string>();
 
         /// <summary>
         /// Attempts to mark an item as installed by a specific user or entity.
         /// Logs a warning if the item is already marked as installed.
         /// </summary>
         /// <param name="what">The name of the item to install.</param>
-        /// <param name="byWho">The identifier of the user or entity performing the installation.</param>
+        /// <param name="who">The identifier of the user or entity performing the installation.</param>
+        /// <param name="optional"></param>
         /// <returns>
         /// Returns true if the item is successfully marked as installed;
         /// otherwise, false if the item was already marked as installed.
         /// </returns>
-        public static bool Set_ModuleInstalledBy(string what, string who)
+        private static bool SetModuleInstalledByInternal(string what, string who, string optional)
         {
             bool result = Installed.TryAdd(what, who);
             if (result == false)
             {
-                string whoBefore = Installed[what]; 
-                GDFLogger.TraceError($"Not possible! the '{what}' was already installed by '{whoBefore}' before '{who}'!");
+                string whoBefore = Installed[what];
+                GDFLogger.Error($"Warning: possible conflict! The '{what}' was already installed by '{whoBefore}' before '{who}'! ({optional})");
             }
             else
             {
-                GDFLogger.TraceSuccess($"Add '{what}' by '{who}'");
+                GDFLogger.Success($"Add '{what}' by '{who}' ({optional})");
             }
 
             return result;
         }
-        // public static bool Set_ModuleInstalledBy<T>(Expression<Action> methodExpr, string who)
-        // {
-        //     if (methodExpr.Body is MethodCallExpression methodCall)
-        //     {
-        //         string methodName = methodCall.Method.Name;
-        //         return Set_ModuleInstalledBy(methodName, who);
-        //     }
-        //
-        //     throw new ArgumentException("Expression must be a method call", nameof(methodExpr));
-        // }
-        public static bool Set_ModuleInstalledBy<T>(Expression<Action<T>> methodExpr, string who)
+
+        public static bool SetModuleInstalledByExpressionT<T>(Expression<Action<T>> methodExpr, string who, string optional = "")
         {
             if (methodExpr.Body is MethodCallExpression methodCall)
             {
-                string methodName = methodCall.Method.Name;
-                return Set_ModuleInstalledBy(methodName, who);
+                // string methodName = methodCall.Method.Name;
+                var method = methodCall.Method;
+                string methodName = method.Name;
+
+                if (method.IsGenericMethod)
+                {
+                    var genericArguments = method.GetGenericArguments();
+                    var genericPart = "<" + string.Join(", ", genericArguments.Select(t => t.Name)) + ">";
+                    methodName += genericPart;
+                }
+
+                return SetModuleInstalledByInternal(methodName, who, optional);
             }
 
             throw new ArgumentException("Expression must be a method call", nameof(methodExpr));
         }
-        
-        public static bool SetModuleInstalledBy(Expression<Action> expr, string who)
+
+        public static bool SetModuleInstalledByExpression(Expression<Action> expr, string who, string optional = "")
         {
             if (expr.Body is MethodCallExpression call)
             {
-                string methodName = call.Method.Name;
-                return Set_ModuleInstalledBy(methodName, who);
+                // string methodName = call.Method.Name;
+                string methodName = ExtractMethodName(expr);
+                return SetModuleInstalledByInternal(methodName, who, optional);
             }
 
             throw new ArgumentException("Expression must be a method call", nameof(expr));
         }
-        
-        public static bool SetModuleInstalledBy(Delegate methodDelegate, string who)
+
+        public static bool SetModuleInstalledByName(string what, string who, string optional = "")
         {
-            string methodName = methodDelegate.Method.Name;
-            return Set_ModuleInstalledBy(methodName, who);
-        }
-        
-        public static bool Set_ModuleInstalledBy(Action methodCall, string who)
-        {
-            var methodName = methodCall.Method.Name;
-            return Set_ModuleInstalledBy(methodName, who);
-        }
-        
-        public static List<IGDFVersionDll> GetVersionDllList()
-        {
-            return new List<IGDFVersionDll>(NuGetDefinition);
+            return SetModuleInstalledByInternal(what, who, optional);
         }
 
-        public static void AddVersionDefinition(IGDFVersionDll version)
+        public static List<IGDFAssemblyInfo> GetVersionDllList()
         {
-            if (!InstalledAssemblies.Contains(version.GetType().Assembly))
+            return new List<IGDFAssemblyInfo>(AssemblyInfoList);
+        }
+
+        public static void AddAssemblyInfo(IGDFAssemblyInfo info)
+        {
+            if (!InstalledAssemblies.Contains(info.GetType().Assembly))
             {
-                InstalledAssemblies.Add(version.GetType().Assembly);
-                NuGetDefinition.Add(version);
-                if (version.Printed == false)
+                InstalledAssemblies.Add(info.GetType().Assembly);
+                AssemblyInfoList.Add(info);
+                if (info.Printed == false)
                 {
-                    version.Printed = true;
+                    info.Printed = true;
                     if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Logo))
                     {
-                        version.PrintLogo();
+                        info.PrintLogo();
                     }
 
                     if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Version))
                     {
-                        version.PrintVersion();
+                        info.PrintVersion();
                     }
 
                     if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Information))
                     {
-                        version.PrintInformation();
+                        info.PrintInformation();
                     }
                 }
             }
@@ -131,6 +128,20 @@ namespace GDFFoundation
         {
             AddAssembly(Assembly.GetAssembly(type));
         }
+
+        public static string ExtractMethodName(Expression<Action> expr)
+        {
+            if (expr.Body is MethodCallExpression call)
+            {
+                return call.Method.Name;
+            }
+
+            if (expr.Body is UnaryExpression unary && unary.Operand is MethodCallExpression innerCall)
+            {
+                return innerCall.Method.Name;
+            }
+
+            throw new ArgumentException("Expression must be a method call", nameof(expr));
+        }
     }
 }
-

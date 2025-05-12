@@ -1,5 +1,4 @@
 using GDFFoundation;
-using GDFFoundation.Tasks;
 
 namespace GDFRuntime
 {
@@ -10,15 +9,15 @@ namespace GDFRuntime
         public MemoryJwtToken Token { get; }
         public string Bearer { get; }
 
-        public Event<MemoryJwtToken> AccountChangingEvent { get; }
-        public Event<MemoryJwtToken> AccountChangedEvent { get; }
+        public Notification<MemoryJwtToken> AccountChangingNotif { get; }
+        public Notification<MemoryJwtToken> AccountChangedNotif { get; }
 
-        public Task ReSignIn();
-        public Task SignOut();
+        public Job ReSignIn();
+        public Job SignOut();
 
-        public Task SignInDevice(GDFCountryISO country);
+        public Job SignInDevice(Country country);
         
-        public Task RegisterEmailPassword(GDFCountryISO country, string email, string password, string confirmPassword);
-        public Task SignInEmailPassword(GDFCountryISO country, string email, string password);
+        public Job RegisterEmailPassword(Country country, string email, string password, string confirmPassword);
+        public Job SignInEmailPassword(Country country, string email, string password);
     }
 }

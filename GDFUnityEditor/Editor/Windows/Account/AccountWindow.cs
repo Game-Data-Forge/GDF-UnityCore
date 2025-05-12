@@ -57,8 +57,8 @@ namespace GDFUnity.Editor
         {
             if (display == LoadingView.Display.Body)
             {
-                GDFEditor.Authentication.AccountChangedEvent.onMainThread -= OnAccountChanged;
-                GDFEditor.Authentication.AccountChangedEvent.onMainThread += OnAccountChanged;
+                GDFEditor.Authentication.AccountChangedNotif.onMainThread -= OnAccountChanged;
+                GDFEditor.Authentication.AccountChangedNotif.onMainThread += OnAccountChanged;
 
                 OnAccountChanged(GDFEditor.Authentication.Token);
             }
@@ -70,7 +70,7 @@ namespace GDFUnity.Editor
         
         public void OnDestroy()
         {
-            GDFEditor.Authentication.AccountChangedEvent.onMainThread -= OnAccountChanged;
+            GDFEditor.Authentication.AccountChangedNotif.onMainThread -= OnAccountChanged;
         }
     }
 }

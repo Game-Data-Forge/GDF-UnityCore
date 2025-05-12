@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using GDFFoundation;
-using GDFFoundation.Tasks;
 
 namespace GDFUnity
 {
@@ -42,19 +40,19 @@ namespace GDFUnity
             };
         }
 
-        public void Validate(ITaskHandler handler, IDBConnection connection, byte gameSave)
+        public void Validate(IJobHandler handler, IDBConnection connection, byte gameSave)
         {
             DALData dalData = new DALData(gameSave);
             ValidateTable(handler, connection, dalData);
         }
 
-        public void Get(ITaskHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data, byte gameSave)
+        public void Get(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data, byte gameSave)
         {
             DALData dalData = new DALData(gameSave);
             Select(handler, connection, dalData, data);
         }
 
-        public void Record(ITaskHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data, byte gameSave)
+        public void Record(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data, byte gameSave)
         {
             DALData dalData = new DALData(gameSave);
             InsertOrUpdate(handler, connection, dalData, data);
