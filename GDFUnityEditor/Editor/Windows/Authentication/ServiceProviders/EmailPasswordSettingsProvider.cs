@@ -7,6 +7,7 @@ namespace GDFUnity.Editor.ServiceProviders
         private class LoginState : AuthenticationState
         {
             public override string Name => "Login";
+            public override string Url => "/unity/windows/authentication/views/email-password-authentication-view#the-login-page";
 
             private EmailPasswordSettingsProvider _provider;
             private TextField _email;
@@ -70,6 +71,7 @@ namespace GDFUnity.Editor.ServiceProviders
         private class RegisterState : AuthenticationState
         {
             public override string Name => "Register";
+            public override string Url => "/unity/windows/authentication/views/email-password-authentication-view#the-register-page";
 
             private EmailPasswordSettingsProvider _provider;
             private TextField _email;
@@ -150,6 +152,7 @@ namespace GDFUnity.Editor.ServiceProviders
 
         public override string Name => "Email password";
         public override string Title => $"{Name} authentication: {_current?.Name}";
+        public override string Url => _current?.Url;
         public override bool NeedConsent => _needConsent;
 
         private AuthenticationView _view;

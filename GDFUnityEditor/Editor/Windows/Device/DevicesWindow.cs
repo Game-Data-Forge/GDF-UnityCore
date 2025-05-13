@@ -22,7 +22,6 @@ namespace GDFUnity.Editor
             providers = AuthenticationSelection.Providers;
 
             mainView = new LoadingView();
-            mainView.AddPreloader(new EnginePreLoader());
             
             DevicesToolbar toolbar = new DevicesToolbar();
             deviceView = new DevicesView(this, toolbar);
@@ -30,6 +29,7 @@ namespace GDFUnity.Editor
             mainView.AddBody(toolbar);
             mainView.AddBody(deviceView);
 
+            mainView.AddPreloader(new EnginePreLoader());
             rootVisualElement.Add(mainView);
         }
         

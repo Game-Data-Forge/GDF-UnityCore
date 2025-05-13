@@ -9,6 +9,8 @@ namespace GDFUnity.Editor
 {
     public class AuthenticationWindow : EditorWindow
     {
+        internal const string HELP_URL = "/unity/windows/authentication/authentication-window"; 
+
         [MenuItem("GDF/Account/Authentication...", priority = 11, secondaryPriority = 1)]
         static public void Display()
         {
@@ -18,6 +20,7 @@ namespace GDFUnity.Editor
 
         internal List<AuthenticationSettingsProvider> providers = new List<AuthenticationSettingsProvider>();
         internal LoadingView mainView;
+        internal HelpButton help;
         internal event Action onDestroying;
 
         public void CreateGUI()
@@ -27,15 +30,17 @@ namespace GDFUnity.Editor
             VisualElement mainViewBody = new VisualElement();
             mainViewBody.style.flexGrow = 1;
             mainView = new LoadingView(mainViewBody);
-            mainView.AddPreloader(new EnginePreLoader());
 
             TwoPaneSplitView splitView = new TwoPaneSplitView(0, 150, TwoPaneSplitViewOrientation.Horizontal);
             splitView.Add(new Authentications(this));
             splitView.Add(new AuthenticationView(this));
-
+            help = new HelpButton(HELP_URL, Position.Absolute);
+            
             mainView.AddBody(splitView);
 
+            mainView.AddPreloader(new EnginePreLoader());
             rootVisualElement.Add(mainView);
+            rootVisualElement.Add(help);
         }
         
         public void OnDestroy()

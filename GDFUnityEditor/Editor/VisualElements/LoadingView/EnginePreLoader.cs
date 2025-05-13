@@ -5,6 +5,8 @@ namespace GDFUnity.Editor
 {
     public class EnginePreLoader : PreLoader
     {
+        public override bool IsLoaded => GDFEditor.Launch.IsDone;
+
         private LoadingView _view;
         private HelpBox _helpBox;
         private Button _button;

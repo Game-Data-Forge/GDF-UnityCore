@@ -6,6 +6,7 @@ namespace GDFUnity.Editor.ServiceProviders
     {
         public override string Name => "Device";
         public override string Title => "Device authentication";
+        public override string Url => "/unity/windows/authentication/views/device-authentication-view";
 
         private DeviceSelector _selector;
         private Button _login;

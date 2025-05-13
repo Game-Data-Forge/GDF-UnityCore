@@ -6,6 +6,8 @@ namespace GDFUnity.Editor
 {
     public class AccountWindow : EditorWindow
     {
+        internal const string HELP_URL = "/unity/windows/account-window"; 
+        
         [MenuItem("GDF/Account/Account...", priority = 11, secondaryPriority = 3)]
         static public void Display()
         {
@@ -23,7 +25,6 @@ namespace GDFUnity.Editor
             VisualElement mainViewBody = new VisualElement();
             mainViewBody.style.flexGrow = 1;
             mainView = new LoadingView(mainViewBody);
-            mainView.AddPreloader(new EnginePreLoader());
             
             _loginView = new AccountLoginView();
             _information = new AccountInformation(this);
@@ -32,10 +33,10 @@ namespace GDFUnity.Editor
             mainView.AddBody(_information);
 
             mainView.onDisplayChanged += OnMainViewStateChanged;
-
-            OnMainViewStateChanged(mainView.MainDisplay);
-
+            
+            mainView.AddPreloader(new EnginePreLoader());
             rootVisualElement.Add(mainView);
+            rootVisualElement.Add(new HelpButton(HELP_URL, Position.Absolute));
         }
 
         private void OnAccountChanged(MemoryJwtToken token)

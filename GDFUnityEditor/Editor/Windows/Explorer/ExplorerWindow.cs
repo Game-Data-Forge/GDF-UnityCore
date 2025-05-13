@@ -6,7 +6,7 @@ namespace GDFUnity.Editor
 {
     public class ExplorerWindow : EditorWindow
     {
-        [MenuItem("GDF/Data/Explorer...", priority = 22, secondaryPriority = 1)]
+        //[MenuItem("GDF/Data/Explorer...", priority = 22, secondaryPriority = 1)]
         static public void Display()
         {
             ExplorerWindow window = GetWindow<ExplorerWindow>("Data explorer");

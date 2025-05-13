@@ -7,6 +7,7 @@ namespace GDFUnity.Editor.ServiceProviders
     {
         public override string Name => "Automatic";
         public override string Title => "Automatic authentication";
+        public override string Url => "/unity/windows/authentication/views/automatic-reconnection-view";
 
         public override bool NeedCountry => false;
         public override bool NeedConsent => false;

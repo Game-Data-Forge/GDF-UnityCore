@@ -4,6 +4,11 @@ namespace GDFUnity.Editor
 {
     public class TitleLabel : Label
     {
+        public TitleLabel() : this(null)
+        {
+
+        }
+        
         public TitleLabel(string title) : base(title)
         {
             style.fontSize = 19;

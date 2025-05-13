@@ -1,5 +1,4 @@
 using System;
-using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -34,10 +33,8 @@ namespace GDFUnity.Editor
             background.style.right = 0;
             background.style.flexDirection = FlexDirection.RowReverse;
 
-            _button = new ToolbarButton();
+            _button = new ClickableElement();
             _button.style.IconContent("pane options");
-            _button.style.borderLeftWidth = 0;
-            _button.style.borderRightWidth = 0;
             _button.style.width = 20;
             _button.style.left = 0;
             _button.clicked += () => _actionMenu?.Invoke();

@@ -237,7 +237,7 @@ namespace GDFUnity.Editor
             splitView.Add(footer);
 
             Add(splitView);
-            Add(logo);
+            //Add(logo);
         }
 
         public LoadingView() : this (new VisualElement())
@@ -266,7 +266,14 @@ namespace GDFUnity.Editor
         {
             _preLoader = preLoader;
             _mainFrame.Add(_preLoader);
-            MainDisplay = Display.PreLoader;
+            if (!_preLoader.IsLoaded)
+            {
+                MainDisplay = Display.PreLoader;
+            }
+            else
+            {
+                MainDisplay = Display.Body;
+            }
         }
 
         public void SetBodyEnabled(bool value)

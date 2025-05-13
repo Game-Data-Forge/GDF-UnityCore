@@ -43,6 +43,7 @@ namespace GDFUnity.Editor
             mainView.AddBody(new Environment(this));
             
             rootElement.Add(mainView);
+            rootElement.Add(new HelpButton("/unity/environment-configuration", Position.Absolute));
         }
 
         public void VerifyConfiguration()

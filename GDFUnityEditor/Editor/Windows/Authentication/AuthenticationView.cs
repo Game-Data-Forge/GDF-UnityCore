@@ -22,7 +22,7 @@ namespace GDFUnity.Editor
         private VisualElement _body;
         private ButtonList _buttons;
         private Environment _environment;
-        private Label _title;
+        private TitleLabel _title;
         private AuthenticationWindow _window;
 
         private State _State
@@ -31,6 +31,8 @@ namespace GDFUnity.Editor
             set
             {
                 _state = value;
+                _window.help.url = AuthenticationWindow.HELP_URL;
+
                 if (_state.HasFlag(State.LoggedIn))
                 {
                     _logoutView.style.display = DisplayStyle.Flex;
@@ -46,6 +48,10 @@ namespace GDFUnity.Editor
 
                     _logoutView.style.display = DisplayStyle.None;
                     _message.style.display = DisplayStyle.None;
+                    if (AuthenticationSelection.selection != null)
+                    {
+                        _window.help.url = AuthenticationSelection.selection.Url;
+                    }
                     return;
                 }
                 
@@ -86,8 +92,7 @@ namespace GDFUnity.Editor
                 _buttons.style.flexDirection = FlexDirection.Row;
                 _buttons.style.marginTop = 50;
 
-                _title = new Label();
-                _title.style.fontSize = 19;
+                _title = new TitleLabel();
                 _title.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Bold;
                 _title.style.marginBottom = 20;
                 _title.style.marginLeft = 3;
@@ -119,7 +124,7 @@ namespace GDFUnity.Editor
 
             _window.onDestroying += OnDestroy;
         }
-
+        
         public void OnDestroy()
         {
             AuthenticationSelection.onSelectionChanged -= OnSelectionChanged;
@@ -129,7 +134,7 @@ namespace GDFUnity.Editor
         private void OnSelectionChanged(AuthenticationSettingsProvider last, AuthenticationSettingsProvider selection)
         {
             last?.OnDeactivate(this, _body);
-
+            
             if (selection == null)
             {
                 _State = _state.HasFlag(State.LoggedIn) ? State.LoggedIn : State.None;
@@ -180,6 +185,7 @@ namespace GDFUnity.Editor
         public void Update(AuthenticationSettingsProvider selection)
         {
             _title.text = selection.Title;
+            _window.help.url = selection.Url;
             country.style.display = selection.NeedCountry ? DisplayStyle.Flex : DisplayStyle.None;
             consent.style.display = selection.NeedConsent ? DisplayStyle.Flex : DisplayStyle.None;
         }

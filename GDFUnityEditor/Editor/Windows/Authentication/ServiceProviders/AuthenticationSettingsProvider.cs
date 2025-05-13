@@ -6,6 +6,7 @@ namespace GDFUnity.Editor.ServiceProviders
     {
         public abstract string Name { get; }
         public abstract string Title { get; }
+        public abstract string Url { get; }
         public virtual bool NeedCountry => true;
         public virtual bool NeedConsent => true;
         
