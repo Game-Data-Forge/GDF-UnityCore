@@ -11,7 +11,11 @@ namespace GDFFoundation
 {
     public interface IApiResult
     {
+        #region Instance fields and properties
+
         public string Status { get; set; }
         public bool Success { get; set; }
+
+        #endregion
     }
 }

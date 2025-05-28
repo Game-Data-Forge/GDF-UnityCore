@@ -3,6 +3,7 @@ using GDFEditor;
 using GDFFoundation;
 using UnityEditor;
 using UnityEngine.UIElements;
+using static GDFUnity.RuntimeConfigurationEngine;
 
 namespace GDFUnity.Editor
 {
@@ -59,8 +60,10 @@ namespace GDFUnity.Editor
         private Info _channelsError;
         private TreeView _channels;
         private Info _dashboard;
-        private TreeView _agentPool;
-        private Info _agentPoolError;
+        private TreeView _authAgentPool;
+        private Info _authAgentPoolError;
+        private TreeView _syncAgentPool;
+        private Info _syncAgentPoolError;
 
         public ProjectInformation(GlobalSettingsProvider provider) : base()
         {
@@ -145,33 +148,64 @@ namespace GDFUnity.Editor
             _dashboard = new Info("Dashboard");
             _dashboard.style.marginLeft = 10;
             _dashboard.style.paddingLeft = 18;
-
-            _agentPool = new TreeView();
-            _agentPool.fixedItemHeight = EditorGUIUtility.singleLineHeight;
-            _agentPool.style.flexBasis = new StyleLength(StyleKeyword.Auto);
-            _agentPool.selectionType = SelectionType.None;
-            _agentPool.horizontalScrollingEnabled = false;
-            _agentPool.makeItem = () => pool.Get();
-            _agentPool.bindItem = (ve, i) => {
-                string value = _agentPool.GetItemDataForIndex<string>(i);
+            
+            _authAgentPool = new TreeView();
+            _authAgentPool.fixedItemHeight = EditorGUIUtility.singleLineHeight;
+            _authAgentPool.style.flexBasis = new StyleLength(StyleKeyword.Auto);
+            _authAgentPool.selectionType = SelectionType.None;
+            _authAgentPool.horizontalScrollingEnabled = false;
+            _authAgentPool.makeItem = () => pool.Get();
+            _authAgentPool.bindItem = (ve, i) => {
+                object value = _authAgentPool.GetItemDataForIndex<object>(i);
                 Info field = ve as Info;
-                field.text = value;
                 if (i == 0)
                 {
+                    field.text = (string)value;
                     field.value = "";
                     return;
                 }
 
-                field.value = provider.Configuration.AgentPool[value];
+                Country country = (Country)value;
+                field.text = country.ToCodeString();
+                field.value = provider.Configuration.CloudConfig.Auth[country];
             };
-            _agentPool.destroyItem = (ve) => (ve as Info).Dispose();
-            _agentPool.style.marginLeft = 10;
+            _authAgentPool.destroyItem = (ve) => (ve as Info).Dispose();
+            _authAgentPool.style.marginLeft = 10;
+            _authAgentPool.style.maxHeight = 100;
 
-            _agentPoolError = new Info("Agent pool");
-            _agentPoolError.style.marginLeft = 10;
-            _agentPoolError.style.paddingLeft = 18;
-            _agentPoolError.SetState(false, "The agent pool is not a valid for the GDF project.");
+            _authAgentPoolError = new Info("Auth agent pool");
+            _authAgentPoolError.style.marginLeft = 10;
+            _authAgentPoolError.style.paddingLeft = 18;
+            _authAgentPoolError.SetState(false, "The auth agent pool is not a valid for the GDF project.");
 
+            _syncAgentPool = new TreeView();
+            _syncAgentPool.fixedItemHeight = EditorGUIUtility.singleLineHeight;
+            _syncAgentPool.style.flexBasis = new StyleLength(StyleKeyword.Auto);
+            _syncAgentPool.selectionType = SelectionType.None;
+            _syncAgentPool.horizontalScrollingEnabled = false;
+            _syncAgentPool.makeItem = () => pool.Get();
+            _syncAgentPool.bindItem = (ve, i) => {
+                object value = _syncAgentPool.GetItemDataForIndex<object>(i);
+                Info field = ve as Info;
+                if (i == 0)
+                {
+                    field.text = (string)value;
+                    field.value = "";
+                    return;
+                }
+
+                Country country = (Country)value;
+                field.text = country.ToCodeString();
+                field.value = provider.Configuration.CloudConfig.Sync[country];
+            };
+            _syncAgentPool.destroyItem = (ve) => (ve as Info).Dispose();
+            _syncAgentPool.style.marginLeft = 10;
+            _syncAgentPool.style.maxHeight = 100;
+
+            _syncAgentPoolError = new Info("Sync agent pool");
+            _syncAgentPoolError.style.marginLeft = 10;
+            _syncAgentPoolError.style.paddingLeft = 18;
+            _syncAgentPoolError.SetState(false, "The sync agent pool is not a valid for the GDF project.");
 
             Add(_state);
             Add(_reference);
@@ -183,8 +217,10 @@ namespace GDFUnity.Editor
             Add(_channels);
             Add(_channelsError);
             Add(_dashboard);
-            Add(_agentPool);
-            Add(_agentPoolError);
+            Add(_authAgentPool);
+            Add(_authAgentPoolError);
+            Add(_syncAgentPool);
+            Add(_syncAgentPoolError);
 
             provider.onConfigurationChanged += UpdateConfiguration;
             provider.onStateChanged += (state) => {
@@ -216,7 +252,8 @@ namespace GDFUnity.Editor
             UpdateChannel(configuration, errors);
             UpdateChannels(configuration, errors);
             UpdateDashboard(configuration, errors);
-            UpdateAgentPool(configuration, errors);
+            UpdateAuthAgentPool(configuration, errors);
+            UpdateSyncAgentPool(configuration, errors);
 
             if (errors.Count == 0)
             {
@@ -328,7 +365,7 @@ namespace GDFUnity.Editor
         {
             int id = 0;
             List<TreeViewItemData<string>> items = new List<TreeViewItemData<string>>();
-            foreach (GDFEnvironmentKind channel in configuration.Credentials.Keys)
+            foreach (ProjectEnvironment channel in configuration.Credentials.Keys)
             {
                 items.Add(new TreeViewItemData<string>(++id, channel.ToLongString()));
             }
@@ -374,37 +411,52 @@ namespace GDFUnity.Editor
             }
         }
 
-        private void UpdateAgentPool(IEditorConfiguration configuration, List<GDFException> errors)
+        private void UpdateAuthAgentPool(IEditorConfiguration configuration, List<GDFException> errors)
         {
-            if (errors.Contains(EditorConfigurationEngine.RuntimeExceptions.InvalidAgentPool))
+            if (errors.Contains(RuntimeExceptions.InvalidAuthAgentPool))
             {
-                _agentPoolError.style.display = DisplayStyle.Flex;
-                _agentPool.style.display = DisplayStyle.None;
+                _authAgentPoolError.style.display = DisplayStyle.Flex;
+                _authAgentPool.style.display = DisplayStyle.None;
             }
             else
             {
-                _agentPoolError.style.display = DisplayStyle.None;
-                _agentPool.style.display = DisplayStyle.Flex;
-                FillAgentPool(configuration);
+                _authAgentPoolError.style.display = DisplayStyle.None;
+                _authAgentPool.style.display = DisplayStyle.Flex;
+                FillAgentPool(_authAgentPool, "Auth agent pool", configuration.CloudConfig.Auth);
             }
         }
 
-        private void FillAgentPool (IEditorConfiguration configuration)
+        private void UpdateSyncAgentPool(IEditorConfiguration configuration, List<GDFException> errors)
+        {
+            if (errors.Contains(RuntimeExceptions.InvalidSyncAgentPool))
+            {
+                _syncAgentPoolError.style.display = DisplayStyle.Flex;
+                _syncAgentPool.style.display = DisplayStyle.None;
+            }
+            else
+            {
+                _syncAgentPoolError.style.display = DisplayStyle.None;
+                _syncAgentPool.style.display = DisplayStyle.Flex;
+                FillAgentPool(_syncAgentPool, "Sync agent pool", configuration.CloudConfig.Sync);
+            }
+        }
+
+        private void FillAgentPool (TreeView treeView, string name, ServerConfiguration agents)
         {
             int id = 0;
-            List<TreeViewItemData<string>> items = new List<TreeViewItemData<string>>();
-            foreach (string channel in configuration.AgentPool.Keys)
+            List<TreeViewItemData<object>> items = new List<TreeViewItemData<object>>();
+            foreach (KeyValuePair<Country, string> country in agents.Enumerate())
             {
-                items.Add(new TreeViewItemData<string>(++id, channel));
+                items.Add(new TreeViewItemData<object>(++id, country.Key));
             }
 
-            List<TreeViewItemData<string>> root = new List<TreeViewItemData<string>>
+            List<TreeViewItemData<object>> root = new List<TreeViewItemData<object>>
             {
-                new TreeViewItemData<string>(0, "Agent pool", items)
+                new TreeViewItemData<object>(0, name, items)
             };
 
-            _agentPool.SetRootItems(root);
-            _agentPool.Rebuild();
+            treeView.SetRootItems(root);
+            treeView.Rebuild();
         }
     }
 }

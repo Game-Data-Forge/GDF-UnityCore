@@ -1,41 +1,64 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFAdvancedConsoleLogger.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
 using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Represents an advanced console logger that implements the IGDFLogger interface.
+    ///     Represents an advanced console logger that implements the IGDFLogger interface.
     /// </summary>
     public class GDFAdvancedConsoleLogger : IGDFLogger
     {
-        private readonly object _locker = new object();
+        #region Constants
 
         /// <summary>
-        /// Represents the logging level for the GDFAdvancedConsoleLogger class.
-        /// </summary>
-        private GDFLogLevel _Level = GDFLogLevel.None;
-
-        /// <summary>
-        /// The indentation string used for formatting log messages.
-        /// </summary>
-        private const string _INDENT = " ";
-
-        /// <summary>
-        /// The _PADDING variable is used to represent a string of spaces that is used for indentation or spacing.
-        /// </summary>
-        private const string _PADDING = "  ";
-
-        /// <summary>
-        /// Represents a constant string used as the left border in the GDFAdvancedConsoleLogger class.
+        ///     Represents a constant string used as the left border in the GDFAdvancedConsoleLogger class.
         /// </summary>
         private const string _BORDER_LEFT = " ";
 
         /// <summary>
-        /// Represents the separator used in the GDFAdvancedConsoleLogger class.
+        ///     The indentation string used for formatting log messages.
+        /// </summary>
+        private const string _INDENT = " ";
+
+        /// <summary>
+        ///     The _PADDING variable is used to represent a string of spaces that is used for indentation or spacing.
+        /// </summary>
+        private const string _PADDING = "  ";
+
+        /// <summary>
+        ///     Represents the separator used in the GDFAdvancedConsoleLogger class.
         /// </summary>
         private const string _SEPARATOR = "--------------------------------------------------------------------------------------------------------------------------------";
 
+        #endregion
+
+        #region Instance fields and properties
+
         /// <summary>
-        /// Represents an advanced console logger for GDFFoundation.
+        ///     Represents the logging level for the GDFAdvancedConsoleLogger class.
+        /// </summary>
+        private GDFLogLevel _Level = GDFLogLevel.None;
+
+        private readonly object _locker = new object();
+
+        #endregion
+
+        #region Instance constructors and destructors
+
+        /// <summary>
+        ///     Represents an advanced console logger for GDFFoundation.
         /// </summary>
         public GDFAdvancedConsoleLogger()
         {
@@ -43,60 +66,26 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// A class that provides advanced console logging functionality.
+        ///     A class that provides advanced console logging functionality.
         /// </summary>
         public GDFAdvancedConsoleLogger(GDFLogLevel sLogLevel)
         {
             _Level = sLogLevel;
         }
 
-        /// <summary>
-        /// Sets the log level to be displayed by the logger.
-        /// </summary>
-        /// <param name="sLogLevel">The log level to be set.</param>
-        public void SetLogLevel(GDFLogLevel sLogLevel)
-        {
-            _Level = sLogLevel;
-        }
+        #endregion
+
+        #region Instance methods
 
         /// <summary>
-        /// Loads the log level for the logger.
+        ///     Loads the log level for the logger.
         /// </summary>
         public void LoadLogLevel()
         {
         }
 
         /// <summary>
-        /// Gets the default log level to be displayed by the logger.
-        /// </summary>
-        /// <returns>The default log level.</returns>
-        public GDFLogLevel DefaultLogLevel()
-        {
-            return GDFLogLevel.Information;
-        }
-
-        /// <summary>
-        /// Determines if the debugger is active or not.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if the debugger is active; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsActivated()
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// Retrieves the log level to be displayed by the logger.
-        /// </summary>
-        /// <returns>The log level to be displayed.</returns>
-        public GDFLogLevel LogLevel()
-        {
-            return _Level;
-        }
-
-        /// <summary>
-        /// Writes the category of a log message to the console.
+        ///     Writes the category of a log message to the console.
         /// </summary>
         /// <param name="sLogCategory">The log category to write.</param>
         private void WriteCategory(GDFLogCategory sLogCategory)
@@ -107,45 +96,45 @@ namespace GDFFoundation
                 switch (sLogCategory)
                 {
                     case GDFLogCategory.No:
-                        break;
+                    break;
                     case GDFLogCategory.Todo:
                         Console.Write(" ");
                         Console.BackgroundColor = ConsoleColor.Blue;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write("    TODO    ");
-                        break;
+                    break;
                     case GDFLogCategory.Success:
                         Console.Write(" ");
                         Console.BackgroundColor = ConsoleColor.Green;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write("   SUCCESS   ");
-                        break;
+                    break;
                     case GDFLogCategory.Error:
                         Console.Write(" ");
                         Console.BackgroundColor = ConsoleColor.Yellow;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write("   ERROR    ");
-                        break;
+                    break;
                     case GDFLogCategory.Attention:
                         Console.Write(" ");
                         // Console.Write(" ⚠️ ");
                         Console.BackgroundColor = ConsoleColor.Yellow;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write("  WARNING   ");
-                        break;
+                    break;
                     case GDFLogCategory.Exception:
                         Console.Write(" ");
                         // Console.Write(" 💀 ");
                         Console.BackgroundColor = ConsoleColor.Red;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write(" EXCEPTION  ");
-                        break;
+                    break;
                     case GDFLogCategory.Failed:
                         Console.Write(" ");
                         Console.BackgroundColor = ConsoleColor.Red;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write("   FAILED   ");
-                        break;
+                    break;
                 }
 
                 Console.ResetColor();
@@ -154,7 +143,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes an icon representing the log level to the console.
+        ///     Writes an icon representing the log level to the console.
         /// </summary>
         /// <param name="sLogLevel">The log level.</param>
         /// <param name="sAdd">Additional information to be displayed.</param>
@@ -169,34 +158,34 @@ namespace GDFFoundation
                         Console.BackgroundColor = ConsoleColor.Black;
                         Console.ForegroundColor = ConsoleColor.Gray;
                         Console.Write(" 🤖   trace" + sAdd + " ");
-                        break;
+                    break;
                     case GDFLogLevel.Debug:
                         Console.BackgroundColor = ConsoleColor.Black;
                         Console.ForegroundColor = ConsoleColor.Gray;
                         Console.Write(" 🤔   debug" + sAdd + " ");
-                        break;
+                    break;
                     case GDFLogLevel.Information:
                         Console.BackgroundColor = ConsoleColor.Blue;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write(" 🧐    info" + sAdd + " ");
-                        break;
+                    break;
                     case GDFLogLevel.Warning:
                         Console.BackgroundColor = ConsoleColor.Yellow;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write(" 😰 warning" + sAdd + " ");
-                        break;
+                    break;
                     case GDFLogLevel.Error:
                         Console.BackgroundColor = ConsoleColor.Red;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write(" 🤬   error" + sAdd + " ");
-                        break;
+                    break;
                     case GDFLogLevel.Critical:
                         Console.BackgroundColor = ConsoleColor.DarkRed;
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.Write(" 💀critical" + sAdd + " ");
-                        break;
+                    break;
                     case GDFLogLevel.None:
-                        break;
+                    break;
                 }
 
                 Console.ResetColor();
@@ -204,7 +193,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes the given object to the console based on the provided log level.
+        ///     Writes the given object to the console based on the provided log level.
         /// </summary>
         /// <param name="sObject">The object to write to the console.</param>
         private void WriteObject(object sObject)
@@ -223,8 +212,48 @@ namespace GDFFoundation
             }
         }
 
+        #region From interface IGDFLogger
+
         /// <summary>
-        /// Writes a log message with the specified log level, log category, string message, and optional object.
+        ///     Gets the default log level to be displayed by the logger.
+        /// </summary>
+        /// <returns>The default log level.</returns>
+        public GDFLogLevel DefaultLogLevel()
+        {
+            return GDFLogLevel.Information;
+        }
+
+        /// <summary>
+        ///     Determines if the debugger is active or not.
+        /// </summary>
+        /// <returns>
+        ///     <c>true</c> if the debugger is active; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsActivated()
+        {
+            return true;
+        }
+
+        /// <summary>
+        ///     Retrieves the log level to be displayed by the logger.
+        /// </summary>
+        /// <returns>The log level to be displayed.</returns>
+        public GDFLogLevel LogLevel()
+        {
+            return _Level;
+        }
+
+        /// <summary>
+        ///     Sets the log level to be displayed by the logger.
+        /// </summary>
+        /// <param name="sLogLevel">The log level to be set.</param>
+        public void SetLogLevel(GDFLogLevel sLogLevel)
+        {
+            _Level = sLogLevel;
+        }
+
+        /// <summary>
+        ///     Writes a log message with the specified log level, log category, string message, and optional object.
         /// </summary>
         /// <param name="sLogLevel">The log level of the message.</param>
         /// <param name="sLogCategory">The log category of the message.</param>
@@ -243,35 +272,35 @@ namespace GDFFoundation
                         Console.ForegroundColor = ConsoleColor.Gray;
                         Console.WriteLine(sString);
                         WriteObject(sObject);
-                        break;
+                    break;
                     case GDFLogLevel.Debug:
                         // GDFLogger.ForegroundColor = ConsoleColor.Gray;
                         Console.WriteLine(sString);
                         WriteObject(sObject);
-                        break;
+                    break;
                     case GDFLogLevel.Information:
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine(sString);
                         WriteObject(sObject);
                         Console.ResetColor();
-                        break;
+                    break;
                     case GDFLogLevel.Warning:
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine(sString);
                         WriteObject(sObject);
-                        break;
+                    break;
                     case GDFLogLevel.Error:
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(sString);
                         WriteObject(sObject);
-                        break;
+                    break;
                     case GDFLogLevel.Critical:
                         Console.ForegroundColor = ConsoleColor.DarkRed;
                         Console.WriteLine(sString);
                         WriteObject(sObject);
-                        break;
+                    break;
                     case GDFLogLevel.None:
-                        break;
+                    break;
                 }
 
                 Console.ResetColor();
@@ -280,7 +309,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes log messages to the console.
+        ///     Writes log messages to the console.
         /// </summary>
         /// <param name="sLogLevel">The log level of the message.</param>
         /// <param name="sLogCategory">The category of the log message.</param>
@@ -335,7 +364,7 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.WriteLine(" ");
-                        break;
+                    break;
 
                     case GDFLogLevel.Debug:
                         tBack = ConsoleColor.Black;
@@ -366,7 +395,7 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.WriteLine(" ");
-                        break;
+                    break;
                     case GDFLogLevel.Information:
                         tBack = ConsoleColor.Blue;
                         tFore = ConsoleColor.Black;
@@ -396,7 +425,7 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.WriteLine(" ");
-                        break;
+                    break;
                     case GDFLogLevel.Warning:
                         tBack = ConsoleColor.Yellow;
                         tFore = ConsoleColor.Black;
@@ -426,7 +455,7 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.WriteLine(" ");
-                        break;
+                    break;
                     case GDFLogLevel.Error:
                         tBack = ConsoleColor.Red;
                         tFore = ConsoleColor.Black;
@@ -456,7 +485,7 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.WriteLine(" ");
-                        break;
+                    break;
                     case GDFLogLevel.Critical:
                         tBack = ConsoleColor.DarkRed;
                         tFore = ConsoleColor.Black;
@@ -486,14 +515,18 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.WriteLine(" ");
-                        break;
+                    break;
                     case GDFLogLevel.None:
-                        break;
+                    break;
                 }
 
                 Console.ResetColor();
                 Console.Write(string.Empty);
             }
         }
+
+        #endregion
+
+        #endregion
     }
 }

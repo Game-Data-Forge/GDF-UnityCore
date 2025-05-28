@@ -36,11 +36,11 @@ namespace GDFUnity.Editor
             rootElement.Add(new TitleLabel("Game Data Forge: Environment"));
 
             mainView = new LoadingView(new ScrollView(ScrollViewMode.Vertical));
-            mainView.AddPreloader(new EnginePreLoader());
             
-
             mainView.AddBody(new CategoryLabel("Environment selection"));
             mainView.AddBody(new Environment(this));
+
+            mainView.AddPreloader(new EnginePreLoader());
             
             rootElement.Add(mainView);
             rootElement.Add(new HelpButton("/unity/environment-configuration", Position.Absolute));

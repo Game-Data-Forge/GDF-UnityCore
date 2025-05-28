@@ -19,7 +19,7 @@ namespace GDFUnity.Editor
             _engine.EnvironmentManager.EnvironmentChangingNotif.onBackgroundThread -= OnEnvironmentChanging;
         }
 
-        private void OnEnvironmentChanging(IJobHandler handler, GDFEnvironmentKind kind)
+        private void OnEnvironmentChanging(IJobHandler handler, ProjectEnvironment kind)
         {
             if (!IsConnected)
             {

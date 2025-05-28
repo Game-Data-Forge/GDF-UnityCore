@@ -9,12 +9,24 @@ namespace GDFUnity.Editor
 {
     public class AuthenticationWindow : EditorWindow
     {
+        static private GUIContent _title = null;
+
         internal const string HELP_URL = "/unity/windows/authentication/authentication-window"; 
 
         [MenuItem("GDF/Account/Authentication...", priority = 11, secondaryPriority = 1)]
         static public void Display()
         {
-            AuthenticationWindow window = GetWindow<AuthenticationWindow>("Authentication");
+            if (_title == null)
+            {
+                _title = new GUIContent()
+                {
+                    image = GDFGUIUtility.IconContent("GDF").image,
+                    text = "Authentication"
+                };
+            }
+
+            AuthenticationWindow window = GetWindow<AuthenticationWindow>();
+            window.titleContent = _title;
             window.Focus();
         }
 

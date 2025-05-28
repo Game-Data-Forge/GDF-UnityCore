@@ -29,7 +29,7 @@ namespace GDFRuntime
         /// <summary>
         /// Represents a response to a project license request.
         /// </summary>
-        public GDFResponseProjectLicense(IGDFProjectKey sProjectKeyManager, long sProjectReference, GDFEnvironmentKind sEnvironment, GDFExchangeLicenseKind sKind, GDFDownPayloadLicense sDownPayload, GDFRequestStatus sStatus)
+        public GDFResponseProjectLicense(IGDFProjectKey sProjectKeyManager, long sProjectReference, ProjectEnvironment sEnvironment, GDFExchangeLicenseKind sKind, GDFDownPayloadLicense sDownPayload, GDFRequestStatus sStatus)
         {
             ProjectReference = sProjectReference;
             Environment = sEnvironment;

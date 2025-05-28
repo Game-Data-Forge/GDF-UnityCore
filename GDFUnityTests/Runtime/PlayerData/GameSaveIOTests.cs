@@ -397,26 +397,8 @@ namespace PlayerData
         
         private IEnumerator Connect()
         {
-            UnityJob task = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
+            UnityJob task = GDF.Authentication.SignInDevice(Country.FR);
             yield return WaitTask(task);
-        }
-
-        private IEnumerator AlternateConnect()
-        {
-            UnityJob task = GDF.Launch;
-            yield return WaitTask(task);
-
-            string address = "test-account-no-use-please@not-existing.plop";
-            string password = "Super-seecret_Password+12357865";
-            
-            task = GDF.Authentication.SignInEmailPassword(Country.FromTwoLetterCode("FR"), address, password);
-            yield return task;
-
-            if (task.State == JobState.Failure)
-            {
-                task = GDF.Authentication.RegisterEmailPassword(Country.FromTwoLetterCode("FR"), address, password, password);
-                yield return WaitTask(task);
-            }
         }
 
         private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)

@@ -4,7 +4,7 @@ using GDFFoundation;
 
 namespace GDFRuntime
 {
-    public interface IRuntimePlayerDataManager
+    public interface IRuntimePlayerDataManager : IAsyncManager
     {
         public byte GameSave { get; }
         public bool HasDataToSave { get; }

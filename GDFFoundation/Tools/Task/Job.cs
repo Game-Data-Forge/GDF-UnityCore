@@ -1,13 +1,42 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj Job.cs create at 2025/05/15 11:05:03
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+#endregion
+
 namespace GDFFoundation
 {
     public class Job : IJob
     {
+        #region Static fields and properties
+
         static private Pool<Job> _pool = new Pool<Job>();
+
+        #endregion
+
+        #region Static methods
+
+        static public Job Failure(Exception error, [CallerMemberName] string name = "Unknown")
+        {
+            Job task = _pool.Get();
+            task._name = name;
+            task._error = error;
+            task._state = JobState.Failure;
+            return task;
+        }
+
         static public Job Run(Action<IJobHandler> action, [CallerMemberName] string name = "Unknown")
         {
             Job task = _pool.Get();
@@ -16,6 +45,7 @@ namespace GDFFoundation
             Task.Run(() => task.Process(action));
             return task;
         }
+
         static public Job Run(Func<IJobHandler, Task> action, [CallerMemberName] string name = "Unknown")
         {
             Job task = _pool.Get();
@@ -33,49 +63,116 @@ namespace GDFFoundation
             return task;
         }
 
-        static public Job Failure(Exception error, [CallerMemberName] string name = "Unknown")
-        {
-            Job task = _pool.Get();
-            task._name = name;
-            task._error = error;
-            task._state = JobState.Failure;
-            return task;
-        }
+        #endregion
 
-        internal CancellationTokenSource source;
-        internal float progress;
+        #region Instance fields and properties
+
+        protected Exception _error;
         protected string _name;
         protected JobState _state;
-        protected Exception _error;
+        internal float progress;
+
+        internal CancellationTokenSource source;
+
+        #region From interface IJob
+
+        public Exception Error => _error;
+        public bool IsCancelled => source.IsCancellationRequested;
+        public bool IsDone => _state >= JobState.Success;
 
         public string Name => _name;
-        public JobState State
-        {
-            get => _state;
-        }
+
+        public Pool Pool { get; set; }
+
         public float Progress
         {
             get => progress;
         }
-        public bool IsDone => _state >= JobState.Success;
-        public Exception Error => _error;
-        public bool IsCancelled => source.IsCancellationRequested;
 
-        public Pool Pool { get; set; }
+        public JobState State
+        {
+            get => _state;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Instance methods
+
+        private void Process(Action<IJobHandler> action)
+        {
+            using (IJobHandler handler = JobHandler.Get(this))
+            {
+                try
+                {
+                    _state = JobState.Running;
+                    action?.Invoke(handler);
+                    handler.ThrowIfCancelled();
+                    progress = 1;
+                    _state = JobState.Success;
+                }
+                catch (TaskCanceledException e)
+                {
+                    _state = JobState.Cancelled;
+                }
+                catch (OperationCanceledException e)
+                {
+                    _state = JobState.Cancelled;
+                }
+                catch (Exception e)
+                {
+                    _error = e;
+                    _state = JobState.Failure;
+                    GDFLogger.Error(e);
+                }
+            }
+        }
+
+        private async void Process(Func<IJobHandler, Task> action)
+        {
+            using (IJobHandler handler = JobHandler.Get(this))
+            {
+                try
+                {
+                    _state = JobState.Running;
+                    await action?.Invoke(handler);
+                    handler.ThrowIfCancelled();
+                    progress = 1;
+                    _state = JobState.Success;
+                }
+                catch (TaskCanceledException e)
+                {
+                    _state = JobState.Cancelled;
+                }
+                catch (OperationCanceledException e)
+                {
+                    _state = JobState.Cancelled;
+                }
+                catch (Exception e)
+                {
+                    _error = e;
+                    _state = JobState.Failure;
+                    GDFLogger.Error(e);
+                }
+            }
+        }
+
+        #region From interface IJob
 
         public void Cancel()
         {
             source.Cancel();
         }
 
+        public void Dispose()
+        {
+            PoolItem.Release(this);
+        }
+
         public TaskAwaiter GetAwaiter()
         {
             return Task.Run(Wait).GetAwaiter();
-        }
-
-        public void Wait()
-        {
-            while (!IsDone) { }
         }
 
         public virtual void OnPooled()
@@ -92,77 +189,38 @@ namespace GDFFoundation
             source = null;
         }
 
-        public void Dispose()
+        public void Wait()
         {
-            PoolItem.Release(this);
-        }
-
-        private void Process(Action<IJobHandler> action)
-        {
-            using(IJobHandler handler = JobHandler.Get(this))
+            while (!IsDone)
             {
-                try
-                {
-                    _state = JobState.Running;
-                    action?.Invoke(handler);
-                    handler.ThrowIfCancelled();
-                    progress = 1;
-                    _state = JobState.Success;
-                }
-                catch (TaskCanceledException e)
-                {
-                    _state = JobState.Cancelled;
-                    GDFLogger.Error(e);
-                }
-                catch (OperationCanceledException e)
-                {
-                    _state = JobState.Cancelled;
-                    GDFLogger.Error(e);
-                }
-                catch (Exception e)
-                {
-                    _error = e;
-                    _state = JobState.Failure;
-                    GDFLogger.Error(e);
-                }
             }
         }
 
-        private async void Process(Func<IJobHandler, Task> action)
-        {
-            using(IJobHandler handler = JobHandler.Get(this))
-            {
-                try
-                {
-                    _state = JobState.Running;
-                    await action?.Invoke(handler);
-                    handler.ThrowIfCancelled();
-                    progress = 1;
-                    _state = JobState.Success;
-                }
-                catch (TaskCanceledException e)
-                {
-                    _state = JobState.Cancelled;
-                    GDFLogger.Error(e);
-                }
-                catch (OperationCanceledException e)
-                {
-                    _state = JobState.Cancelled;
-                    GDFLogger.Error(e);
-                }
-                catch (Exception e)
-                {
-                    _error = e;
-                    _state = JobState.Failure;
-                    GDFLogger.Error(e);
-                }
-            }
-        }
+        #endregion
+
+        #endregion
     }
 
     public class Job<T> : Job, IJob<T>
     {
+        #region Static fields and properties
+
         static private Pool<Job<T>> _pool = new Pool<Job<T>>();
+
+        #endregion
+
+        #region Static methods
+
+        static public new Job<T> Failure(Exception error, [CallerMemberName] string name = "Unknown")
+        {
+            Job<T> task = _pool.Get();
+            task._name = name;
+            task._error = error;
+            task._result = default;
+            task._state = JobState.Failure;
+            return task;
+        }
+
         static public Job<T> Run(Func<IJobHandler, T> action, [CallerMemberName] string name = "Unknown")
         {
             Job<T> task = _pool.Get();
@@ -171,6 +229,7 @@ namespace GDFFoundation
             Task.Run(() => task.Process(action));
             return task;
         }
+
         static public Job<T> Run(Func<IJobHandler, Task<T>> action, [CallerMemberName] string name = "Unknown")
         {
             Job<T> task = _pool.Get();
@@ -189,17 +248,13 @@ namespace GDFFoundation
             return task;
         }
 
-        static public new Job<T> Failure(Exception error, [CallerMemberName] string name = "Unknown")
-        {
-            Job<T> task = _pool.Get();
-            task._name = name;
-            task._error = error;
-            task._result = default;
-            task._state = JobState.Failure;
-            return task;
-        }
+        #endregion
+
+        #region Instance fields and properties
 
         private T _result;
+
+        #region From interface IJob<T>
 
         public T Result
         {
@@ -209,25 +264,15 @@ namespace GDFFoundation
             }
         }
 
-        public new T Wait()
-        {
-            base.Wait();
-            return _result;
-        }
-        public new TaskAwaiter<T> GetAwaiter()
-        {
-            return Task.Run(Wait).GetAwaiter();
-        }
+        #endregion
 
-        public override void OnPooled()
-        {
-            base.OnPooled();
-            _result = default;
-        }
+        #endregion
+
+        #region Instance methods
 
         private void Process(Func<IJobHandler, T> action)
         {
-            using(IJobHandler handler = JobHandler.Get(this))
+            using (IJobHandler handler = JobHandler.Get(this))
             {
                 try
                 {
@@ -240,12 +285,10 @@ namespace GDFFoundation
                 catch (TaskCanceledException e)
                 {
                     _state = JobState.Cancelled;
-                    GDFLogger.Error(e);
                 }
                 catch (OperationCanceledException e)
                 {
                     _state = JobState.Cancelled;
-                    GDFLogger.Error(e);
                 }
                 catch (Exception e)
                 {
@@ -258,7 +301,7 @@ namespace GDFFoundation
 
         private async void Process(Func<IJobHandler, Task<T>> action)
         {
-            using(IJobHandler handler = JobHandler.Get(this))
+            using (IJobHandler handler = JobHandler.Get(this))
             {
                 try
                 {
@@ -271,12 +314,10 @@ namespace GDFFoundation
                 catch (TaskCanceledException e)
                 {
                     _state = JobState.Cancelled;
-                    GDFLogger.Error(e);
                 }
                 catch (OperationCanceledException e)
                 {
                     _state = JobState.Cancelled;
-                    GDFLogger.Error(e);
                 }
                 catch (Exception e)
                 {
@@ -286,5 +327,28 @@ namespace GDFFoundation
                 }
             }
         }
+
+        #region From interface IJob<T>
+
+        public new TaskAwaiter<T> GetAwaiter()
+        {
+            return Task.Run(Wait).GetAwaiter();
+        }
+
+        public override void OnPooled()
+        {
+            base.OnPooled();
+            _result = default;
+        }
+
+        public new T Wait()
+        {
+            base.Wait();
+            return _result;
+        }
+
+        #endregion
+
+        #endregion
     }
 }

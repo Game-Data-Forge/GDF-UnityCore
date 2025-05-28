@@ -1,60 +1,24 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj IGDFAssemblyInfo.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+
+#endregion
 
 namespace GDFFoundation
 {
     public interface IGDFAssemblyInfo
     {
-        public bool Printed { set; get; }
-        public string DotNet { set; get; }
-        public string GitCommit { set; get; }
-        public string GitCommitShort { set; get; }
-        public string PipelineDate { set; get; }
-        public string PipelineJob { set; get; }
-        public string Version { set; get; }
-        public bool NuGet { set; get; }
-        public string Title { set; get; }
-        public string Description { set; get; }
-        public bool Localized { set; get; }
-        public List<IGDFAssemblyInfo> Dependencies { set; get; }
-        public bool DebugStatus();
-        public bool DebugTrace();
-        public void PrintLogo()
-        {
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.WriteLine(GenerateAsciiArt(Title.Replace("GDF", "°GDF ") + "4"));
-            // Console.ForegroundColor = ConsoleColor.DarkRed;
-            // Console.WriteLine(Title);
-            // Console.ResetColor();
-        }
-
-        public void PrintVersion()
-        {
-            Console.WriteLine(@$"{Title} version {Version} 2024-{DateTime.UtcNow.Year} ©");
-        }
-
-        public void PrintInformation()
-        {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.Write(Title);
-            Console.ResetColor();
-            if (NuGet == true)
-            {
-                Console.Write(@$"  v{Version}
-NuGet built by CICD ({GitCommit} {PipelineJob} {PipelineDate})");
-            }
-            else
-            {
-                Console.Write(@$" CsProj integration");
-            }
-            Console.WriteLine();
-//             Console.ForegroundColor = ConsoleColor.Gray;
-//             Console.WriteLine(@$"
-// {Description}");
-//             Console.ResetColor();
-            Console.WriteLine(@$"____________________________________________________________________________________________________________");
-        }
+        #region Static fields and properties
 
         static readonly Dictionary<char, string[]> RectangleFont = new()
         {
@@ -1348,6 +1312,10 @@ NuGet built by CICD ({GitCommit} {PipelineJob} {PipelineDate})");
             },
         };
 
+        #endregion
+
+        #region Static methods
+
         static string GenerateAsciiArt(string text)
         {
             string[] output = new string[9];
@@ -1362,11 +1330,75 @@ NuGet built by CICD ({GitCommit} {PipelineJob} {PipelineDate})");
                     }
                 }
             }
+
             List<string> result = new List<string>();
             result.AddRange(output);
             result.RemoveAt(result.Count - 1);
             result.RemoveAt(result.Count - 1);
             return string.Join("\n", result);
         }
+
+        #endregion
+
+        #region Instance fields and properties
+
+        public List<IGDFAssemblyInfo> Dependencies { set; get; }
+        public string Description { set; get; }
+        public string DotNet { set; get; }
+        public string GitCommit { set; get; }
+        public string GitCommitShort { set; get; }
+        public bool Localized { set; get; }
+        public bool NuGet { set; get; }
+        public string PipelineDate { set; get; }
+        public string PipelineJob { set; get; }
+        public bool Printed { set; get; }
+        public string Title { set; get; }
+        public string Version { set; get; }
+
+        #endregion
+
+        #region Instance methods
+
+        public bool DebugStatus();
+        public bool DebugTrace();
+
+        public void PrintInformation()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.Write(Title);
+            Console.ResetColor();
+            if (NuGet == true)
+            {
+                Console.Write(@$"  v{Version}
+NuGet built by CICD ({GitCommit} {PipelineJob} {PipelineDate})");
+            }
+            else
+            {
+                Console.Write(@$" CsProj integration");
+            }
+
+            Console.WriteLine();
+            //             Console.ForegroundColor = ConsoleColor.Gray;
+            //             Console.WriteLine(@$"
+            // {Description}");
+            //             Console.ResetColor();
+            Console.WriteLine(@$"____________________________________________________________________________________________________________");
+        }
+
+        public void PrintLogo()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WriteLine(GenerateAsciiArt(Title.Replace("GDF", "°GDF ") + "4"));
+            // Console.ForegroundColor = ConsoleColor.DarkRed;
+            // Console.WriteLine(Title);
+            // Console.ResetColor();
+        }
+
+        public void PrintVersion()
+        {
+            Console.WriteLine(@$"{Title} version {Version} 2024-{DateTime.UtcNow.Year} ©");
+        }
+
+        #endregion
     }
 }

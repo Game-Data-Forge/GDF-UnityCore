@@ -1,7 +1,18 @@
-namespace  GDFFoundation
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj SignKindExtension.cs create at 2025/03/26 17:03:59
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+namespace GDFFoundation
 {
     static class SignKindExtension
     {
+        #region Static methods
+
         public static string Obfuscation(this GDFAccountSignType kind)
         {
             switch (kind)
@@ -30,5 +41,7 @@ namespace  GDFFoundation
                     return "W";
             }
         }
+
+        #endregion
     }
 }

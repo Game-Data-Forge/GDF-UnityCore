@@ -1,135 +1,58 @@
-﻿using System.Collections.Generic;
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFLocalizationISO.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
+using System.Collections.Generic;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Represents an ISO localization containing information such as name, short code, long code, and language.
+    ///     Represents an ISO localization containing information such as name, short code, long code, and language.
     /// </summary>
     public class GDFLocalizationISO
     {
-        /// <summary>
-        /// Represents a dictionary of language localization ISO objects.
-        /// </summary>
-        public static GDFLocalizationISO[] LanguageDictionary;
+        #region Static fields and properties
 
         /// <summary>
-        /// Gets the name of the GDFLocalizationISO object.
-        /// </summary>
-        /// <value>
-        /// The name of the GDFLocalizationISO object.
-        /// </value>
-        public string Name { get; private set; }
-
-        /// <summary>
-        /// Represents the short code associated with a localization ISO object.
-        /// </summary>
-        public string ShortCode { get; private set; }
-
-        /// <summary>
-        /// Gets the long code representing the localization ISO object.
-        /// </summary>
-        /// <remarks>
-        /// This property represents the long code associated with a localization ISO object.
-        /// </remarks>
-        public string LongCode { get; private set; }
-
-        /// <summary>
-        /// Represents a language property of a GDFLocalizationISO object.
-        /// </summary>
-        public GDFLanguageEnum Language { get; private set; }
-
-        /// <summary>
-        /// Represents a dictionary that allows retrieval of GDFLocalizationISO objects by name.
-        /// </summary>
-        private static readonly Dictionary<string, GDFLocalizationISO> ByNameDictionary = new Dictionary<string, GDFLocalizationISO>();
-
-        /// <summary>
-        /// Represents a dictionary that maps a short code to a localization ISO object.
-        /// </summary>
-        private static readonly Dictionary<string, GDFLocalizationISO> ByShortCodeDictionary = new Dictionary<string, GDFLocalizationISO>();
-
-        /// <summary>
-        /// Represents a dictionary that maps long codes to GDFLocalizationISO objects.
-        /// </summary>
-        private static readonly Dictionary<string, GDFLocalizationISO> ByLongCodeDictionary = new Dictionary<string, GDFLocalizationISO>();
-
-        /// <summary>
-        /// Represents a dictionary containing localization ISO objects indexed by GDFLanguageEnum.
+        ///     Represents a dictionary containing localization ISO objects indexed by GDFLanguageEnum.
         /// </summary>
         private static readonly Dictionary<GDFLanguageEnum, GDFLocalizationISO> ByEnumDictionary = new Dictionary<GDFLanguageEnum, GDFLocalizationISO>();
 
         /// <summary>
-        /// Returns the GDFLocalizationISO object by its name.
+        ///     Represents a dictionary that maps long codes to GDFLocalizationISO objects.
         /// </summary>
-        /// <param name="sName">The name of the GDFLocalizationISO object.</param>
-        /// <returns>The GDFLocalizationISO object if found, otherwise null.</returns>
-        public static GDFLocalizationISO GetByName(string sName)
-        {
-            GDFLocalizationISO rReturn = null;
-            ByNameDictionary.TryGetValue(sName, out rReturn);
-            return rReturn;
-        }
+        private static readonly Dictionary<string, GDFLocalizationISO> ByLongCodeDictionary = new Dictionary<string, GDFLocalizationISO>();
 
         /// <summary>
-        /// Get the GDFLocalizationISO object by its short code.
+        ///     Represents a dictionary that allows retrieval of GDFLocalizationISO objects by name.
         /// </summary>
-        /// <param name="sShortCode">The short code of the GDFLocalizationISO to retrieve.</param>
-        /// <returns>The GDFLocalizationISO object with the given short code, or null if not found.</returns>
-        public static GDFLocalizationISO GetByShortCode(string sShortCode)
-        {
-            GDFLocalizationISO rReturn = null;
-            ByShortCodeDictionary.TryGetValue(sShortCode, out rReturn);
-            return rReturn;
-        }
+        private static readonly Dictionary<string, GDFLocalizationISO> ByNameDictionary = new Dictionary<string, GDFLocalizationISO>();
 
         /// <summary>
-        /// Retrieves the GDFLocalizationISO object based on the long code.
+        ///     Represents a dictionary that maps a short code to a localization ISO object.
         /// </summary>
-        /// <param name="sLongCode">The long code of the localization ISO object.</param>
-        /// <returns>
-        /// The GDFLocalizationISO object with the given long code, or null if it doesn't exist.
-        /// </returns>
-        public static GDFLocalizationISO GetByLongCode(string sLongCode)
-        {
-            GDFLocalizationISO rReturn = null;
-            ByLongCodeDictionary.TryGetValue(sLongCode, out rReturn);
-            return rReturn;
-        }
+        private static readonly Dictionary<string, GDFLocalizationISO> ByShortCodeDictionary = new Dictionary<string, GDFLocalizationISO>();
 
         /// <summary>
-        /// Retrieves the GDFLocalizationISO object based on the specified GDFLanguageEnum.
+        ///     Represents a dictionary of language localization ISO objects.
         /// </summary>
-        /// <param name="sEnum">The GDFLanguageEnum value.</param>
-        /// <returns>The GDFLocalizationISO object associated with the specified GDFLanguageEnum, or null if not found.</returns>
-        public static GDFLocalizationISO GetByEnum(GDFLanguageEnum sEnum)
-        {
-            GDFLocalizationISO rReturn = null;
-            ByEnumDictionary.TryGetValue(sEnum, out rReturn);
-            return rReturn;
-        }
+        public static GDFLocalizationISO[] LanguageDictionary;
+
+        #endregion
+
+        #region Static constructors and destructors
 
         /// <summary>
-        /// The GDFLocalizationISO class represents an ISO localization code.
-        /// </summary>
-        /// <param name="sName">The name of the GDFLocalizationISO object.</param>
-        /// <param name="sShortCode">The short code of the GDFLocalizationISO object.</param>
-        /// <param name="sLongCode">The long code of the GDFLocalizationISO object.</param>
-        /// <param name="sLanguage">The language of the GDFLocalizationISO object.</param>
-        public GDFLocalizationISO(string sName, string sShortCode, string sLongCode, GDFLanguageEnum sLanguage)
-        {
-            Name = sName;
-            ShortCode = sShortCode;
-            LongCode = sLongCode;
-            Language = sLanguage;
-
-            ByNameDictionary.Add(Name, this);
-            ByShortCodeDictionary.Add(ShortCode, this);
-            ByLongCodeDictionary.Add(LongCode, this);
-            ByEnumDictionary.Add(Language, this);
-        }
-
-        /// <summary>
-        /// The GDFLocalizationISO class is responsible for handling ISO localization.
+        ///     The GDFLocalizationISO class is responsible for handling ISO localization.
         /// </summary>
         static GDFLocalizationISO()
         {
@@ -196,8 +119,115 @@ namespace GDFFoundation
                 //new GDFLocalizationISO("Arabic(Yemen)", "ar", "ar_YE", GDFLanguageEnum.Arabic),
             };
         }
+
+        #endregion
+
+        #region Static methods
+
+        /// <summary>
+        ///     Retrieves the GDFLocalizationISO object based on the specified GDFLanguageEnum.
+        /// </summary>
+        /// <param name="sEnum">The GDFLanguageEnum value.</param>
+        /// <returns>The GDFLocalizationISO object associated with the specified GDFLanguageEnum, or null if not found.</returns>
+        public static GDFLocalizationISO GetByEnum(GDFLanguageEnum sEnum)
+        {
+            GDFLocalizationISO rReturn = null;
+            ByEnumDictionary.TryGetValue(sEnum, out rReturn);
+            return rReturn;
+        }
+
+        /// <summary>
+        ///     Retrieves the GDFLocalizationISO object based on the long code.
+        /// </summary>
+        /// <param name="sLongCode">The long code of the localization ISO object.</param>
+        /// <returns>
+        ///     The GDFLocalizationISO object with the given long code, or null if it doesn't exist.
+        /// </returns>
+        public static GDFLocalizationISO GetByLongCode(string sLongCode)
+        {
+            GDFLocalizationISO rReturn = null;
+            ByLongCodeDictionary.TryGetValue(sLongCode, out rReturn);
+            return rReturn;
+        }
+
+        /// <summary>
+        ///     Returns the GDFLocalizationISO object by its name.
+        /// </summary>
+        /// <param name="sName">The name of the GDFLocalizationISO object.</param>
+        /// <returns>The GDFLocalizationISO object if found, otherwise null.</returns>
+        public static GDFLocalizationISO GetByName(string sName)
+        {
+            GDFLocalizationISO rReturn = null;
+            ByNameDictionary.TryGetValue(sName, out rReturn);
+            return rReturn;
+        }
+
+        /// <summary>
+        ///     Get the GDFLocalizationISO object by its short code.
+        /// </summary>
+        /// <param name="sShortCode">The short code of the GDFLocalizationISO to retrieve.</param>
+        /// <returns>The GDFLocalizationISO object with the given short code, or null if not found.</returns>
+        public static GDFLocalizationISO GetByShortCode(string sShortCode)
+        {
+            GDFLocalizationISO rReturn = null;
+            ByShortCodeDictionary.TryGetValue(sShortCode, out rReturn);
+            return rReturn;
+        }
+
+        #endregion
+
+        #region Instance fields and properties
+
+        /// <summary>
+        ///     Represents a language property of a GDFLocalizationISO object.
+        /// </summary>
+        public GDFLanguageEnum Language { get; private set; }
+
+        /// <summary>
+        ///     Gets the long code representing the localization ISO object.
+        /// </summary>
+        /// <remarks>
+        ///     This property represents the long code associated with a localization ISO object.
+        /// </remarks>
+        public string LongCode { get; private set; }
+
+        /// <summary>
+        ///     Gets the name of the GDFLocalizationISO object.
+        /// </summary>
+        /// <value>
+        ///     The name of the GDFLocalizationISO object.
+        /// </value>
+        public string Name { get; private set; }
+
+        /// <summary>
+        ///     Represents the short code associated with a localization ISO object.
+        /// </summary>
+        public string ShortCode { get; private set; }
+
+        #endregion
+
+        #region Instance constructors and destructors
+
+        /// <summary>
+        ///     The GDFLocalizationISO class represents an ISO localization code.
+        /// </summary>
+        /// <param name="sName">The name of the GDFLocalizationISO object.</param>
+        /// <param name="sShortCode">The short code of the GDFLocalizationISO object.</param>
+        /// <param name="sLongCode">The long code of the GDFLocalizationISO object.</param>
+        /// <param name="sLanguage">The language of the GDFLocalizationISO object.</param>
+        public GDFLocalizationISO(string sName, string sShortCode, string sLongCode, GDFLanguageEnum sLanguage)
+        {
+            Name = sName;
+            ShortCode = sShortCode;
+            LongCode = sLongCode;
+            Language = sLanguage;
+
+            ByNameDictionary.Add(Name, this);
+            ByShortCodeDictionary.Add(ShortCode, this);
+            ByLongCodeDictionary.Add(LongCode, this);
+            ByEnumDictionary.Add(Language, this);
+        }
+
+        #endregion
     }
 }
-
-
-

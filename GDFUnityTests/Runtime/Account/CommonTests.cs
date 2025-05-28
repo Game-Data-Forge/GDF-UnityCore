@@ -8,7 +8,7 @@ namespace Account
 {
     public class CommonTests
     {
-        Country country = Country.FromTwoLetterCode("FR");
+        Country country = Country.FR;
 
         [UnityTest]
         public IEnumerator CanDelete()

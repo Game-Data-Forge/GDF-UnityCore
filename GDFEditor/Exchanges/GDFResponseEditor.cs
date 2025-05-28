@@ -1,7 +1,6 @@
-
-
 using Newtonsoft.Json;
 using GDFFoundation;
+using System;
 
 namespace GDFEditor
 {
@@ -32,7 +31,7 @@ namespace GDFEditor
         /// Represents a timestamp used in the GDFResponseEditor class.
         /// </summary>
         //[JsonProperty("Tim")]
-        public long Timestamp { set; get; }
+        public DateTime Timestamp { set; get; }
 
         /// <summary>
         /// Gets or sets the duration of the response.
@@ -74,7 +73,7 @@ namespace GDFEditor
         /// </summary>
         public GDFResponseEditor()
         {
-            Timestamp = GDFTimestamp.Timestamp();
+            Timestamp = GDFDatetime.Now;
         }
 
 
@@ -83,7 +82,7 @@ namespace GDFEditor
         /// </summary>
         public GDFResponseEditor(GDFExchangeEditorKind sKind, GDFDownPayloadEditor sDownPayload, GDFRequestStatus sStatus, string sToken)
         {
-            Timestamp = GDFTimestamp.Timestamp();
+            Timestamp = GDFDatetime.Now;
             Duration = 0;
             Kind = sKind;
             if (sDownPayload != null)
@@ -101,7 +100,7 @@ namespace GDFEditor
         /// </summary>
         public GDFResponseEditor(GDFExchangeEditorKind sKind, GDFDownPayloadEditor sDownPayload, GDFRequestStatus sStatus)
         {
-            Timestamp = GDFTimestamp.Timestamp();
+            Timestamp = GDFDatetime.Now;
             Duration = 0;
             Kind = sKind;
             if (sDownPayload != null)

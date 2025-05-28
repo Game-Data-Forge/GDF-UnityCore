@@ -1,12 +1,23 @@
-﻿using System;
+﻿#region Copyright
 
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFPlayerSharedFinder.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
 
+#endregion
+
+#region
+
+using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// GDFPlayerSharedRequest is an abstract class that represents a shared request made by a player in a game.
-    /// It extends the GDFPlayerData class.
+    ///     GDFPlayerSharedRequest is an abstract class that represents a shared request made by a player in a game.
+    ///     It extends the GDFPlayerData class.
     /// </summary>
     [Serializable]
     public abstract class GDFPlayerSharedRequest : GDFPlayerData
@@ -14,8 +25,8 @@ namespace GDFFoundation
     }
 
     /// <summary>
-    /// The GDFPlayerSharedProposal class represents a proposal made by a player in a game.
-    /// It is an abstract class that extends the GDFPlayerData class.
+    ///     The GDFPlayerSharedProposal class represents a proposal made by a player in a game.
+    ///     It is an abstract class that extends the GDFPlayerData class.
     /// </summary>
     [Serializable]
     public abstract class GDFPlayerSharedProposal : GDFPlayerData
@@ -23,16 +34,15 @@ namespace GDFFoundation
     }
 
     /// <summary>
-    /// Provides a base class for shared finder classes that are used to search for player data in a game.
+    ///     Provides a base class for shared finder classes that are used to search for player data in a game.
     /// </summary>
     /// <typeparam name="TR">The type of the shared request.</typeparam>
     /// <typeparam name="TP">The type of the shared proposal.</typeparam>
     /// <remarks>
-    /// This class is an abstract class. Any shared finder class that inherits from this class must provide implementation for the abstract methods defined here.
+    ///     This class is an abstract class. Any shared finder class that inherits from this class must provide implementation for the abstract methods defined here.
     /// </remarks>
     [Serializable]
     public abstract class GDFPlayerSharedFinder<TR, TP> : GDFPlayerData where TR : GDFPlayerSharedRequest where TP : GDFPlayerSharedProposal
     {
     }
 }
-

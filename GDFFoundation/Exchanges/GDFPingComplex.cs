@@ -1,35 +1,52 @@
-﻿using System;
+﻿#region Copyright
 
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFPingComplex.cs create at 2025/03/26 17:03:59
+// ©2024-2025 idéMobi SARL FRANCE
 
+#endregion
+
+#region
+
+using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Complex ping to return more information about server
+    ///     Complex ping to return more information about server
     /// </summary>
     [Serializable]
     public class GDFPingComplex : GDFPing
     {
+        #region Instance fields and properties
+
         /// <summary>
-        /// Status of the server as text.
+        ///     Status of the server as text.
         /// </summary>
         /// <value>
-        /// The status of the server represented as text.
+        ///     The status of the server represented as text.
         /// </value>
         public string AnswerText { set; get; }
 
         /// <summary>
-        /// A class representing the timestamp property of the GDFPingComplex class.
+        ///     A class representing the timestamp property of the GDFPingComplex class.
         /// </summary>
         public long Timestamp { set; get; }
 
         /// <summary>
-        /// Version of the GDFPingComplex class
+        ///     Version of the GDFPingComplex class
         /// </summary>
         public string Version { set; get; }
 
+        #endregion
+
+        #region Instance constructors and destructors
+
         /// <summary>
-        /// Complex ping to return more information about the server.
+        ///     Complex ping to return more information about the server.
         /// </summary>
         public GDFPingComplex()
         {
@@ -40,7 +57,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Complex ping to return more information about server
+        ///     Complex ping to return more information about server
         /// </summary>
         public GDFPingComplex(GDFServerStatus sServerStatus)
         {
@@ -49,5 +66,7 @@ namespace GDFFoundation
             Timestamp = GDFTimestamp.Timestamp();
             Version = GDFFoundation.GDFAssemblyInfo.AssemblyInfo.Version;
         }
+
+        #endregion
     }
 }

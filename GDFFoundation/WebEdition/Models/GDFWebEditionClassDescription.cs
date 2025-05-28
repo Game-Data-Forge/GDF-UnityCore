@@ -1,57 +1,77 @@
+#region Copyright
 
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFWebEditionClassDescription.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+
+#region
 
 using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Represents a class for the web edition of a class description.
+    ///     Represents a class for the web edition of a class description.
     /// </summary>
     [Serializable]
     public class GDFWebEditionClassDescription
     {
-        /// <summary>
-        /// Represents the title of a web edition class description.
-        /// </summary>
-        public string Title = "Item";
+        #region Instance fields and properties
+
+        public string CancelString = "Cancel";
+        public string DeleteString = "Delete this item";
 
         /// <summary>
-        /// Represents a Bootstrap icon.
-        /// </summary>
-        public string Icon = "bi-gear";
-
-        /// <summary>
-        /// Represents the description of a web edition class.
+        ///     Represents the description of a web edition class.
         /// </summary>
         public string Description = "Item management system.";
 
         /// <summary>
-        /// Represents the options for the number of items per page in pagination.
+        ///     Represents a Bootstrap icon.
         /// </summary>
-        public int[] ItemsPerPageOption = new int[] { 5, 10, 15 };
-        public bool JsonClipboard = false;
+        public string Icon = "bi-gear";
 
         /// <summary>
-        /// Gets or sets a value indicating whether the reference should be shown.
+        ///     Represents the options for the number of items per page in pagination.
+        /// </summary>
+        public int[] ItemsPerPageOption = new int[] { 5, 10, 15 };
+
+        public string ItemsPerPageString = "{0} Items per page";
+        public bool JsonClipboard = false;
+        public string NewItemString = "Add new Item";
+        public string ReferenceString = "Reference";
+        public string RefreshString = "Refresh";
+        public bool ShowBlankButton = false;
+
+        /// <summary>
+        ///     Represents the ShowButton variable.
+        /// </summary>
+        public bool ShowButton = false;
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the reference should be shown.
         /// </summary>
         public bool ShowReference = false;
 
         /// <summary>
-        /// Represents the ShowButton variable.
+        ///     Represents the title of a web edition class description.
         /// </summary>
-        public bool ShowButton = false;
-        public bool ShowBlankButton = false;
-        public string NewItemString = "Add new Item";
-        public string RefreshString = "Refresh";
+        public string Title = "Item";
 
-        public string ItemsPerPageString = "{0} Items per page";
-        public string DeleteString = "Delete this item";
-        public string CancelString = "Cancel";
-        public string ReferenceString = "Reference";
         public string YouWillDeleteThisItemString = "You will delete this item!";
 
+        #endregion
+
+        #region Instance constructors and destructors
+
         /// <summary>
-        /// Represents a class that provides description for the web edition of a class.
+        ///     Represents a class that provides description for the web edition of a class.
         /// </summary>
         public GDFWebEditionClassDescription()
         {
@@ -59,7 +79,18 @@ namespace GDFFoundation
 
         /// Represents a class description for the GDFWebEditionClass.
         /// /
-        public GDFWebEditionClassDescription(string title, string icon, string description, int[] itemsPerPageOption, bool jsonClipboard, bool showReference, bool showButton, bool showBlankButton, string newItemString = "Add new Item", string refreshString = "Refresh")
+        public GDFWebEditionClassDescription(
+            string title,
+            string icon,
+            string description,
+            int[] itemsPerPageOption,
+            bool jsonClipboard,
+            bool showReference,
+            bool showButton,
+            bool showBlankButton,
+            string newItemString = "Add new Item",
+            string refreshString = "Refresh"
+        )
         {
             Title = title;
             Icon = icon;
@@ -72,6 +103,7 @@ namespace GDFFoundation
             NewItemString = newItemString;
             RefreshString = refreshString;
         }
+
+        #endregion
     }
 }
-

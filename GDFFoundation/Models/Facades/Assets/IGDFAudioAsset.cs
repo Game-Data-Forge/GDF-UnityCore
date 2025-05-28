@@ -1,14 +1,19 @@
-﻿
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj IGDFAudioAsset.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
 
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Represents an audio asset in the GDFFoundation.
+    ///     Represents an audio asset in the GDFFoundation.
     /// </summary>
     public interface IGDFAudioAsset : IGDFAsset
     {
     }
 }
-
-

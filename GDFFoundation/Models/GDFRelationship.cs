@@ -1,74 +1,102 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFRelationship.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
 
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Represents a relationship between two accounts.
+    ///     Represents a relationship between two accounts.
     /// </summary>
     public class GDFRelationship : GDFBasicData, IGDFWritableLongReference
     {
-        [GDFDbAccess(updateAccess = GDFDbColumnAccess.Deny)]
-        public long Reference { get; set; }
+        #region Instance fields and properties
+
         /// <summary>
-        /// Represents a reference to an GDFAccount object in the GDF foundation.
+        ///     Represents a reference to an GDFAccount object in the GDF foundation.
         /// </summary>
         public GDFLongReference<GDFAccount> AccountA { set; get; } = new GDFLongReference<GDFAccount>();
 
         /// <summary>
-        /// Represents the second account in the GDF foundation relationship.
-        /// </summary>
-        public GDFLongReference<GDFAccount> AccountB { set; get; } = new GDFLongReference<GDFAccount>();
-
-        /// <summary>
-        /// Represents the name of an account in the GDF relationship.
+        ///     Represents the name of an account in the GDF relationship.
         /// </summary>
         public string AccountAName { set; get; } = string.Empty;
 
         /// <summary>
-        /// Represents the name of Account B in a relationship in the GDFFoundation.
+        ///     Represents the second account in the GDF foundation relationship.
+        /// </summary>
+        public GDFLongReference<GDFAccount> AccountB { set; get; } = new GDFLongReference<GDFAccount>();
+
+        /// <summary>
+        ///     Represents the name of Account B in a relationship in the GDFFoundation.
         /// </summary>
         public string AccountBName { set; get; } = string.Empty;
 
         /// <summary>
-        /// Represents the state of a relationship.
+        ///     Represents a code used in the GDFRelationship class.
         /// </summary>
-        public GDFRelationshipState RelationshipState { set; get; }
+        public string Code { set; get; } = string.Empty;
 
         /// <summary>
-        /// Represents the type of relationship between accounts.
+        ///     Represents the expiry date of a code in a relationship object.
         /// </summary>
-        public GDFRelationshipType RelationshipType { set; get; } = GDFRelationshipType.Friend;
+        public uint CodeExpiryDate { set; get; }
 
         /// <summary>
-        /// Gets or sets the modification date of the GDFRelationship.
+        ///     Gets or sets the modification date of the GDFRelationship.
         /// </summary>
         /// <value>The modification date in Unix timestamp format.</value>
         public int ModificationDate { set; get; }
 
         /// <summary>
-        /// Represents a code used in the GDFRelationship class.
+        ///     Represents the state of a relationship.
         /// </summary>
-        public string Code { set; get; } = string.Empty;
+        public GDFRelationshipState RelationshipState { set; get; }
 
         /// <summary>
-        /// Represents the expiry date of a code in a relationship object.
+        ///     Represents the type of relationship between accounts.
         /// </summary>
-        public uint CodeExpiryDate { set; get; }
+        public GDFRelationshipType RelationshipType { set; get; } = GDFRelationshipType.Friend;
 
+        #region From interface IGDFWritableLongReference
+
+        [GDFDbAccess(updateAccess = GDFDbColumnAccess.Deny)]
+        public long Reference { get; set; }
+
+        #endregion
+
+        #endregion
+
+        #region Instance methods
 
         /// <summary>
-        /// Gets the reference to the other account in the relationship.
+        ///     Determines whether the current instance is equal to the specified object.
         /// </summary>
-        /// <param name="sReference">The reference to one of the accounts in the relationship.</param>
-        /// <returns>The reference to the other account in the relationship.</returns>
-        public GDFLongReference<GDFAccount> GetOtherAccount(GDFLongReference<GDFAccount> sReference)
+        /// <param name="sObj">The object to compare with the current instance.</param>
+        /// <returns>true if the specified object is equal to the current instance; otherwise, false.</returns>
+        public override bool Equals(object sObj)
         {
-            if (sReference.Reference == AccountA.Reference) return AccountB;
-            return AccountA;
+            return sObj != null && sObj.GetType().IsInstanceOfType(typeof(GDFRelationship)) && Reference == ((GDFRelationship)sObj).Reference;
         }
 
         /// <summary>
-        /// Gets the name of the account referenced by the given reference.
+        ///     Computes a hash code for the current instance.
+        /// </summary>
+        /// <returns>
+        ///     A hash code for the current instance.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return 1;
+        }
+
+        /// <summary>
+        ///     Gets the name of the account referenced by the given reference.
         /// </summary>
         /// <param name="sReference">The reference to one of the accounts in the relationship.</param>
         /// <returns>The name of the account referenced by the given reference. If the reference matches AccountA.Reference, AccountAName is returned. Otherwise, AccountBName is returned.</returns>
@@ -79,10 +107,10 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Gets the name of the account referenced by <paramref name="sReference"/>.
+        ///     Gets the name of the account referenced by <paramref name="sReference" />.
         /// </summary>
         /// <param name="sReference">The reference to the account.</param>
-        /// <returns>The name of the account referenced by <paramref name="sReference"/>.</returns>
+        /// <returns>The name of the account referenced by <paramref name="sReference" />.</returns>
         public string GetName(long sReference)
         {
             if (sReference == AccountA.Reference) return AccountAName;
@@ -91,7 +119,19 @@ namespace GDFFoundation
 
 
         /// <summary>
-        /// Gets the reference to the other account in the relationship.
+        ///     Gets the reference to the other account in the relationship.
+        /// </summary>
+        /// <param name="sReference">The reference to one of the accounts in the relationship.</param>
+        /// <returns>The reference to the other account in the relationship.</returns>
+        public GDFLongReference<GDFAccount> GetOtherAccount(GDFLongReference<GDFAccount> sReference)
+        {
+            if (sReference.Reference == AccountA.Reference) return AccountB;
+            return AccountA;
+        }
+
+
+        /// <summary>
+        ///     Gets the reference to the other account in the relationship.
         /// </summary>
         /// <param name="sReference">The reference to one of the accounts in the relationship.</param>
         /// <returns>The reference to the other account in the relationship.</returns>
@@ -102,38 +142,22 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Determines whether the current instance is equal to the specified object.
-        /// </summary>
-        /// <param name="sObj">The object to compare with the current instance.</param>
-        /// <returns>true if the specified object is equal to the current instance; otherwise, false.</returns>
-        public override bool Equals(object sObj)
-        {
-            return sObj != null && sObj.GetType().IsInstanceOfType(typeof(GDFRelationship)) && Reference == ((GDFRelationship)sObj).Reference;
-        }
-
-        /// <summary>
-        /// Computes a hash code for the current instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for the current instance.
-        /// </returns>
-        public override int GetHashCode()
-        {
-            return 1;
-        }
-
-        /// <summary>
-        /// Sets the name of the specified account reference in the relationship.
+        ///     Sets the name of the specified account reference in the relationship.
         /// </summary>
         /// <param name="sProfileInfoPlayerReference">The reference to the account in the relationship.</param>
         /// <param name="sNewName">The new name to set for the account.</param>
         public void SetName(long sProfileInfoPlayerReference, string sNewName)
         {
             if (sProfileInfoPlayerReference == AccountA.Reference)
-            { AccountAName = sNewName; }
-            else if (sProfileInfoPlayerReference == AccountB.Reference) { AccountBName = sNewName; }
+            {
+                AccountAName = sNewName;
+            }
+            else if (sProfileInfoPlayerReference == AccountB.Reference)
+            {
+                AccountBName = sNewName;
+            }
         }
 
+        #endregion
     }
 }
-

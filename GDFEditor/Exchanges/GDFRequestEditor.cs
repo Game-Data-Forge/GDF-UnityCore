@@ -1,5 +1,3 @@
-
-
 using System;
 using Newtonsoft.Json;
 using GDFFoundation;
@@ -43,7 +41,7 @@ namespace GDFEditor
         /// Gets or sets the timestamp of the request.
         /// </summary>
         //[JsonProperty("Tim")]
-        public long Timestamp { set; get; }
+        public DateTime Timestamp { set; get; }
 
         /// <summary>
         /// Represents a StampStudio object used in GDFRequestEditor.
@@ -67,7 +65,7 @@ namespace GDFEditor
         /// </summary>
         public GDFRequestEditor()
         {
-            Timestamp = GDFTimestamp.Timestamp();
+            Timestamp = GDFDatetime.Now;
         }
 
         /// <summary>
@@ -75,7 +73,7 @@ namespace GDFEditor
         /// </summary>
         public GDFRequestEditor(string sRolePublicToken, GDFExchangeEditorKind sKind, GDFUpPayloadEditor sUpPayload, GDFExchangeOrigin sOrigin, GDFExchangeDevice sDevice, string sToken)
         {
-            Timestamp = GDFTimestamp.Timestamp();
+            Timestamp = GDFDatetime.Now;
             RolePublicKey = sRolePublicToken;
             Kind = sKind;
             Origin = sOrigin;
@@ -96,7 +94,7 @@ namespace GDFEditor
         /// <param name="sDevice">The device of the request</param>
         private GDFRequestEditor(GDFExchangeEditorKind sTest, GDFUpPayloadEditor sUpPayload, GDFExchangeOrigin sOrigin, GDFExchangeDevice sDevice)
         {
-            Timestamp = GDFTimestamp.Timestamp();
+            Timestamp = GDFDatetime.Now;
             Kind = sTest;
             Origin = sOrigin;
             Device = sDevice;

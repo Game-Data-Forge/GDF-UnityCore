@@ -34,7 +34,7 @@ namespace GDFUnity.Editor.ServiceProviders
             UpdateLoginButton();
         }
 
-        private void OnEnvironmentChanged(GDFEnvironmentKind environment)
+        private void OnEnvironmentChanged(ProjectEnvironment environment)
         {
             UpdateLoginButton();
         }

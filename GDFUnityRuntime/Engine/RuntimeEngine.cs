@@ -26,12 +26,12 @@ namespace GDFUnity
 
 #if !UNITY_EDITOR
         [RuntimeInitializeOnLoadMethod]
-#endif
         static private void RuntimeStart()
         {
             string _ = FileStorage.ROOT;
             GDF.Instance = () => Instance;
         }
+#endif
 
         private GameObject _gameObject = null;
 
@@ -86,9 +86,26 @@ namespace GDFUnity
 
         public Job Stop()
         {
-            _instance = null;
             GameObject.Destroy(_gameObject);
-            return Job.Success("Stop engine");
+            return Job.Run(async handler => {
+                handler.StepAmount = 3;
+                try
+                {
+                    await _playerDataManager.Stop();
+                    handler.Step();
+                    
+                    await _accountManager.Stop();
+                    handler.Step();
+
+                    await _authenticationManager.Stop();
+                    handler.Step();
+                }
+                finally
+                {
+                    _launch.Dispose();
+                    _instance = null;
+                }
+            }, "Stop engine");
         }
 
         public void Kill()

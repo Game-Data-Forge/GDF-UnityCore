@@ -25,7 +25,7 @@ namespace GDFUnity
     /// <summary>
     ///     Abstract class of any API call.
     /// </summary>
-    public abstract class APIManager
+    public abstract class APIManager : AsyncManager
     {
         #region Instance methods
 

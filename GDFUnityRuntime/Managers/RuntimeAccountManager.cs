@@ -6,31 +6,37 @@ namespace GDFUnity
 {
     public class RuntimeAccountManager : APIManager, IRuntimeAccountManager
     {
-        private readonly object _taskLock = new object();
+        private readonly object _lock = new object();
         
         private Notification _deletingEvent;
         private Notification _deletedEvent;
-        private Job _task = null;
         private IRuntimeEngine _engine;
+        private Job _job = null;
         private Dictionary<string, string> _headers = new Dictionary<string, string>();
 
         public Notification DeletingNotif => _deletingEvent;
         public Notification DeletedNotif => _deletedEvent;
+
+        protected override Job Job => _job;
 
         public RuntimeAccountManager(IRuntimeEngine engine)
         {
             _engine = engine;
             _deletingEvent = new Notification(_engine.ThreadManager);
             _deletedEvent = new Notification(_engine.ThreadManager);
+
+            State = ManagerState.Ready;
         }
 
         public Job Delete()
         {
-            lock (_taskLock)
+            lock (_lock)
             {
-                _task.EnsureNotInUse();
+                EnsureUseable();
 
-                _task = Job.Run(handler => {
+                _job = Job.Run(handler => {
+                    using Locker _ = Locker.Lock(this);
+
                     handler.StepAmount = 3;
 
                     _deletingEvent.Invoke(handler.Split());
@@ -45,7 +51,7 @@ namespace GDFUnity
 
                 }, "Delete Account");
 
-                return _task;
+                return _job;
             }
         }
     }

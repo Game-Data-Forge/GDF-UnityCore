@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
+using GDFFoundation;
 using GDFRuntime;
-using UnityEngine;
+using PlasticPipe.PlasticProtocol.Messages;
 
 namespace GDFUnity
 {
@@ -13,12 +14,21 @@ namespace GDFUnity
 
         private IRuntimeEngine _engine;
 
+        private Dictionary<Country, string> _authAgent = new Dictionary<Country, string>();
+        private Dictionary<Country, string> _syncAgent = new Dictionary<Country, string>();
+
         public string SyncAgent
         {
             get
             {
-                Debug.LogWarning("Sync agent returned without region or account range checking !");
-                return _engine.Configuration.AgentPool.First().Value.TrimEnd('/');
+                string agent;
+                Country country = _engine.AuthenticationManager.Token.Country;
+                if (!_syncAgent.TryGetValue(country, out agent))
+                {
+                    agent = BuildServerAddress(_engine.Configuration.CloudConfig.Sync[country]);
+                    _syncAgent.Add(country, agent);
+                }
+                return agent;
             }
         }
         
@@ -27,15 +37,40 @@ namespace GDFUnity
             _engine = engine;
         }
 
-        public string AuthAgent(string countryISO)
+        public string AuthAgent(Country country)
         {
-            Debug.Log("Auth agent returned without region checking !");
-            return _engine.Configuration.AgentPool.First().Value.TrimEnd('/');
+            string agent;
+            if (!_authAgent.TryGetValue(country, out agent))
+            {
+                agent = BuildServerAddress(_engine.Configuration.CloudConfig.Auth[country]);
+                _authAgent.Add(country, agent);
+            }
+            return agent;
         }
 
-        public string BuildAuthURL(string countryISO, string path)
+        public string BuildServerAddress(string address)
         {
-            UriBuilder builder = new UriBuilder(SyncAgent);
+            if (!address.EndsWith("/"))
+            {
+                address += "/";
+            }
+
+            if (address.StartsWith("http://"))
+            {
+                return address;
+            }
+
+            if (address.StartsWith("https://"))
+            {
+                return address;
+            }
+
+            return "https://" + address;
+        }
+
+        public string BuildAuthURL(Country country, string path)
+        {
+            UriBuilder builder = new UriBuilder(AuthAgent(country));
             builder.Path = path;
             return builder.ToString();
         }

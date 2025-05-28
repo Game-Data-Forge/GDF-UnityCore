@@ -29,7 +29,7 @@ namespace GDFRuntime
         /// <summary>
         /// Represents a request for a project license.
         /// </summary>
-        public GDFRequestProjectLicense(IGDFProjectKey sProjectKeyManager, long sProjectReference, GDFEnvironmentKind sEnvironment, GDFExchangeLicenseKind sKind, GDFUpPayloadLicense sUpPayload, GDFExchangeOrigin sOrigin, GDFExchangeDevice sDevice)
+        public GDFRequestProjectLicense(IGDFProjectKey sProjectKeyManager, long sProjectReference, ProjectEnvironment sEnvironment, GDFExchangeLicenseKind sKind, GDFUpPayloadLicense sUpPayload, GDFExchangeOrigin sOrigin, GDFExchangeDevice sDevice)
         {
             ProjectReference = sProjectReference;
             Environment = sEnvironment;
@@ -139,7 +139,7 @@ namespace GDFRuntime
         /// <param name="sOrigin">The origin of the request. (Optional, default: Unknown)</param>
         /// <param name="sDevice">The device of the request. (Optional, default: Unknown)</param>
         /// <returns>A new instance of GDFRequestProjectLicense with the specified parameters.</returns>
-        public static GDFRequestProjectLicense CreateRequestTest(IGDFProjectKey sProjectKeyManager, long sProjectReference, GDFEnvironmentKind sEnvironment, GDFExchangeOrigin sOrigin = GDFExchangeOrigin.Unknown, GDFExchangeDevice sDevice = GDFExchangeDevice.Unknown)
+        public static GDFRequestProjectLicense CreateRequestTest(IGDFProjectKey sProjectKeyManager, long sProjectReference, ProjectEnvironment sEnvironment, GDFExchangeOrigin sOrigin = GDFExchangeOrigin.Unknown, GDFExchangeDevice sDevice = GDFExchangeDevice.Unknown)
         {
             return new GDFRequestProjectLicense(sProjectKeyManager, sProjectReference, sEnvironment, GDFExchangeLicenseKind.Test, new GDFUpPayloadLicense(), sOrigin, sDevice);
         }

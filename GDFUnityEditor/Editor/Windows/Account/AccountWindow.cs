@@ -1,17 +1,30 @@
 using GDFFoundation;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
 {
     public class AccountWindow : EditorWindow
     {
+        static private GUIContent _title = null;
+
         internal const string HELP_URL = "/unity/windows/account-window"; 
         
         [MenuItem("GDF/Account/Account...", priority = 11, secondaryPriority = 3)]
         static public void Display()
         {
-            AccountWindow window = GetWindow<AccountWindow>("Account");
+            if (_title == null)
+            {
+                _title = new GUIContent()
+                {
+                    image = GDFGUIUtility.IconContent("GDF").image,
+                    text = "Account"
+                };
+            }
+
+            AccountWindow window = GetWindow<AccountWindow>();
+            window.titleContent = _title;
             window.Focus();
         }
 

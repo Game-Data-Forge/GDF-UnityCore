@@ -29,18 +29,18 @@ namespace GDFUnity.Editor
             _view = view;
             try
             {
-                IJob task = GDFEditor.Launch;
+                IJob job = GDFEditor.Launch;
                 _helpBox.text = "Loading engine...";
                 _helpBox.messageType = HelpBoxMessageType.Info;
 
                 _button.style.display = DisplayStyle.None;
-                if (task.InUse())
+                if (job != null && !job.IsDone)
                 {
-                    _view.AddLoader(task, OnEngineLoaded);
+                    _view.AddLoader(job, OnEngineLoaded);
                 }
                 else
                 {
-                    OnEngineLoaded(task);
+                    OnEngineLoaded(job);
                 }
             }
             catch

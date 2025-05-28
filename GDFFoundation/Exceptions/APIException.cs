@@ -1,11 +1,30 @@
-﻿using System;
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj APIException.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
+using System;
 using System.Net;
+
+#endregion
 
 namespace GDFFoundation
 {
     public class APIException : GDFException
     {
+        #region Instance fields and properties
+
         public HttpStatusCode StatusCode { get; private set; }
+
+        #endregion
+
+        #region Instance constructors and destructors
 
         public APIException()
             : base("API", 500, $"This is a {nameof(GDFException)}")
@@ -43,6 +62,10 @@ namespace GDFFoundation
             StatusCode = HttpStatusCode.InternalServerError;
         }
 
+        #endregion
+
+        #region Instance methods
+
         public ApiErrorMessage ToHttpResult()
         {
             return new ApiErrorMessage
@@ -53,5 +76,7 @@ namespace GDFFoundation
                 Help = Help,
             };
         }
+
+        #endregion
     }
 }

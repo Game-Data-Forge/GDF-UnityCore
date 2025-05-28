@@ -1,6 +1,22 @@
-﻿using System;
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFLogger.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
+using System;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
+#if !UNITY_EDITOR && ! UNITY_STANDALONE
+using System.Text.Json;
+#endif
+
+#endregion
+
 #if UNITY_EDITOR
 using UnityEngine;
 #endif
@@ -9,52 +25,52 @@ using UnityEngine;
 namespace GDFFoundation
 {
     /// <summary>
-    /// GDFLogger class provides logging functionalities.
+    ///     GDFLogger class provides logging functionalities.
     /// </summary>
     public static class GDFLogger
     {
         /// <summary>
-        /// The Writer class provides methods for logging messages using the chosen logger.
+        ///     The Writer class provides methods for logging messages using the chosen logger.
         /// </summary>
         private static IGDFLogger Writer = new GDFConsoleLogger();
 
         /// <summary>
-        /// The constant string that represents the message template for when a configuration is already loaded.
+        ///     The constant string that represents the message template for when a configuration is already loaded.
         /// </summary>
         public const string K_CONFIG_ALREADY_LOADED = "{0} already loaded before!";
 
         /// <summary>
-        /// Represents a constant string for enable the Razor Runtime Compilation.
+        ///     Represents a constant string for enable the Razor Runtime Compilation.
         /// </summary>
         public const string K_RAZOR_RUNTIME_COMPILATION_ENABLE = "{0} active Razor Runtime Compilation by {1} configuration!";
 
         /// <summary>
-        /// Represents the configuration to disable Razor runtime compilation.
+        ///     Represents the configuration to disable Razor runtime compilation.
         /// </summary>
         public const string K_RAZOR_RUNTIME_COMPILATION_DISABLE = "{0} disable Razor Runtime Compilation by {1} configuration (IsDevelopment = false)!";
 
         /// <summary>
-        /// The K_RAZOR_COMPILE_NOT_FOR_DEV constant is used to disable Razor Runtime Compilation in development mode.
+        ///     The K_RAZOR_COMPILE_NOT_FOR_DEV constant is used to disable Razor Runtime Compilation in development mode.
         /// </summary>
         public const string K_RAZOR_COMPILE_NOT_FOR_DEV = "{0} disable Razor Runtime from parameter : sRuntimeCompileForDev";
 
         /// <summary>
-        /// The configuration key for finding a value in the app settings file or in a specific JSON file.
+        ///     The configuration key for finding a value in the app settings file or in a specific JSON file.
         /// </summary>
         public const string K_FOUND_IN_APP_SETTINGS = "{0} config found in app" + "settings.json or in {0}.json!";
 
         /// <summary>
-        /// The constant string used when a configuration is not found in the app settings.
+        ///     The constant string used when a configuration is not found in the app settings.
         /// </summary>
         public const string K_NOT_FOUND_IN_APP_SETTINGS = "{0} config not found in app" + "settings.json or in {0}.json!";
 
         /// <summary>
-        /// Represents the example value for the K_CONFIG_JSON_EXAMPLE constant.
+        ///     Represents the example value for the K_CONFIG_JSON_EXAMPLE constant.
         /// </summary>
         public const string K_CONFIG_JSON_EXAMPLE = "{0}.json Example";
 
         /// <summary>
-        /// Sets the writer for the GDFLogger.
+        ///     Sets the writer for the GDFLogger.
         /// </summary>
         /// <param name="sWriter">The writer implementing the IGDFLogger interface.</param>
         public static void SetWriter(IGDFLogger sWriter)
@@ -63,7 +79,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Splits a JSON string into an array of strings, separating each element, object, and value with a delimiter.
+        ///     Splits a JSON string into an array of strings, separating each element, object, and value with a delimiter.
         /// </summary>
         /// <param name="sJson">The JSON string to split.</param>
         /// <returns>An array of strings with each element, object, and value separated by the delimiter.</returns>
@@ -73,17 +89,22 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Splits a serialized object into an array of strings, where each string represents a separate line in the serialized format.
+        ///     Splits a serialized object into an array of strings, where each string represents a separate line in the serialized format.
         /// </summary>
         /// <param name="sObject">The object to be serialized and split.</param>
         /// <returns>An array of strings representing the serialized object split by lines.</returns>
         public static string[] SplitObjectSerializable(object sObject)
         {
-            return JsonConvert.SerializeObject(sObject, Formatting.Indented).Replace(",\\\"", ",\n\\\"").Replace("{\\\"", "{\n\\\"").Replace("\\\"}", "\\\"\n}").Split('\n');
+            #if !UNITY_EDITOR && ! UNITY_STANDALONE
+            return JsonSerializer.Serialize(sObject, new JsonSerializerOptions { WriteIndented = true }).Replace(",\\\"", ",\n\\\"").Replace("{\\\"", "{\n\\\"").Replace("\\\"}", "\\\"\n}").Split('\n');
+            //return JsonConvert.SerializeObject(sObject, Formatting.Indented).Replace(",\\\"", ",\n\\\"").Replace("{\\\"", "{\n\\\"").Replace("\\\"}", "\\\"\n}").Split('\n');
+            #else
+            return sObject.ToString().Split('\n');
+            #endif
         }
 
         /// <summary>
-        /// Checks if a log for a given <see cref="GDFLogLevel"/> can be written by the <see cref="Writer"/>.
+        ///     Checks if a log for a given <see cref="GDFLogLevel" /> can be written by the <see cref="Writer" />.
         /// </summary>
         /// <param name="sLogLevel">The log level to check</param>
         /// <returns>True if a log with the specified log level can be written, false otherwise</returns>
@@ -93,9 +114,9 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Checks if a log for a given <see cref="GDFLogLevel"/> can be written by the specified writer.
+        ///     Checks if a log for a given <see cref="GDFLogLevel" /> can be written by the specified writer.
         /// </summary>
-        /// <param name="sWriter">The writer implementing the <see cref="IGDFLogger"/> interface.</param>
+        /// <param name="sWriter">The writer implementing the <see cref="IGDFLogger" /> interface.</param>
         /// <param name="sLogLevel">The log level to check.</param>
         /// <returns>True if the log can be written, otherwise false.</returns>
         internal static bool CanWrite(IGDFLogger sWriter, GDFLogLevel sLogLevel)
@@ -122,11 +143,11 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// [Insert brief description of the method's purpose]
+        ///     [Insert brief description of the method's purpose]
         /// </summary>
         /// <param name="/*[Insert parameter name]*/">[Insert description of the parameter]</param>
         /// <remarks>
-        /// [Insert any additional information about the method, such as side effects or limitations]
+        ///     [Insert any additional information about the method, such as side effects or limitations]
         /// </remarks>
         public static void TestLayout()
         {
@@ -193,10 +214,10 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes the log using the wanted <see cref="Writer"/>.
+        ///     Writes the log using the wanted <see cref="Writer" />.
         /// </summary>
-        /// <param name="sLogLevel">The <see cref="GDFLogLevel"/> indicating the severity level of the log.</param>
-        /// <param name="sLogCategory">The <see cref="GDFLogCategory"/> indicating the category of the log.</param>
+        /// <param name="sLogLevel">The <see cref="GDFLogLevel" /> indicating the severity level of the log.</param>
+        /// <param name="sLogCategory">The <see cref="GDFLogCategory" /> indicating the category of the log.</param>
         /// <param name="sString">The string message to be logged.</param>
         /// <param name="sObject">The optional object to be logged.</param>
         #if UNITY_EDITOR
@@ -211,7 +232,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a log using the specified log level, log category, title, object, and messages.
+        ///     Writes a log using the specified log level, log category, title, object, and messages.
         /// </summary>
         /// <param name="sLogLevel">The log level of the log.</param>
         /// <param name="sLogCategory">The log category of the log.</param>
@@ -230,10 +251,10 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes the log using the wanted <see cref="Writer"/>.
+        ///     Writes the log using the wanted <see cref="Writer" />.
         /// </summary>
-        /// <param name="sLogLevel">The <see cref="GDFLogLevel"/> indicating the severity level of the log.</param>
-        /// <param name="sLogCategory">The <see cref="GDFLogCategory"/> indicating the category of the log.</param>
+        /// <param name="sLogLevel">The <see cref="GDFLogLevel" /> indicating the severity level of the log.</param>
+        /// <param name="sLogCategory">The <see cref="GDFLogCategory" /> indicating the category of the log.</param>
         /// <param name="sString">The string message to be logged.</param>
         /// <param name="sObject">The optional object to be logged.</param>
         #if UNITY_EDITOR
@@ -248,7 +269,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a log using the specified log level, log category, title, object, and messages.
+        ///     Writes a log using the specified log level, log category, title, object, and messages.
         /// </summary>
         /// <param name="sLogLevel">The log level of the log.</param>
         /// <param name="sLogCategory">The log category of the log.</param>
@@ -267,7 +288,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a <see cref="GDFLogLevel.Trace"/> log using the <see cref="Writer"/>.
+        ///     Sends a <see cref="GDFLogLevel.Trace" /> log using the <see cref="Writer" />.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The object associated with the log message (optional).</param>
@@ -280,7 +301,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Logs detailed trace information, including caller file path, method name, and line number.
+        ///     Logs detailed trace information, including caller file path, method name, and line number.
         /// </summary>
         /// <param name="message">optional message</param>
         /// <param name="callerFile">The file path of the calling method. Automatically populated by the runtime.</param>
@@ -295,7 +316,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a <see cref="GDFLogLevel.Trace"/> log using the <see cref="Writer"/>.
+        ///     Sends a <see cref="GDFLogLevel.Trace" /> log using the <see cref="Writer" />.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The object associated with the log message (optional).</param>
@@ -308,7 +329,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a trace log message for a todo item.
+        ///     Writes a trace log message for a todo item.
         /// </summary>
         /// <param name="sMessage">The message describing the todo item.</param>
         #if UNITY_EDITOR
@@ -320,7 +341,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Logs a trace success message.
+        ///     Logs a trace success message.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         #if UNITY_EDITOR
@@ -340,7 +361,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a log message with the specified message for a failed operation or event.
+        ///     Writes a log message with the specified message for a failed operation or event.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         #if UNITY_EDITOR
@@ -352,7 +373,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Logs an attention message to the GDFLogger with the specified message.
+        ///     Logs an attention message to the GDFLogger with the specified message.
         /// </summary>
         /// <param name="sMessage">The message to log.</param>
         #if UNITY_EDITOR
@@ -364,7 +385,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes an error log message with a given message to the log file.
+        ///     Writes an error log message with a given message to the log file.
         /// </summary>
         /// <param name="sMessage">The error message to write.</param>
         #if UNITY_EDITOR
@@ -376,8 +397,8 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a log message with the given title and messages to the log file with the <see cref="GDFLogLevel.Trace"/> level.
-        /// The log message will have the <see cref="GDFLogCategory.No"/> category by default.
+        ///     Writes a log message with the given title and messages to the log file with the <see cref="GDFLogLevel.Trace" /> level.
+        ///     The log message will have the <see cref="GDFLogCategory.No" /> category by default.
         /// </summary>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
@@ -390,8 +411,8 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a log message with the given title and messages to the log file with the <see cref="GDFLogLevel.Trace"/> level.
-        /// The log message will have the <see cref="GDFLogCategory.No"/> category by default.
+        ///     Writes a log message with the given title and messages to the log file with the <see cref="GDFLogLevel.Trace" /> level.
+        ///     The log message will have the <see cref="GDFLogCategory.No" /> category by default.
         /// </summary>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
@@ -404,7 +425,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a <see cref="GDFLogLevel.Debug"/> log using the <see cref="Writer"/>.
+        ///     Sends a <see cref="GDFLogLevel.Debug" /> log using the <see cref="Writer" />.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The optional object associated with the log.</param>
@@ -417,7 +438,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a debug log with the given title and messages.
+        ///     Writes a debug log with the given title and messages.
         /// </summary>
         /// <param name="sTitle">The title of the debug log.</param>
         /// <param name="sMessages">The messages to be included in the debug log.</param>
@@ -430,7 +451,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a <see cref="GDFLogLevel.Debug"/> log using the <see cref="Writer"/>.
+        ///     Sends a <see cref="GDFLogLevel.Debug" /> log using the <see cref="Writer" />.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The optional object associated with the log.</param>
@@ -443,7 +464,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a debug log with the given title and messages.
+        ///     Writes a debug log with the given title and messages.
         /// </summary>
         /// <param name="sTitle">The title of the debug log.</param>
         /// <param name="sMessages">The messages to be included in the debug log.</param>
@@ -456,7 +477,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a log with the level 'Information' using the Writer.
+        ///     Sends a log with the level 'Information' using the Writer.
         /// </summary>
         /// <param name="sMessage">The log message.</param>
         /// <param name="sObject">Optional object related to the log message.</param>
@@ -469,7 +490,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes an information log.
+        ///     Writes an information log.
         /// </summary>
         /// <param name="title">The title of the log.</param>
         /// <param name="messages">Additional messages to include in the log.</param>
@@ -482,7 +503,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a log with the level 'Information' using the Writer.
+        ///     Sends a log with the level 'Information' using the Writer.
         /// </summary>
         /// <param name="sMessage">The log message.</param>
         /// <param name="sObject">Optional object related to the log message.</param>
@@ -495,7 +516,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes an information log.
+        ///     Writes an information log.
         /// </summary>
         /// <param name="sTitle">The title of the log.</param>
         /// <param name="sMessages">Additional messages to include in the log.</param>
@@ -508,7 +529,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Logs an exception with the given error code and message.
+        ///     Logs an exception with the given error code and message.
         /// </summary>
         /// <param name="sObject">The exception object to be logged.</param>
         #if UNITY_EDITOR
@@ -520,7 +541,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Logs an exception with the given message.
+        ///     Logs an exception with the given message.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">The exception object to be logged.</param>
@@ -533,7 +554,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a <see cref="GDFLogLevel.Warning"/> log using the WriteLog method.
+        ///     Sends a <see cref="GDFLogLevel.Warning" /> log using the WriteLog method.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">Optional object to be logged alongside the message.</param>
@@ -546,7 +567,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a warning log with the specified title and messages.
+        ///     Writes a warning log with the specified title and messages.
         /// </summary>
         /// <param name="sTitle">The title of the warning log.</param>
         /// <param name="sMessages">An optional list of messages to include in the log.</param>
@@ -559,7 +580,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a <see cref="GDFLogLevel.Warning"/> log using the WriteLog method.
+        ///     Sends a <see cref="GDFLogLevel.Warning" /> log using the WriteLog method.
         /// </summary>
         /// <param name="sMessage">The message to be logged.</param>
         /// <param name="sObject">Optional object to be logged alongside the message.</param>
@@ -572,7 +593,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a warning log with the specified title and messages.
+        ///     Writes a warning log with the specified title and messages.
         /// </summary>
         /// <param name="sTitle">The title of the warning log.</param>
         /// <param name="sMessages">An optional list of messages to include in the log.</param>
@@ -585,7 +606,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends an error log using the GDFLogger.
+        ///     Sends an error log using the GDFLogger.
         /// </summary>
         /// <param name="sException"></param>
         #if UNITY_EDITOR
@@ -598,7 +619,7 @@ namespace GDFFoundation
 
 
         /// <summary>
-        /// Sends an error log using the GDFLogger.
+        ///     Sends an error log using the GDFLogger.
         /// </summary>
         /// <param name="sMessage">The error message to be logged.</param>
         /// <param name="sObject">An optional object associated with the error log.</param>
@@ -611,7 +632,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Logs an error with the specified title and messages.
+        ///     Logs an error with the specified title and messages.
         /// </summary>
         /// <param name="sTitle">The title of the error log.</param>
         /// <param name="sMessages">The messages to be included in the error log.</param>
@@ -624,7 +645,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends an error log using the GDFLogger.
+        ///     Sends an error log using the GDFLogger.
         /// </summary>
         /// <param name="sMessage">The error message to be logged.</param>
         /// <param name="sObject">An optional object associated with the error log.</param>
@@ -637,7 +658,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Logs an error with the specified title and messages.
+        ///     Logs an error with the specified title and messages.
         /// </summary>
         /// <param name="sTitle">The title of the error log.</param>
         /// <param name="sMessages">The messages to be included in the error log.</param>
@@ -650,7 +671,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a <see cref="GDFLogLevel.Critical"/> log using the <see cref="Writer"/>.
+        ///     Sends a <see cref="GDFLogLevel.Critical" /> log using the <see cref="Writer" />.
         /// </summary>
         /// <param name="sMessage">The message to log.</param>
         /// <param name="sObject">The object associated with the log message (optional).</param>
@@ -663,7 +684,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a log message with the given <paramref name="sTitle"/> and <paramref name="sMessages"/> as critical level.
+        ///     Writes a log message with the given <paramref name="sTitle" /> and <paramref name="sMessages" /> as critical level.
         /// </summary>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
@@ -676,7 +697,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sends a <see cref="GDFLogLevel.Critical"/> log using the <see cref="Writer"/>.
+        ///     Sends a <see cref="GDFLogLevel.Critical" /> log using the <see cref="Writer" />.
         /// </summary>
         /// <param name="sMessage">The message to log.</param>
         /// <param name="sObject">The object associated with the log message (optional).</param>
@@ -689,7 +710,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a log message with the given <paramref name="sTitle"/> and <paramref name="sMessages"/> as critical level.
+        ///     Writes a log message with the given <paramref name="sTitle" /> and <paramref name="sMessages" /> as critical level.
         /// </summary>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sMessages">The messages to be included in the log.</param>
@@ -702,16 +723,16 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Returns the current log level used by the <see cref="Writer"/>.
+        ///     Returns the current log level used by the <see cref="Writer" />.
         /// </summary>
-        /// <returns>The current log level as a member of the <see cref="GDFLogLevel"/> enum.</returns>
+        /// <returns>The current log level as a member of the <see cref="GDFLogLevel" /> enum.</returns>
         public static GDFLogLevel LogLevel()
         {
             return Writer?.LogLevel() ?? GDFLogLevel.Information;
         }
 
         /// <summary>
-        /// Sets the log level for the GDFLogger. The log level determines which log messages will be written by the Writer.
+        ///     Sets the log level for the GDFLogger. The log level determines which log messages will be written by the Writer.
         /// </summary>
         /// <param name="sLevel">The log level to set. Must be one of the values defined in the GDFLogLevel enum.</param>
         public static void SetLogLevel(GDFLogLevel sLevel)

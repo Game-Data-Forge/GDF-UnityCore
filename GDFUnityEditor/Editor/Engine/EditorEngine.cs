@@ -105,8 +105,28 @@ namespace GDFUnity.Editor
 
         public Job Stop()
         {
-            _instance = null;
-            return Job.Success("Stop engine");
+            return Job.Run(async handler => {
+                handler.StepAmount = 4;
+                try
+                {
+                    await _playerDataManager.Stop();
+                    handler.Step();
+                    
+                    await _accountManager.Stop();
+                    handler.Step();
+
+                    await _environmentManager.Stop();
+                    handler.Step();
+
+                    await _authenticationManager.Stop();
+                    handler.Step();
+                }
+                finally
+                {
+                    _launch.Dispose();
+                    _instance = null;
+                }
+            }, "Stop engine");
         }
 
         public void Kill()

@@ -7,14 +7,23 @@ namespace GDFUnity.Editor
 {
     public class SettingsManager : APIManager
     {
+        private readonly object _lock = new object();
         static private readonly Regex ADDRESS_REGEX = new Regex(@"^https?:\/\/([0-9a-zA-Z]+)(\.[0-9a-zA-Z]+|-[0-9a-zA-Z]+)*(:[0-9]{1,5})?\/?$");
-        
         static private readonly Regex ROLE_REGEX = new Regex(@"^([0-9a-zA-Z_-]){128}$");
 
         static public class Exceptions
         {
             static public APIException InvalidDashboardAddress => new APIException(HttpStatusCode.BadRequest, "API", 3, "Dashboard address is not of valid format");
             static public APIException InvalidRoleTokenFormat => new APIException(HttpStatusCode.Unauthorized, "API", 3, "Invalid role token format");
+        }
+
+        private Job _job;
+
+        protected override Job Job => _job;
+
+        public SettingsManager()
+        {
+            State = GDFRuntime.ManagerState.Ready;
         }
 
         public bool IsValidAddress(string address)
@@ -26,7 +35,26 @@ namespace GDFUnity.Editor
             return ADDRESS_REGEX.IsMatch(address);
         }
 
-        public IJob<DateTime> ContactDashboard(string dashboardAddress)
+        public Job<DateTime> ContactDashboard(string dashboardAddress)
+        {
+            lock(_lock)
+            {
+                EnsureUseable();
+
+                return ContactDashboardJob(dashboardAddress);
+            }
+        }
+        
+        public Job<GDFProjectConfiguration> RequestConfigurationUpdate(string dashboardAddress, string role)
+        {
+            lock(_lock)
+            {
+                EnsureUseable();
+                return RequestConfigurationUpdateJob(dashboardAddress, role);
+            }
+        }
+
+        private Job<DateTime> ContactDashboardJob(string dashboardAddress)
         {
             string taskName = "Connect to dashboard";
             if (!IsValidAddress(dashboardAddress))
@@ -35,6 +63,8 @@ namespace GDFUnity.Editor
             }
 
             return Job<DateTime>.Run((handler) => {
+                using Locker _ = Locker.Lock(this);
+
                 UriBuilder builder = new UriBuilder(dashboardAddress);
                 builder.Path = "/api/v1/date";
 
@@ -42,8 +72,8 @@ namespace GDFUnity.Editor
 
             }, taskName);
         }
-        
-        public IJob<GDFProjectConfiguration> RequestConfigurationUpdate(string dashboardAddress, string role)
+
+        public Job<GDFProjectConfiguration> RequestConfigurationUpdateJob(string dashboardAddress, string role)
         {
             string operationName = "Retrieve project configuration";
             if (!IsValidAddress(dashboardAddress))
@@ -57,6 +87,8 @@ namespace GDFUnity.Editor
             }
 
             return Job<GDFProjectConfiguration>.Run((handler) => {
+                using Locker _ = Locker.Lock(this);
+
                 UriBuilder builder = new UriBuilder(dashboardAddress);
                 builder.Path = $"/api/v1/role/{role}";
 

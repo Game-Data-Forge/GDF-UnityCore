@@ -1,15 +1,28 @@
 using System.Collections.Generic;
 using GDFUnity.Editor.ServiceProviders;
 using UnityEditor;
+using UnityEngine;
 
 namespace GDFUnity.Editor
 {
     public class DevicesWindow : EditorWindow
     {
+        static private GUIContent _title = null;
+
         [MenuItem("GDF/Account/Devices...", priority = 11, secondaryPriority = 0)]
         static public void Display()
         {
-            DevicesWindow window = GetWindow<DevicesWindow>("Devices");
+            if (_title == null)
+            {
+                _title = new GUIContent()
+                {
+                    image = GDFGUIUtility.IconContent("GDF").image,
+                    text = "Devices"
+                };
+            }
+
+            DevicesWindow window = GetWindow<DevicesWindow>();
+            window.titleContent = _title;
             window.Focus();
         }
 

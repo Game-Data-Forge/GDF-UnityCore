@@ -13,7 +13,7 @@ namespace PlayerData
 {
     public class CRUDTests
     {
-        Country country = Country.FromTwoLetterCode("FR");
+        Country country = Country.FR;
 
         [Test]
         public void CannotAddNull()

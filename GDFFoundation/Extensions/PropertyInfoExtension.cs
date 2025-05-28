@@ -1,13 +1,28 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj PropertyInfoExtension.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
 using System;
 using System.Reflection;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Gets or sets a value indicating whether the setup page needs to be executed.
+    ///     Gets or sets a value indicating whether the setup page needs to be executed.
     /// </summary>
     static public class PropertyInfoExtension
     {
+        #region Static methods
+
         static public T ComplexGetCustomAttribute<T>(this PropertyInfo self) where T : Attribute
         {
             T attribute = self.GetCustomAttribute<T>();
@@ -48,7 +63,10 @@ namespace GDFFoundation
 
                 return other.ComplexGetCustomAttribute<T>();
             }
+
             return null;
         }
+
+        #endregion
     }
 }

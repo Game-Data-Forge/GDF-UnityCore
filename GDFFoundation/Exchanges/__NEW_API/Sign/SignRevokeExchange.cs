@@ -7,13 +7,25 @@
 
 #endregion
 
+#region
+
 using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     [Serializable]
     public class SignRevokeExchange : ISignReference
     {
+        #region Instance fields and properties
+
+        #region From interface ISignReference
+
         public long Reference { set; get; }
+
+        #endregion
+
+        #endregion
     }
 }

@@ -1,24 +1,24 @@
-﻿
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFToolbox.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// A collection of utility methods for various operations.
+    ///     A collection of utility methods for various operations.
     /// </summary>
     public partial class GDFToolbox
     {
-        /// <summary>
-        /// Base64 encodes a string.
-        /// </summary>
-        /// <param name="sText">The string to encode.</param>
-        /// <returns>The encoded string.</returns>
-        public static string Base64Encode(string sText)
-        {
-            return System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sText));
-        }
+        #region Static methods
 
         /// <summary>
-        /// Decodes a Base64 encoded string.
+        ///     Decodes a Base64 encoded string.
         /// </summary>
         /// <param name="sBase64EncodedData">The Base64 encoded string to decode.</param>
         /// <returns>The decoded string.</returns>
@@ -28,7 +28,17 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Converts a byte size into a human-readable format.
+        ///     Base64 encodes a string.
+        /// </summary>
+        /// <param name="sText">The string to encode.</param>
+        /// <returns>The encoded string.</returns>
+        public static string Base64Encode(string sText)
+        {
+            return System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sText));
+        }
+
+        /// <summary>
+        ///     Converts a byte size into a human-readable format.
         /// </summary>
         /// <param name="sByteSize">The byte size to convert.</param>
         /// <returns>A string representing the converted byte size in a human-readable format.</returns>
@@ -56,8 +66,10 @@ namespace GDFFoundation
             {
                 rResult = sByteSize + " B";
             }
+
             return rResult;
         }
+
+        #endregion
     }
 }
-

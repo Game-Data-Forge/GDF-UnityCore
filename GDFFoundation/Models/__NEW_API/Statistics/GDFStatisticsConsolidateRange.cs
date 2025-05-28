@@ -1,7 +1,11 @@
+#region Copyright
+
 // Game-Data-Forge Solution
-// Copyright ©2024-2025  idéMobi SARL
-// Authors: Jean-François CONTART & Quentin BOULOGNE
-// File identity: GDFFoundation.csproj GDFStatisticsConsolidateRange.cs create at 2025/03/25 11:03:36
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFStatisticsConsolidateRange.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
 
 namespace GDFFoundation
 {

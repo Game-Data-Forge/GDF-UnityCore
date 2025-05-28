@@ -1,54 +1,65 @@
+#region Copyright
 
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFExchangeDevice.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+
+#region
 
 using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Enumeration representing the exchange device used for communication.
+    ///     Enumeration representing the exchange device used for communication.
     /// </summary>
     [Serializable]
     public enum GDFExchangeDevice
     {
         /// <summary>
-        /// Enumeration representing an unknown exchange device used for communication.
+        ///     Enumeration representing an unknown exchange device used for communication.
         /// </summary>
         Unknown = 0,
 
         /// <summary>
-        /// The enum member representing the iOS exchange device used for communication.
+        ///     The enum member representing the iOS exchange device used for communication.
         /// </summary>
         Ios = 11,
 
         /// <summary>
-        /// The Android enum member represents the exchange device used for communication specifically on Android devices.
+        ///     The Android enum member represents the exchange device used for communication specifically on Android devices.
         /// </summary>
         Android = 12,
 
         /// <summary>
-        /// Macos is an exchange device used for communication.
+        ///     Macos is an exchange device used for communication.
         /// </summary>
         Macos = 21,
 
         /// <summary>
-        /// Represents a Windows exchange device member of the GDFExchangeDevice enumeration.
+        ///     Represents a Windows exchange device member of the GDFExchangeDevice enumeration.
         /// </summary>
         Windows = 22,
 
         /// <summary>
-        /// Linux exchange device used for communication.
+        ///     Linux exchange device used for communication.
         /// </summary>
         Linux = 23,
 
         /// <summary>
-        /// Represents a Web device.
+        ///     Represents a Web device.
         /// </summary>
         Web = 41,
 
         /// <summary>
-        /// Enumeration member representing an error in the exchange device used for communication.
+        ///     Enumeration member representing an error in the exchange device used for communication.
         /// </summary>
         Error = 128,
     }
 }
-

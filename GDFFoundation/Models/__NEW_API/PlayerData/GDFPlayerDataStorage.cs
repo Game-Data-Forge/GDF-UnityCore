@@ -2,7 +2,7 @@
 
 // Game-Data-Forge Solution
 // Written by CONTART Jean-François & BOULOGNE Quentin
-// GDFFoundation.csproj GDFPlayerDataStorage.cs create at 2025/03/26 17:03:12
+// GDFFoundation.csproj GDFPlayerDataStorage.cs create at 2025/04/08 15:04:53
 // ©2024-2025 idéMobi SARL FRANCE
 
 #endregion
@@ -62,11 +62,9 @@ namespace GDFFoundation
         /// </summary>
         public int Storage { get; set; } = 1;
 
-        [Obsolete("Only use SyncDateTime")]
-        public long SyncCommit { get; set; }
+        [Obsolete("Only use SyncDateTime")] public long SyncCommit { get; set; }
 
-        [GDFDbIndex]
-        public DateTime SyncDateTime { get; set; }
+        [GDFDbIndex] public DateTime SyncDateTime { get; set; }
 
         public bool Trashed { get; set; }
 
@@ -122,7 +120,6 @@ namespace GDFFoundation
             SyncDateTime = sOther.SyncDateTime;
             SyncCommit = sOther.SyncCommit;
             Channels = sOther.Channels;
-
         }
 
         #region From interface IGDFStorageData

@@ -1,76 +1,98 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFEnvironmentKindExtension.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
 namespace GDFFoundation
 {
     /// <summary>
-    /// Gets or sets a value indicating whether the setup page needs to be executed.
+    ///     Gets or sets a value indicating whether the setup page needs to be executed.
     /// </summary>
     static public class GDFEnvironmentKindExtension
     {
-        static private GDFEnvironmentKind[] _array = null;
+        #region Static fields and properties
 
-        static public string ToLongString(this GDFEnvironmentKind self)
-        {
-            switch (self)
-            {
-                case GDFEnvironmentKind.Development:
-                    return "Development";
-                case GDFEnvironmentKind.PlayTest:
-                    return "PlayTest";
-                case GDFEnvironmentKind.Preproduction:
-                    return "Preproduction";
-                case GDFEnvironmentKind.Production:
-                    return "Production";
-            }
-            return null;
-        }
-        static public string ToShortString(this GDFEnvironmentKind self)
-        {
-            switch (self)
-            {
-                case GDFEnvironmentKind.Development:
-                    return "Dev";
-                case GDFEnvironmentKind.PlayTest:
-                    return "PlayT";
-                case GDFEnvironmentKind.Preproduction:
-                    return "Pre";
-                case GDFEnvironmentKind.Production:
-                    return "Prod";
-            }
-            return null;
-        }
-        static public GDFEnvironmentKind[] ToArray()
+        static private ProjectEnvironment[] _array = null;
+
+        #endregion
+
+        #region Static methods
+
+        static public ProjectEnvironment[] ToArray()
         {
             if (_array == null)
             {
-                _array = new GDFEnvironmentKind[]
+                _array = new ProjectEnvironment[]
                 {
-                    GDFEnvironmentKind.Development,
-                    GDFEnvironmentKind.PlayTest,
-                    GDFEnvironmentKind.Preproduction,
-                    GDFEnvironmentKind.Production
+                    ProjectEnvironment.Development,
+                    ProjectEnvironment.PlayTest,
+                    ProjectEnvironment.Preproduction,
+                    ProjectEnvironment.Production
                 };
             }
 
             return _array;
         }
 
-        static public GDFEnvironmentKind ToEnvironment(this string self)
+        static public ProjectEnvironment ToEnvironment(this string self)
         {
             switch (self)
             {
                 case "Development":
                 case "Dev":
-                    return GDFEnvironmentKind.Development;
+                    return ProjectEnvironment.Development;
                 case "PlayTest":
                 case "PlayT":
-                    return GDFEnvironmentKind.PlayTest;
+                    return ProjectEnvironment.PlayTest;
                 case "Preproduction":
                 case "Pre":
-                    return GDFEnvironmentKind.Preproduction;
+                    return ProjectEnvironment.Preproduction;
                 case "Production":
                 case "Prod":
-                    return GDFEnvironmentKind.Production;
+                    return ProjectEnvironment.Production;
             }
-            return GDFEnvironmentKind.Development;
+
+            return ProjectEnvironment.Development;
         }
+
+        static public string ToLongString(this ProjectEnvironment self)
+        {
+            switch (self)
+            {
+                case ProjectEnvironment.Development:
+                    return "Development";
+                case ProjectEnvironment.PlayTest:
+                    return "PlayTest";
+                case ProjectEnvironment.Preproduction:
+                    return "Preproduction";
+                case ProjectEnvironment.Production:
+                    return "Production";
+            }
+
+            return null;
+        }
+
+        static public string ToShortString(this ProjectEnvironment self)
+        {
+            switch (self)
+            {
+                case ProjectEnvironment.Development:
+                    return "Dev";
+                case ProjectEnvironment.PlayTest:
+                    return "PlayT";
+                case ProjectEnvironment.Preproduction:
+                    return "Pre";
+                case ProjectEnvironment.Production:
+                    return "Prod";
+            }
+
+            return null;
+        }
+
+        #endregion
     }
 }

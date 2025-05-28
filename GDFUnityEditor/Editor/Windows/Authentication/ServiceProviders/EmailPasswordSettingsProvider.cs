@@ -1,3 +1,4 @@
+using UnityEditor.VersionControl;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor.ServiceProviders
@@ -75,10 +76,9 @@ namespace GDFUnity.Editor.ServiceProviders
 
             private EmailPasswordSettingsProvider _provider;
             private TextField _email;
-            private TextField _password1;
-            private TextField _password2;
             private Button _loginPage;
             private Button _register;
+            private HelpBox _message;
 
             public RegisterState(EmailPasswordSettingsProvider provider)
             {
@@ -92,39 +92,34 @@ namespace GDFUnity.Editor.ServiceProviders
                     _email = new TextField("Email");
                     _email.style.marginBottom = 5;
                     _email.keyboardType = UnityEngine.TouchScreenKeyboardType.EmailAddress;
-                    _email.RegisterCallback<NavigationSubmitEvent>((_) => {
-                        Register(view);
-                    });
-                    _password1 = new TextField("Password");
-                    _password1.isPasswordField = true;
-                    _password1.RegisterCallback<NavigationSubmitEvent>((_) => {
-                        Register(view);
-                    });
-                    _password2 = new TextField("Confirm password");
-                    _password2.isPasswordField = true;
-                    _password2.RegisterCallback<NavigationSubmitEvent>((_) => {
+                    _email.RegisterCallback<NavigationSubmitEvent>((_) =>
+                    {
                         Register(view);
                     });
 
                     _loginPage = new Button();
                     _loginPage.text = "Login page";
                     _loginPage.style.width = 100;
-                    _loginPage.clicked += () => {
+                    _loginPage.clicked += () =>
+                    {
                         _provider.SetState(_provider._login);
                     };
 
                     _register = new Button();
                     _register.text = "Register";
                     _register.style.width = 100;
-                    _register.clicked += () => {
+                    _register.clicked += () =>
+                    {
                         Register(view);
                     };
+
+                    _message = new HelpBox("Enter a valid email address.\nThe account password will be sent to it on register.", HelpBoxMessageType.Info);
+                    _message.style.marginBottom = 5;
                 }
 
+                rootElement.Add(_message);
                 rootElement.Add(_email);
-                rootElement.Add(_password1);
-                rootElement.Add(_password2);
-
+                
                 buttons.Add(_loginPage);
                 buttons.Add(_register);
 
@@ -141,7 +136,7 @@ namespace GDFUnity.Editor.ServiceProviders
 
             private void Register(AuthenticationView view)
             {
-                view.Load(GDFEditor.Authentication.RegisterEmailPassword(view.country.value, _email.value, _password1.value, _password2.value));
+                view.Load(GDFEditor.Authentication.RegisterEmailPassword(view.country.value, _email.value));
             }
 
             private void OnConsentChanged(ChangeEvent<bool> ev)

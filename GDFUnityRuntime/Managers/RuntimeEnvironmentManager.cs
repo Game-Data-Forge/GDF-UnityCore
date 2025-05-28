@@ -7,7 +7,7 @@ namespace GDFUnity
     {
         private IRuntimeEngine _engine;
 
-        public GDFEnvironmentKind Environment => _engine.Configuration.Environment;
+        public ProjectEnvironment Environment => _engine.Configuration.Environment;
 
         public RuntimeEnvironmentManager(IRuntimeEngine engine)
         {

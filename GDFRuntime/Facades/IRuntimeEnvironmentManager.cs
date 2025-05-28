@@ -4,6 +4,6 @@ namespace GDFRuntime
 {
     public interface IRuntimeEnvironmentManager
     {
-        public GDFEnvironmentKind Environment { get; }
+        public ProjectEnvironment Environment { get; }
     }
 }

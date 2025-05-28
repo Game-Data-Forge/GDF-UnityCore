@@ -328,7 +328,6 @@ namespace GDFUnity
         private readonly Lock _lock = new Lock();
         private byte _gameSave = 0;
         private IRuntimeEngine _engine;
-        private Job _task = null;
         private Dictionary<string, PlayerReferenceStorage> _references = new Dictionary<string, PlayerReferenceStorage>();
         private Cache _commonCache;
         private Cache _gameSaveCache;
@@ -338,12 +337,15 @@ namespace GDFUnity
         private Queue _saveQueue = new Queue();
         private Queue _syncQueue = new Queue();
         private Random _rng = new Random();
+        private Job _job = null;
         private Dictionary<string, string> _headers = new Dictionary<string, string>();
         private DateTime _syncTime;
 
         public byte GameSave => _gameSave;
         public bool HasDataToSave => _saveQueue.Count != 0;
         public bool HasDataToSync => _syncQueue.Count != 0;
+
+        protected override Job Job => _job;
 
         public RuntimePlayerDataManager(IRuntimeEngine engine)
         {
@@ -354,6 +356,8 @@ namespace GDFUnity
 
             _gameSaveCache = new Cache(this);
             _commonCache = new Cache(this);
+
+            State = ManagerState.Ready;
         }
 
         ~RuntimePlayerDataManager()
@@ -377,11 +381,11 @@ namespace GDFUnity
                     throw Exceptions.InvalidGameSave;
                 }
 
-                _task.EnsureNotInUse();
+                EnsureUseable();
 
-                _task = LoadTask(gameSave);
+                _job = LoadJob(gameSave);
 
-                return _task;
+                return _job;
             }
         }
 
@@ -563,9 +567,10 @@ namespace GDFUnity
         {
             lock (_taskLock)
             {
-                _task.EnsureNotInUse();
-                _task = Job.Run(DeleteGameSaveRunner, "Delete GameSave");
-                return _task;
+                EnsureUseable();
+
+                _job = Job.Run(DeleteGameSaveRunner, "Delete GameSave");
+                return _job;
             }
         }
 
@@ -615,9 +620,10 @@ namespace GDFUnity
         {
             lock (_taskLock)
             {
-                _task.EnsureNotInUse();
-                _task = Job.Run(SaveRunner, "Player data save");
-                return _task;
+                EnsureUseable();
+
+                _job = Job.Run(SaveRunner, "Player data save");
+                return _job;
             }
         }
         
@@ -625,9 +631,10 @@ namespace GDFUnity
         {
             lock (_taskLock)
             {
-                _task.EnsureNotInUse();
-                _task = Job.Run(SyncRunner, "Player data sync");
-                return _task;
+                EnsureUseable();
+
+                _job = Job.Run(SyncRunner, "Player data sync");
+                return _job;
             }
         }
 
@@ -635,9 +642,10 @@ namespace GDFUnity
         {
             lock (_taskLock)
             {
-                _task.EnsureNotInUse();
-                _task = Job.Run(PurgeRunner, "Purge data");
-                return _task;
+                EnsureUseable();
+
+                _job = Job.Run(PurgeRunner, "Purge data");
+                return _job;
             }
         }
 
@@ -668,7 +676,7 @@ namespace GDFUnity
             }
         }
 
-        private Job LoadTask(byte gameSave)
+        private Job LoadJob(byte gameSave)
         {
             return Job.Run(handler => LoadRunner(handler, gameSave), $"Load gamesave {gameSave}");
         }
@@ -803,6 +811,8 @@ namespace GDFUnity
 
         private void SaveRunner(IJobHandler handler)
         {
+            using Locker _ = Locker.Lock(this);
+
             using(_lock.Use(_engine))
             {
                 SaveRunnerUnsafe(handler);
@@ -811,6 +821,8 @@ namespace GDFUnity
 
         private void SyncRunner(IJobHandler handler)
         {
+            using Locker _ = Locker.Lock(this);
+
             handler.StepAmount = 2;
             using(_lock.Use(_engine))
             {
@@ -821,6 +833,8 @@ namespace GDFUnity
 
         private void DeleteGameSaveRunner(IJobHandler handler)
         {
+            using Locker _ = Locker.Lock(this);
+
             using(_lock.Use(_engine))
             {
                 handler.StepAmount = 2;
@@ -845,6 +859,8 @@ namespace GDFUnity
 
         private void PurgeRunner(IJobHandler handler)
         {
+            using Locker _ = Locker.Lock(this);
+
             using(_lock.Use(_engine))
             {
                 handler.StepAmount = 2;
@@ -859,7 +875,7 @@ namespace GDFUnity
 
                 _engine.PersistanceManager.Purge(handler.Split());
 
-                string country = _engine.AuthenticationManager.Token.Country;
+                Country country = _engine.AuthenticationManager.Token.Country;
 
                 _headers.Clear();
                 _engine.ServerManager.FillHeaders(_headers, _engine.AuthenticationManager.Bearer);
@@ -869,6 +885,8 @@ namespace GDFUnity
 
         private void LoadRunner(IJobHandler handler, byte gameSave)
         {
+            using Locker _ = Locker.Lock(this);
+
             using(_lock.Use(_engine))
             {
                 handler.StepAmount = 4;
@@ -1113,6 +1131,8 @@ namespace GDFUnity
 
         private void OnAccountChanging(IJobHandler handler, MemoryJwtToken token)
         {
+            using Locker _ = Locker.Lock(this);
+            
             using(_lock.Use(_engine))
             {
                 if (token == null)
@@ -1131,6 +1151,8 @@ namespace GDFUnity
 
         private void OnAccountChanged(IJobHandler handler, MemoryJwtToken token)
         {
+            using Locker _ = Locker.Lock(this);
+            
             using(_lock.Use(_engine))
             {
                 if (token == null)

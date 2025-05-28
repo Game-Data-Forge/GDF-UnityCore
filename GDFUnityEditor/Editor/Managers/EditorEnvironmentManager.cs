@@ -5,24 +5,26 @@ using UnityEditor;
 
 namespace GDFUnity.Editor
 {
-    public class EditorEnvironmentManager : IEditorEnvironmentManager
+    public class EditorEnvironmentManager : AsyncManager, IEditorEnvironmentManager
     {
-        private readonly object _taskLock = new object();
+        private readonly object _lock = new object();
 
         private class EnvironmentConfiguration
         {
-            public GDFEnvironmentKind Environment { get; set; } = GDFEnvironmentKind.Development;
+            public ProjectEnvironment Environment { get; set; } = ProjectEnvironment.Development;
         }
 
-        private Notification<GDFEnvironmentKind> _EnvironmentChangingEvent { get; }
-        private Notification<GDFEnvironmentKind> _EnvironmentChangedEvent { get; }
-        private Job<GDFEnvironmentKind> _task = null;
+        private Notification<ProjectEnvironment> _EnvironmentChangingEvent { get; }
+        private Notification<ProjectEnvironment> _EnvironmentChangedEvent { get; }
+        private Job<ProjectEnvironment> _job = null;
         private EnvironmentConfiguration _environment;
         private IEditorEngine _engine;
 
-        public Notification<GDFEnvironmentKind> EnvironmentChangingNotif => _EnvironmentChangingEvent;
-        public Notification<GDFEnvironmentKind> EnvironmentChangedNotif => _EnvironmentChangedEvent;
-        public GDFEnvironmentKind Environment => _environment.Environment;
+        public Notification<ProjectEnvironment> EnvironmentChangingNotif => _EnvironmentChangingEvent;
+        public Notification<ProjectEnvironment> EnvironmentChangedNotif => _EnvironmentChangedEvent;
+        public ProjectEnvironment Environment => _environment.Environment;
+
+        protected override Job Job => _job;
         
         private GDFException canceledByUserException => new GDFException("ENV", 01, "Operation canceled by user !");
 
@@ -30,28 +32,30 @@ namespace GDFUnity.Editor
         {
             _engine = engine;
             _environment = GDFUserSettings.Instance.LoadOrDefault(new EnvironmentConfiguration(), container: engine.Configuration.Reference.ToString());
-            _EnvironmentChangingEvent = new Notification<GDFEnvironmentKind>(engine.ThreadManager);
-            _EnvironmentChangedEvent = new Notification<GDFEnvironmentKind>(engine.ThreadManager);
+            _EnvironmentChangingEvent = new Notification<ProjectEnvironment>(engine.ThreadManager);
+            _EnvironmentChangedEvent = new Notification<ProjectEnvironment>(engine.ThreadManager);
+
+            State = ManagerState.Ready;
         }
 
-        public Job<GDFEnvironmentKind> SetEnvironment(GDFEnvironmentKind environment)
+        public Job<ProjectEnvironment> SetEnvironment(ProjectEnvironment environment)
         {
-            lock (_taskLock)
+            lock (_lock)
             {
-                _task.EnsureNotInUse();
-                
-                _task = ChangeEnvironmentTask(environment);
+                EnsureUseable();
 
-                return _task;
+                _job = ChangeEnvironmentJob(environment);
+
+                return _job;
             }
         }
 
-        private Job<GDFEnvironmentKind> ChangeEnvironmentTask(GDFEnvironmentKind environment)
+        private Job<ProjectEnvironment> ChangeEnvironmentJob(ProjectEnvironment environment)
         {
             string taskName = "Switch environment";
             if (environment == _environment.Environment)
             {
-                return Job<GDFEnvironmentKind>.Success(environment, taskName);
+                return Job<ProjectEnvironment>.Success(environment, taskName);
             }
 
             if (GDF.Authentication.IsConnected)
@@ -59,11 +63,13 @@ namespace GDFUnity.Editor
                 if (!EditorUtility.DisplayDialog("Account conflict", "You are trying to change the environment while connected to an account"+
                 "\nProceeding will disconnect the current account.", "Ok", "Cancel"))
                 {
-                    return Job<GDFEnvironmentKind>.Failure(canceledByUserException, taskName);
+                    return Job<ProjectEnvironment>.Failure(canceledByUserException, taskName);
                 }
             }
             
-            return Job<GDFEnvironmentKind>.Run(handler => {
+            return Job<ProjectEnvironment>.Run(handler => {
+                using Locker _ = Locker.Lock(this);
+
                 handler.StepAmount = 3;
 
                 EnvironmentChangingNotif.Invoke(handler.Split(), environment);

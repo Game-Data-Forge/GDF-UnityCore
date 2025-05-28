@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using GDFFoundation;
 
 namespace GDFRuntime
@@ -8,9 +7,9 @@ namespace GDFRuntime
         public long Reference { get; }
         public string Name { get; }
         public string Organization { get; }
-        public GDFEnvironmentKind Environment { get; }
+        public ProjectEnvironment Environment { get; }
         public string PublicToken { get; }
         public short Channel { get; }
-        public Dictionary<string, string> AgentPool { get; }
+        public CloudConfiguration CloudConfig { get; }
     }
 }

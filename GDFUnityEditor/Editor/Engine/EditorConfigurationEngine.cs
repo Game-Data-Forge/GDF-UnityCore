@@ -66,7 +66,7 @@ namespace GDFUnity.Editor
 
         private void CredentialsValidation(List<GDFException> result, IEditorConfiguration configuration)
         {
-            if (configuration.Credentials.Count != Enum.GetValues(typeof(GDFEnvironmentKind)).Length)
+            if (configuration.Credentials.Count != Enum.GetValues(typeof(ProjectEnvironment)).Length)
             {
                 result.Add (EditorExceptions.InvalidCredentials);
             }
@@ -131,7 +131,7 @@ namespace GDFUnity.Editor
                 Environment = GDFEditor.Environment.Environment,
                 PublicToken = configuration.Credentials[GDFEditor.Environment.Environment].PublicKey,
                 Channel = configuration.Channel,
-                AgentPool = configuration.AgentPool
+                CloudConfig = configuration.CloudConfig
             };
         }
 

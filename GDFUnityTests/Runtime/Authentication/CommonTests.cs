@@ -10,16 +10,16 @@ namespace Authentication
     {
         bool triggeredImmediate = false;
         bool triggeredDelay = false;
-        Country country = Country.FromTwoLetterCode("FR");
+        Country country = Country.FR;
 
         [UnityTest]
         public IEnumerator CanSignOut()
         {
             UnityJob task = GDF.Authentication.SignInDevice(country);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
         }
         
         [UnityTest]
@@ -28,22 +28,22 @@ namespace Authentication
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             UnityJob task = GDF.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsFalse(GDF.Authentication.IsConnected);
         }
@@ -54,12 +54,12 @@ namespace Authentication
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             UnityJob task = GDF.Authentication.SignInDevice(country);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.IsTrue(GDF.Authentication.IsConnected);
 
             task = GDF.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsFalse(GDF.Authentication.IsConnected);
         }
@@ -68,10 +68,10 @@ namespace Authentication
         public IEnumerator CanConnectWithoutDisconnecting()
         {
             UnityJob task = GDF.Authentication.SignInDevice(country);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Authentication.SignInDevice(country);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.AreEqual(task.State, JobState.Success);
         }
@@ -86,7 +86,7 @@ namespace Authentication
             Assert.IsFalse(triggeredDelay);
 
             UnityJob task = GDF.Authentication.SignInDevice(country);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.IsTrue(triggeredImmediate);
             
@@ -98,7 +98,7 @@ namespace Authentication
             triggeredImmediate = false;
 
             task = GDF.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.IsTrue(triggeredImmediate);
             
@@ -118,32 +118,30 @@ namespace Authentication
             Assert.IsFalse(triggeredDelay);
 
             UnityJob task = GDF.Authentication.SignInDevice(country);
-            yield return null;
+            yield return WaitJobStarted(task);
 
             Assert.IsTrue(triggeredImmediate);
             Assert.IsFalse(task.IsDone);
-            
-            yield return null;
+
             yield return null;
             
             Assert.IsTrue(triggeredDelay);
 
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             triggeredImmediate = false;
             
             task = GDF.Authentication.SignOut();
-            yield return null;
+            yield return WaitJobStarted(task);
 
             Assert.IsTrue(triggeredImmediate);
             Assert.IsFalse(task.IsDone);
             
             yield return null;
-            yield return null;
             
             Assert.IsTrue(triggeredDelay);
 
-            yield return WaitTask(task);
+            yield return WaitJob(task);
         }
 
         [UnityTest]
@@ -152,12 +150,12 @@ namespace Authentication
             Assert.IsFalse(GDF.Authentication.IsConnected);
 
             UnityJob task = GDF.Authentication.SignInDevice(country);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsTrue(GDF.Authentication.IsConnected);
 
             task = GDF.Account.Delete();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsFalse(GDF.Authentication.IsConnected);
         }
@@ -188,7 +186,7 @@ namespace Authentication
             triggeredImmediate = false;
             triggeredDelay = false;
             UnityJob task = GDF.Launch;
-            yield return WaitTask(task);
+            yield return WaitJob(task);
         }
 
         [UnityTearDown]
@@ -202,19 +200,27 @@ namespace Authentication
             if (GDF.Authentication.IsConnected)
             {
                 UnityJob task = GDF.Account.Delete();
-                yield return WaitTask(task);
+                yield return WaitJob(task);
             }
             
             GDF.Kill();
         }
 
-        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
+        private IEnumerator WaitJob(UnityJob job, JobState expectedState = JobState.Success)
         {
-            yield return task;
+            yield return job;
 
-            if (task.State != expectedState)
+            if (job.State != expectedState)
             {
-                Assert.Fail("Task '" + task.Name + "' finished with the unexpected state '" + task.State + "' !\n" + task.Error);
+                Assert.Fail("Task '" + job.Name + "' finished with the unexpected state '" + job.State + "' !\n" + job.Error);
+            }
+        }
+
+        private IEnumerator WaitJobStarted(IJob job)
+        {
+            while (job.State == JobState.Pending)
+            {
+                yield return job;
             }
         }
     }

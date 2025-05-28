@@ -1,104 +1,122 @@
-﻿
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFRequestPlayerToken.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+
+#region
 
 using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Represents a request for a player token.
+    ///     Represents a request for a player token.
     /// </summary>
     [Serializable]
     public class GDFRequestPlayerToken
     {
+        #region Instance fields and properties
+
         /// <summary>
-        /// Represents an account range.
+        ///     Represents an account range.
         /// </summary>
         //[JsonProperty("Ran")]
         public short AccountRange { set; get; }
 
         /// <summary>
-        /// Gets or sets the ProjectReference.
-        /// </summary>
-        //[JsonProperty("Prj")]
-        public long ProjectReference { set; get; }
-
-        /// <summary>
-        /// Represents a player reference in the GDFRequestPlayerToken class.
-        /// </summary>
-        //[JsonProperty("Pla")]
-        public long PlayerReference { set; get; }
-
-        /// <summary>
-        /// Represents a player token used for authentication and authorization.
-        /// </summary>
-        //[JsonProperty("Tok")]
-        public string Token { set; get; }
-
-        /// <summary>
-        /// Gets or sets the old token.
+        ///     Represents the environment kind in which the GDFRequestPlayerToken is used.
         /// </summary>
         /// <remarks>
-        /// This property holds the value of the old token associated with a player.
-        /// It is used in the process of creating a new player token or during sign up.
-        /// </remarks>
-        //[JsonProperty("Oto")]
-        public string OldToken { set; get; }
-
-        /// <summary>
-        /// Represents the sign-in type for an account.
-        /// </summary>
-        //[JsonProperty("Env")]
-        public GDFAccountSignType SignType { set; get; } = GDFAccountSignType.None;
-
-        /// <summary>
-        /// Represents the environment kind in which the GDFRequestPlayerToken is used.
-        /// </summary>
-        /// <remarks>
-        /// The GDFEnvironmentKind determines the environment in which the GDFRequestPlayerToken object is used. It can be one of the following values:
-        /// - Development: The development environment.
-        /// - PlayTest: The playtest environment.
-        /// - Qualification: The qualification environment.
-        /// - Preproduction: The pre-production environment.
-        /// - Production: The production environment.
-        /// - PostProduction: The post-production environment.
+        ///     The GDFEnvironmentKind determines the environment in which the GDFRequestPlayerToken object is used. It can be one of the following values:
+        ///     - Development: The development environment.
+        ///     - PlayTest: The playtest environment.
+        ///     - Qualification: The qualification environment.
+        ///     - Preproduction: The pre-production environment.
+        ///     - Production: The production environment.
+        ///     - PostProduction: The post-production environment.
         /// </remarks>
         //[JsonProperty("Env")]
-        public GDFEnvironmentKind EnvironmentKind { set; get; }
+        public ProjectEnvironment EnvironmentKind { set; get; }
 
         /// <summary>
-        /// Represents the origin of an exchange.
+        ///     Represents the origin of an exchange.
         /// </summary>
         //[JsonProperty("Exo")]
         public GDFExchangeOrigin ExchangeOrigin { set; get; }
 
         /// <summary>
-        /// Represents the user synchronization information.
+        ///     Gets or sets the old token.
         /// </summary>
-        [Obsolete("Synchronisation date data are stored by the application as a long date.")]
-        public GDFSyncInformation UserSyncInformation { set; get; } = new GDFSyncInformation();
+        /// <remarks>
+        ///     This property holds the value of the old token associated with a player.
+        ///     It is used in the process of creating a new player token or during sign up.
+        /// </remarks>
+        //[JsonProperty("Oto")]
+        public string OldToken { set; get; }
 
         /// <summary>
-        /// Represents the player synchronisation information.
+        ///     Represents a player reference in the GDFRequestPlayerToken class.
+        /// </summary>
+        //[JsonProperty("Pla")]
+        public long PlayerReference { set; get; }
+
+        /// <summary>
+        ///     Represents the player synchronisation information.
         /// </summary>
         [Obsolete("Synchronisation date data are stored by the application as a long date.")]
         public GDFSyncInformation PlayerSyncInformation { set; get; } = new GDFSyncInformation();
 
         /// <summary>
-        /// Represents the synchronization information for the studio.
+        ///     Gets or sets the ProjectReference.
+        /// </summary>
+        //[JsonProperty("Prj")]
+        public long ProjectReference { set; get; }
+
+        /// <summary>
+        ///     Represents the sign-in type for an account.
+        /// </summary>
+        //[JsonProperty("Env")]
+        public GDFAccountSignType SignType { set; get; } = GDFAccountSignType.None;
+
+        /// <summary>
+        ///     Represents the synchronization information for the studio.
         /// </summary>
         [Obsolete("Synchronisation date data are stored by the application as a long date.")]
         public GDFSyncInformation StudioSyncInformation { set; get; } = new GDFSyncInformation();
 
+        /// <summary>
+        ///     Represents a player token used for authentication and authorization.
+        /// </summary>
+        //[JsonProperty("Tok")]
+        public string Token { set; get; }
+
+        /// <summary>
+        ///     Represents the user synchronization information.
+        /// </summary>
+        [Obsolete("Synchronisation date data are stored by the application as a long date.")]
+        public GDFSyncInformation UserSyncInformation { set; get; } = new GDFSyncInformation();
+
+        #endregion
+
+        #region Instance constructors and destructors
+
         //[Obsolete("NEVER USE! RESERVED TO JSON CONVERT!")]
         /// <summary>
-        /// Represents a request for player token.
+        ///     Represents a request for player token.
         /// </summary>
         public GDFRequestPlayerToken()
         {
         }
 
         /// <summary>
-        /// Represents a request for player token.
+        ///     Represents a request for player token.
         /// </summary>
         public GDFRequestPlayerToken(IGDFProjectInformation sProjectInformation)
         {
@@ -112,12 +130,12 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Represents a player token request.
+        ///     Represents a player token request.
         /// </summary>
         /// <remarks>
-        /// This class is used to request a player token for a specific project and environment.
+        ///     This class is used to request a player token for a specific project and environment.
         /// </remarks>
-        public GDFRequestPlayerToken(long sProjectReference, GDFEnvironmentKind sEnvironmentKind)
+        public GDFRequestPlayerToken(long sProjectReference, ProjectEnvironment sEnvironmentKind)
         {
             AccountRange = 0;
             PlayerReference = 0;
@@ -129,7 +147,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Class representing a request for a player token.
+        ///     Class representing a request for a player token.
         /// </summary>
         public GDFRequestPlayerToken(GDFRequestPlayerToken sToCopy)
         {
@@ -145,5 +163,7 @@ namespace GDFFoundation
                 ExchangeOrigin = sToCopy.ExchangeOrigin;
             }
         }
+
+        #endregion
     }
 }

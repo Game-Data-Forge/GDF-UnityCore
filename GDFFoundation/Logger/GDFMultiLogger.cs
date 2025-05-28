@@ -1,23 +1,41 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFMultiLogger.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
 using System.Collections.Generic;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// GDFMultiLogger class implements the IGDFLogger interface and provides a logger that writes log messages to multiple writers.
+    ///     GDFMultiLogger class implements the IGDFLogger interface and provides a logger that writes log messages to multiple writers.
     /// </summary>
     public class GDFMultiLogger : IGDFLogger
     {
+        #region Instance fields and properties
+
+        private GDFLogLevel _Level = GDFLogLevel.None;
         private readonly object _locker = new object();
 
         /// <summary>
-        /// Gets or sets the writers for the logger.
+        ///     Gets or sets the writers for the logger.
         /// </summary>
         private List<IGDFLogger> _Writers = new List<IGDFLogger>();
 
-        private GDFLogLevel _Level = GDFLogLevel.None;
+        #endregion
+
+        #region Instance constructors and destructors
 
         /// <summary>
-        /// Represents a multi-logger that can write logs to multiple writers.
+        ///     Represents a multi-logger that can write logs to multiple writers.
         /// </summary>
         public GDFMultiLogger(params IGDFLogger[] sWriters)
         {
@@ -32,7 +50,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Represents a logger that can write logs to multiple writers.
+        ///     Represents a logger that can write logs to multiple writers.
         /// </summary>
         public GDFMultiLogger(GDFLogLevel sLogLevel, params IGDFLogger[] sWriters)
         {
@@ -46,17 +64,41 @@ namespace GDFFoundation
             }
         }
 
+        #endregion
+
+        #region Instance methods
+
         /// <summary>
-        /// Sets the log level to be displayed by the logger.
+        ///     Add a writer to the multi-logger.
         /// </summary>
-        /// <param name="sLogLevel">The log level to be set.</param>
-        public void SetLogLevel(GDFLogLevel sLogLevel)
+        /// <param name="sWriter">The writer to add.</param>
+        /// <returns>Returns true if the writer was added successfully; otherwise, false.</returns>
+        public bool AddWritter(IGDFLogger sWriter)
         {
-            _Level = sLogLevel;
+            bool rReturn = false;
+            if (sWriter != null && !_Writers.Contains(sWriter))
+            {
+                _Writers.Add(sWriter);
+                rReturn = true;
+            }
+
+            return rReturn;
         }
 
         /// <summary>
-        /// Gets the default log level to be displayed by the logger.
+        ///     Removes the specified writer from the list of writers in the GDFMultiLogger.
+        /// </summary>
+        /// <param name="tWriter">The writer to remove.</param>
+        /// <returns>True if the writer was successfully removed; otherwise, false.</returns>
+        public bool RemoveWritter(IGDFLogger tWriter)
+        {
+            return _Writers.Remove(tWriter);
+        }
+
+        #region From interface IGDFLogger
+
+        /// <summary>
+        ///     Gets the default log level to be displayed by the logger.
         /// </summary>
         /// <returns>The default log level.</returns>
         public GDFLogLevel DefaultLogLevel()
@@ -65,7 +107,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Determines if the debugger is active or not.
+        ///     Determines if the debugger is active or not.
         /// </summary>
         /// <returns><c>true</c> if the debugger is active; otherwise, <c>false</c>.</returns>
         public bool IsActivated()
@@ -74,7 +116,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Retrieves the log level to be displayed by the logger.
+        ///     Retrieves the log level to be displayed by the logger.
         /// </summary>
         /// <returns>The log level to be displayed.</returns>
         public GDFLogLevel LogLevel()
@@ -83,7 +125,16 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes a log message to the registered log writers.
+        ///     Sets the log level to be displayed by the logger.
+        /// </summary>
+        /// <param name="sLogLevel">The log level to be set.</param>
+        public void SetLogLevel(GDFLogLevel sLogLevel)
+        {
+            _Level = sLogLevel;
+        }
+
+        /// <summary>
+        ///     Writes a log message to the registered log writers.
         /// </summary>
         /// <param name="sLogLevel">The level of the log message.</param>
         /// <param name="sLogCategory">The category of the log message.</param>
@@ -101,7 +152,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Writes log messages to multiple loggers based on the specified log level, log category, title, object, and messages.
+        ///     Writes log messages to multiple loggers based on the specified log level, log category, title, object, and messages.
         /// </summary>
         /// <param name="sLogLevel">The log level of the log message.</param>
         /// <param name="sLogCategory">The log category of the log message.</param>
@@ -119,31 +170,8 @@ namespace GDFFoundation
             }
         }
 
-        /// <summary>
-        /// Add a writer to the multi-logger.
-        /// </summary>
-        /// <param name="sWriter">The writer to add.</param>
-        /// <returns>Returns true if the writer was added successfully; otherwise, false.</returns>
-        public bool AddWritter(IGDFLogger sWriter)
-        {
-            bool rReturn = false;
-            if (sWriter != null && !_Writers.Contains(sWriter))
-            {
-                _Writers.Add(sWriter);
-                rReturn = true;
-            }
+        #endregion
 
-            return rReturn;
-        }
-
-        /// <summary>
-        /// Removes the specified writer from the list of writers in the GDFMultiLogger.
-        /// </summary>
-        /// <param name="tWriter">The writer to remove.</param>
-        /// <returns>True if the writer was successfully removed; otherwise, false.</returns>
-        public bool RemoveWritter(IGDFLogger tWriter)
-        {
-            return _Writers.Remove(tWriter);
-        }
+        #endregion
     }
 }

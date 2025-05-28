@@ -1,11 +1,23 @@
+#region Copyright
 
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFWebEditionStyle.cs create at 2025/05/18 16:05:06
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+
+#region
 
 using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Enum defining the styles for GDFWebEdition.
+    ///     Enum defining the styles for GDFWebEdition.
     /// </summary>
     [Serializable]
     public enum GDFWebEditionStyle
@@ -33,18 +45,16 @@ namespace GDFFoundation
         Month,
 
         Numeric,
-        
+
         EnumDropdown,
         EnumRadio,
-        
+
         FlagDropdown,
         FlagCheckbox,
-        
-        
 
 
         /// <summary>
-        /// Enumeration for GDFWebEditionStyle.
+        ///     Enumeration for GDFWebEditionStyle.
         /// </summary>
         Enum,
 
@@ -55,58 +65,58 @@ namespace GDFFoundation
 
         /// Dropdown
         /// <summary>
-        /// Represents a dropdown style for web edition.
+        ///     Represents a dropdown style for web edition.
         /// </summary>
         Dropdown,
 
         /// <summary>
-        /// Defines the color property for the GDFWebEditionStyle enum.
+        ///     Defines the color property for the GDFWebEditionStyle enum.
         /// </summary>
         Color,
 
         /// <summary>
-        /// Represents an Object style for GDFWebEditionStyle.
+        ///     Represents an Object style for GDFWebEditionStyle.
         /// </summary>
         Object,
 
         /// <summary>
-        /// Represents a hidden web edition style.
+        ///     Represents a hidden web edition style.
         /// </summary>
         Hidden,
 
         /// <summary>
-        /// Enumeration for specifying the status of a show part.
+        ///     Enumeration for specifying the status of a show part.
         /// </summary>
         ShowPartStatus,
 
         /// <summary>
-        /// Represents a reference array edition style for web edition properties.
+        ///     Represents a reference array edition style for web edition properties.
         /// </summary>
         ReferenceArray,
 
         /// <summary>
-        /// Represents the GDFWebEditionStyle enum member ShowTextOnly.
+        ///     Represents the GDFWebEditionStyle enum member ShowTextOnly.
         /// </summary>
         ShowTextOnly,
 
         /// <summary>
-        /// Represents the ShowIntOnly member of the GDFWebEditionStyle enum.
+        ///     Represents the ShowIntOnly member of the GDFWebEditionStyle enum.
         /// </summary>
         ShowIntOnly,
 
         /// <summary>
-        /// Indicates that the web edition style of the property is to show long only.
+        ///     Indicates that the web edition style of the property is to show long only.
         /// </summary>
         ShowLongOnly,
 
         /// <summary>
-        /// Enumeration representing the style of web edition for a property.
+        ///     Enumeration representing the style of web edition for a property.
         /// </summary>
         List,
         Country,
 
         /// <summary>
-        /// Represents the track of a web edition style.
+        ///     Represents the track of a web edition style.
         /// </summary>
         Track,
 
@@ -115,9 +125,8 @@ namespace GDFFoundation
         Language,
 
         /// <summary>
-        /// Represents the available languages for the web edition style.
+        ///     Represents the available languages for the web edition style.
         /// </summary>
         Languages,
     }
 }
-

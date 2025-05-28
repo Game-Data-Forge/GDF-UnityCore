@@ -1,35 +1,55 @@
-﻿
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFLocalizableText.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+
+#region
 
 using System;
 using System.Collections.Generic;
 
+#endregion
+
 namespace GDFFoundation
 {
     /// <summary>
-    /// Represents a localizable text.
+    ///     Represents a localizable text.
     /// </summary>
     [Serializable]
     [Obsolete("Use GDFStringLocalization instead!")]
     public class GDFLocalizableText : IGDFSubModel, IGDFLocalizable
     {
+        #region Instance fields and properties
+
         /// <summary>
-        /// The Context property represents the context of the GDFLocalizableText object.
+        ///     The Context property represents the context of the GDFLocalizableText object.
         /// </summary>
         /// <remarks>
-        /// This property is used to indicate the context in which the localized text will be used.
+        ///     This property is used to indicate the context in which the localized text will be used.
         /// </remarks>
         /// <value>
-        /// A string representing the context of the GDFLocalizableText object.
+        ///     A string representing the context of the GDFLocalizableText object.
         /// </value>
         public string Context { set; get; } = string.Empty;
 
         /// <summary>
-        /// Represents a localizable text.
+        ///     Represents a localizable text.
         /// </summary>
         public Dictionary<GDFLanguageEnum, string> Values { set; get; } = new Dictionary<GDFLanguageEnum, string>();
 
+        #endregion
+
+        #region Instance methods
+
+        #region From interface IGDFLocalizable
+
         /// <summary>
-        /// Gets the context of the localizable text.
+        ///     Gets the context of the localizable text.
         /// </summary>
         /// <returns>The context of the localizable text.</returns>
         public string GetContext()
@@ -38,23 +58,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Sets the context of the localizable text.
-        /// </summary>
-        /// <param name="sContext">The context to set.</param>
-        /// <remarks>
-        /// Use this method to assign a context to a localizable text.
-        /// </remarks>
-        public void SetContext(string sContext)
-        {
-            if (string.IsNullOrEmpty(sContext))
-            {
-                sContext = string.Empty;
-            }
-            Context = sContext;
-        }
-
-        /// <summary>
-        /// Get the translated value for a specific language.
+        ///     Get the translated value for a specific language.
         /// </summary>
         /// <param name="sLanguage">The language enum value for which translation is needed.</param>
         /// <returns>The translated value as a string. If no translation is available, an empty string is returned.</returns>
@@ -69,11 +73,29 @@ namespace GDFFoundation
                     rReturn = String.Empty;
                 }
             }
+
             return rReturn;
         }
 
         /// <summary>
-        /// Sets the translation for a specific language in the GDFLocalizableText class.
+        ///     Sets the context of the localizable text.
+        /// </summary>
+        /// <param name="sContext">The context to set.</param>
+        /// <remarks>
+        ///     Use this method to assign a context to a localizable text.
+        /// </remarks>
+        public void SetContext(string sContext)
+        {
+            if (string.IsNullOrEmpty(sContext))
+            {
+                sContext = string.Empty;
+            }
+
+            Context = sContext;
+        }
+
+        /// <summary>
+        ///     Sets the translation for a specific language in the GDFLocalizableText class.
         /// </summary>
         /// <param name="sLanguage">The language for which to set the translation.</param>
         /// <param name="sTranslate">The translation to set.</param>
@@ -83,6 +105,7 @@ namespace GDFFoundation
             {
                 sTranslate = string.Empty;
             }
+
             if (Values.ContainsKey(sLanguage) == true)
             {
                 Values[sLanguage] = sTranslate;
@@ -92,7 +115,9 @@ namespace GDFFoundation
                 Values.Add(sLanguage, sTranslate);
             }
         }
+
+        #endregion
+
+        #endregion
     }
 }
-
-

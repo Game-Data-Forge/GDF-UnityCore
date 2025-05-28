@@ -11,12 +11,13 @@ namespace GDFUnity.Editor
         {
             style.marginLeft = 7;
 
-            try
-            {
+            mainView.onDisplayChanged += display => {
+                if (display == LoadingView.Display.PreLoader) return;
+
                 _field = new EnumField("Environment", GDFEditor.Environment.Environment);
                 _field.RegisterValueChangedCallback((evt) => {
                     _field.SetValueWithoutNotify(GDFEditor.Environment.Environment);
-                    IJob task = GDFEditor.Environment.SetEnvironment((GDFEnvironmentKind)evt.newValue);
+                    IJob task = GDFEditor.Environment.SetEnvironment((ProjectEnvironment)evt.newValue);
                     mainView.AddLoader(task, OnSetEnvironmentDone);
                     _field.SetEnabled(false);
                 });
@@ -24,8 +25,7 @@ namespace GDFUnity.Editor
                 Add(_field);
 
                 GDFEditor.Environment.EnvironmentChangedNotif.onMainThread += OnEnvironmentChanged;
-            }
-            catch { }
+            };
         }
 
         public Environment(EnvironmentSettingsProvider provider) : this(provider.mainView)
@@ -41,7 +41,7 @@ namespace GDFUnity.Editor
             _field.SetEnabled(true);
         }
 
-        private void OnEnvironmentChanged (GDFEnvironmentKind environment)
+        private void OnEnvironmentChanged (ProjectEnvironment environment)
         {
             _field.SetValueWithoutNotify(GDFEditor.Environment.Environment);
         }

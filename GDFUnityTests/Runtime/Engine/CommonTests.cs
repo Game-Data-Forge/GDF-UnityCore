@@ -55,7 +55,7 @@ namespace Engine
 
             Assert.AreEqual(task.State, JobState.Success);
             
-            Job awaitedTask = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
+            Job awaitedTask = GDF.Authentication.SignInDevice(Country.FR);
             task = GDF.Stop();
 
             yield return task;
@@ -72,7 +72,7 @@ namespace Engine
 
             Assert.AreEqual(task.State, JobState.Success);
             
-            Job awaitedTask = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
+            Job awaitedTask = GDF.Authentication.SignInDevice(Country.FR);
             GDF.Kill();
 
             Assert.IsFalse(awaitedTask.IsDone);

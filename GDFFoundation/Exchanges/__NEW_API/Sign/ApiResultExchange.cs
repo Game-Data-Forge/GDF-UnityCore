@@ -7,14 +7,26 @@
 
 #endregion
 
+#region
+
 using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     [Serializable]
     public class ApiResultExchange : IApiResult
     {
+        #region Instance fields and properties
+
+        #region From interface IApiResult
+
         public string Status { get; set; } = "ok";
         public bool Success { get; set; } = true;
+
+        #endregion
+
+        #endregion
     }
 }

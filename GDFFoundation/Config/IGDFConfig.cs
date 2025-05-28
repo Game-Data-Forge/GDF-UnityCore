@@ -1,16 +1,25 @@
+#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj IGDFConfig.cs create at 2025/03/26 17:03:59
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
 namespace GDFFoundation
 {
-
     public interface IGDFConfiguration
     {
-        
     }
-    
+
     /// <summary>
-    /// Interface allowing to create classes which will be used as configurators in particular environments.
+    ///     Interface allowing to create classes which will be used as configurators in particular environments.
     /// </summary>
     public interface IGDFConfig : IGDFProjectKey //, IGDFProjectLocalization
     {
+        #region Instance methods
+
         /*
         #region interface
 
@@ -30,11 +39,14 @@ namespace GDFFoundation
         //public string WebSiteURL();
 
         public string GetDefaultWebEditor();
+        public GDFExchangeDevice GetDeviceOS();
+        public long GetProjectReference();
+        public GDFDataTrackDescription GetSelectedEnvironment();
         public string WebEditorURL();
         public string WebServerURLFormat();
-        public long GetProjectReference();
-        public GDFExchangeDevice GetDeviceOS();
-        public GDFDataTrackDescription GetSelectedEnvironment();
+
+        #endregion
+
         /*
         /// <summary>
         /// Active environment in build or runtime

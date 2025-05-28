@@ -1,4 +1,14 @@
-﻿
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFStringCleaner.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+
+#region
 
 using System;
 using System.Globalization;
@@ -6,233 +16,64 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
+#endregion
+
 namespace GDFFoundation
 {
     /// <summary>
-    /// The GDFStringCleaner class provides several static methods to clean and manipulate strings.
+    ///     The GDFStringCleaner class provides several static methods to clean and manipulate strings.
     /// </summary>
     public static class GDFStringCleaner
     {
+        #region Static fields and properties
+
         /// <summary>
-        /// Remove diacritics from a string.
+        ///     Regular expression for removing non-alphabetic characters.
         /// </summary>
-        /// <param name="sText">The input string.</param>
-        /// <returns>The string without diacritics.</returns>
-        public static string RemoveDiacritics(string sText)
-        {
-            string rReturn = string.Empty;
-            if (string.IsNullOrWhiteSpace(sText))
-            {
-                rReturn = sText;
-            }
-            else
-            {
-                sText = sText.Normalize(NormalizationForm.FormD);
-                var chars = sText.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray();
-                rReturn = new string(chars).Normalize(NormalizationForm.FormC);
-                rReturn = AplhaNumericCleaner(rReturn);
-            }
-            return rReturn;
-        }
+        private static readonly Regex AplhaCleanerRgx = new Regex("[^a-zA-Z]", RegexOptions.Compiled);
 
         /// <summary>
-        /// Cleans the DNS server address by stripping unnecessary characters and protocols.
+        ///     Class containing methods for cleaning strings of non-alphanumeric characters.
         /// </summary>
-        /// <returns>The cleaned DNS server address.</returns>
-        /// <param name="sServerDNS">The DNS server address to clean.</param>
-        public static string CleanDNS(string sServerDNS)
-        {
-            string rServerDNS = sServerDNS;
-
-            if (string.IsNullOrEmpty(sServerDNS) == false)
-            {
-                rServerDNS = rServerDNS.TrimEnd('/');
-                if (rServerDNS.StartsWith("https://", StringComparison.Ordinal))
-                {
-                    rServerDNS = rServerDNS.Substring("https://".Length);
-                }
-                if (rServerDNS.StartsWith("http://", StringComparison.Ordinal))
-                {
-                    rServerDNS = rServerDNS.Substring("http://".Length);
-                }
-                if (rServerDNS.StartsWith("http://", StringComparison.Ordinal))
-                {
-                    rServerDNS = rServerDNS.Substring("http://".Length);
-                }
-            }
-            return rServerDNS;
-        }
+        private static readonly Regex AplhaNumericCleanerRgx = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
 
         /// <summary>
-        /// Remove the separator characters from the given text.
+        ///     Regex pattern for converting alphanumeric characters to numeric characters.
         /// </summary>
-        /// <param name="sText">The text from which to remove the separator characters.</param>
-        /// <returns>The text with separator characters removed.</returns>
-        public static string TextRemoveSeparator(string sText)
-        {
-            string rText = sText;
-            if (string.IsNullOrEmpty(sText) == false)
-            {
-                rText = rText.Replace(GDFConstants.kFieldSeparatorA, string.Empty);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorB, string.Empty);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorC, string.Empty);
-                // new adds
-                rText = rText.Replace(GDFConstants.kFieldSeparatorD, string.Empty);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorE, string.Empty);
-            }
-            return rText;
-        }
+        private static readonly Regex AplhaNumericToNumericRgx = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
 
         /// <summary>
-        /// Protects the input text by replacing occurrences of specific field separator characters with their substituted values.
+        ///     Class containing regular expression for cleaning email strings.
         /// </summary>
-        /// <param name="sText">The input text to be protected.</param>
-        /// <returns>The protected text with replaced field separator characters.</returns>
-        public static string TextProtect(string sText)
-        {
-            string rText = sText;
-            if (string.IsNullOrEmpty(sText) == false)
-            {
-                rText = rText.Replace(GDFConstants.kFieldSeparatorA, GDFConstants.kFieldSeparatorASubstitute);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorB, GDFConstants.kFieldSeparatorBSubstitute);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorC, GDFConstants.kFieldSeparatorCSubstitute);
-                // new adds
-                rText = rText.Replace(GDFConstants.kFieldSeparatorD, GDFConstants.kFieldSeparatorDSubstitute);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorE, GDFConstants.kFieldSeparatorESubstitute);
-            }
-            return rText;
-        }
+        private static readonly Regex EmailCleanerRgx = new Regex("[^a-zA-Z0-9-_@\\.]", RegexOptions.Compiled);
 
         /// <summary>
-        /// Unprotect the text for the separator usage.
+        ///     Regular expression used to remove characters that are not letters, numbers, spaces, and certain special characters in a given string.
         /// </summary>
-        /// <returns>The unprotect text.</returns>
-        /// <param name="sText">The text to be unprotected.</param>
-        public static string TextUnprotect(string sText)
-        {
-            string rText = sText;
-            if (string.IsNullOrEmpty(sText) == false)
-            {
-                rText = rText.Replace(GDFConstants.kFieldSeparatorASubstitute, GDFConstants.kFieldSeparatorA);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorBSubstitute, GDFConstants.kFieldSeparatorB);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorCSubstitute, GDFConstants.kFieldSeparatorC);
-                // new adds
-                rText = rText.Replace(GDFConstants.kFieldSeparatorDSubstitute, GDFConstants.kFieldSeparatorD);
-                rText = rText.Replace(GDFConstants.kFieldSeparatorESubstitute, GDFConstants.kFieldSeparatorE);
-            }
-            return rText;
-        }
+        /// <remarks>
+        ///     The SaltCleanerRgx regular expression is used by the SaltCleaner method to remove unwanted characters from the input string.
+        /// </remarks>
+        private static readonly Regex SaltCleanerRgx = new Regex("[^a-zA-Z0-9 -_\\(\\)\\[\\]\\,\\;\\:\\!\\.]", RegexOptions.Compiled);
+
+
+        private static readonly Regex SpaceCleanerRgx = new Regex(@"\s+", RegexOptions.Compiled);
 
         /// <summary>
-        /// Protects the text for CSV export.
-        /// </summary>
-        /// <param name="sText">The text to be protected.</param>
-        /// <returns>The protected text.</returns>
-        public static string TextCSVProtect(string sText)
-        {
-            string rText = sText;
-            rText = rText.Replace(GDFConstants.kStandardSeparator, GDFConstants.kStandardSeparatorSubstitute);
-
-            return rText;
-        }
-
-        /// <summary>
-        /// Unprotect the text from CSV import.
-        /// </summary>
-        /// <returns>The unprotected text.</returns>
-        /// <param name="sText">The text to unprotect.</param>
-        public static string TextCSVUnprotect(string sText)
-        {
-            string rText = sText;
-            rText = rText.Replace(GDFConstants.kStandardSeparatorSubstitute, GDFConstants.kStandardSeparator);
-            return rText;
-        }
-
-        /// <summary>
-        /// Convert the boolean value to a numerical string.
-        /// Returns "0" if the boolean value is false, "1" if the boolean value is true.
-        /// </summary>
-        /// <param name="sBoolean">The boolean value to be converted.</param>
-        /// <returns>The numerical string representing the boolean value.</returns>
-        public static string BoolToNumericalString(bool sBoolean)
-        {
-            if (sBoolean == false)
-            {
-                return "0";
-            }
-            else
-            {
-                return "1";
-            }
-        }
-
-        /// <summary>
-        /// Class for cleaning and manipulating URLs.
-        /// </summary>
-        private static readonly  Regex URLCleanerRgx = new Regex("[^a-zA-Z0-9-_\\:\\/\\.]", RegexOptions.Compiled);
-
-        /// <summary>
-        /// Removes invalid characters from a URL string.
-        /// </summary>
-        /// <param name="sString">The URL string to clean.</param>
-        /// <returns>A cleaned URL string.</returns>
-        public static string URLCleaner(string sString)
-        {
-            return URLCleanerRgx.Replace(sString, string.Empty);
-        }
-
-        /// <summary>
-        /// Class containing regular expression for cleaning email strings.
-        /// </summary>
-        private static readonly  Regex EmailCleanerRgx = new Regex("[^a-zA-Z0-9-_@\\.]", RegexOptions.Compiled);
-
-        /// <summary>
-        /// Remove any characters from the input string that are not letters (a-z, A-Z), digits (0-9), underscore (_), hyphen (-), at symbol (@), or period (.).
-        /// </summary>
-        /// <param name="sString">The input string.</param>
-        /// <returns>The cleaned email.</returns>
-        public static string EmailCleaner(string sString)
-        {
-            return EmailCleanerRgx.Replace(sString, string.Empty);
-        }
-
-        /// <summary>
-        /// Regular expression for removing non-alphanumeric characters from strings for Unix.
+        ///     Regular expression for removing non-alphanumeric characters from strings for Unix.
         /// </summary>
         private static readonly Regex UnixCleanerRgx = new Regex("[^a-zA-Z0-9_]", RegexOptions.Compiled);
 
         /// <summary>
-        /// Remove Unix specific characters from a string
+        ///     Class for cleaning and manipulating URLs.
         /// </summary>
-        /// <returns>The cleaned string.</returns>
-        /// <param name="sString">The input string</param>
-        public static string UnixCleaner(string sString)
-        {
-            if (sString != null)
-            {
-                return UnixCleanerRgx.Replace(sString, string.Empty);
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
-        
+        private static readonly Regex URLCleanerRgx = new Regex("[^a-zA-Z0-9-_\\:\\/\\.]", RegexOptions.Compiled);
 
-        private static readonly Regex SpaceCleanerRgx = new Regex(@"\s+", RegexOptions.Compiled);
+        #endregion
 
-        public static string SpaceCleaner(string sString)
-        {
-            return SpaceCleanerRgx.Replace(sString, string.Empty);
-        }
+        #region Static methods
 
         /// <summary>
-        /// Regular expression for removing non-alphabetic characters.
-        /// </summary>
-        private static readonly  Regex AplhaCleanerRgx = new Regex("[^a-zA-Z]", RegexOptions.Compiled);
-
-        /// <summary>
-        /// Remove all non-alphabetic characters from a given string.
+        ///     Remove all non-alphabetic characters from a given string.
         /// </summary>
         /// <param name="sString">The input string.</param>
         /// <returns>The string with all non-alphabetic characters removed.</returns>
@@ -242,12 +83,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Class containing methods for cleaning strings of non-alphanumeric characters.
-        /// </summary>
-        private static readonly  Regex AplhaNumericCleanerRgx = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
-
-        /// <summary>
-        /// Remove all non-alphanumeric characters from a given string.
+        ///     Remove all non-alphanumeric characters from a given string.
         /// </summary>
         /// <param name="sString">The string to clean.</param>
         /// <returns>The cleaned string without any non-alphanumeric characters.</returns>
@@ -257,12 +93,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Regex pattern for converting alphanumeric characters to numeric characters.
-        /// </summary>
-        private static readonly  Regex AplhaNumericToNumericRgx = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
-
-        /// <summary>
-        /// Converts an alphanumeric string to a numeric string.
+        ///     Converts an alphanumeric string to a numeric string.
         /// </summary>
         /// <param name="sString">The alphanumeric string to convert.</param>
         /// <returns>The numeric string.</returns>
@@ -299,52 +130,56 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Regular expression used to remove characters that are not letters, numbers, spaces, and certain special characters in a given string.
+        ///     Convert the boolean value to a numerical string.
+        ///     Returns "0" if the boolean value is false, "1" if the boolean value is true.
         /// </summary>
-        /// <remarks>
-        /// The SaltCleanerRgx regular expression is used by the SaltCleaner method to remove unwanted characters from the input string.
-        /// </remarks>
-        private static readonly  Regex SaltCleanerRgx = new Regex("[^a-zA-Z0-9 -_\\(\\)\\[\\]\\,\\;\\:\\!\\.]", RegexOptions.Compiled);
-
-        /// <summary>
-        /// Clean a string by removing any characters that are not letters, numbers, spaces, dashes, underscores, parentheses, square brackets, commas, semicolons, colons, exclamation marks or periods.
-        /// </summary>
-        /// <returns>
-        /// The cleaned string.
-        /// </returns>
-        /// <param name="sString">The string to clean.</param>
-        public static string SaltCleaner(string sString)
+        /// <param name="sBoolean">The boolean value to be converted.</param>
+        /// <returns>The numerical string representing the boolean value.</returns>
+        public static string BoolToNumericalString(bool sBoolean)
         {
-            //GDFBenchmark.Start();
-            string rReturn = SaltCleanerRgx.Replace(sString, string.Empty);
-            //GDFBenchmark.Finish();
-            return rReturn;
+            if (sBoolean == false)
+            {
+                return "0";
+            }
+            else
+            {
+                return "1";
+            }
         }
 
         /// <summary>
-        /// Splits the string by Camel Case format.
+        ///     Cleans the DNS server address by stripping unnecessary characters and protocols.
         /// </summary>
-        /// <returns>The camel case.</returns>
-        /// <param name="input">The string to be split. </param>
-        public static string SplitCamelCase(string input)
+        /// <returns>The cleaned DNS server address.</returns>
+        /// <param name="sServerDNS">The DNS server address to clean.</param>
+        public static string CleanDNS(string sServerDNS)
         {
-            string rReturn = Regex.Replace(input, "([A-Z])", " $1", RegexOptions.ECMAScript).Trim();
-            rReturn = rReturn.Replace("_", string.Empty);
-            return rReturn;
+            string rServerDNS = sServerDNS;
+
+            if (string.IsNullOrEmpty(sServerDNS) == false)
+            {
+                rServerDNS = rServerDNS.TrimEnd('/');
+                if (rServerDNS.StartsWith("https://", StringComparison.Ordinal))
+                {
+                    rServerDNS = rServerDNS.Substring("https://".Length);
+                }
+
+                if (rServerDNS.StartsWith("http://", StringComparison.Ordinal))
+                {
+                    rServerDNS = rServerDNS.Substring("http://".Length);
+                }
+
+                if (rServerDNS.StartsWith("http://", StringComparison.Ordinal))
+                {
+                    rServerDNS = rServerDNS.Substring("http://".Length);
+                }
+            }
+
+            return rServerDNS;
         }
 
         /// <summary>
-        /// Replaces the Unix newline ("\r\n") with the Unix newline ("\n").
-        /// </summary>
-        /// <param name="sString">The string to fix.</param>
-        /// <returns>The fixed string.</returns>
-        public static string NewLineUnixFix(string sString)
-        {
-            return sString.Replace("\r\n", "\n");
-        }
-
-        /// <summary>
-        /// Formats the given C# code by adding appropriate indentation.
+        ///     Formats the given C# code by adding appropriate indentation.
         /// </summary>
         /// <param name="sString">The C# code to be formatted.</param>
         /// <returns>The formatted C# code.</returns>
@@ -361,14 +196,17 @@ namespace GDFFoundation
                 {
                     tIndentCount++;
                 }
+
                 if (tLine.Contains("}"))
                 {
                     tIndentCount--;
                 }
+
                 for (int i = 0; i < tIndentCount; i++)
                 {
                     rReturn.Append("\t");
                 }
+
                 //rReturn.Append(tLine.Replace("\t",""));
                 rReturn.Append(tLine);
                 rReturn.Append(GDFConstants.K_ReturnLine);
@@ -376,14 +214,207 @@ namespace GDFFoundation
                 {
                     tIndentCount++;
                 }
+
                 if (tLine.Contains("}"))
                 {
                     tIndentCount--;
                 }
             }
+
             //GDFBenchmark.Finish();
             return rReturn.ToString().TrimEnd(new char[] { '\n', '\r' });
         }
+
+        /// <summary>
+        ///     Remove any characters from the input string that are not letters (a-z, A-Z), digits (0-9), underscore (_), hyphen (-), at symbol (@), or period (.).
+        /// </summary>
+        /// <param name="sString">The input string.</param>
+        /// <returns>The cleaned email.</returns>
+        public static string EmailCleaner(string sString)
+        {
+            return EmailCleanerRgx.Replace(sString, string.Empty);
+        }
+
+        /// <summary>
+        ///     Replaces the Unix newline ("\r\n") with the Unix newline ("\n").
+        /// </summary>
+        /// <param name="sString">The string to fix.</param>
+        /// <returns>The fixed string.</returns>
+        public static string NewLineUnixFix(string sString)
+        {
+            return sString.Replace("\r\n", "\n");
+        }
+
+        /// <summary>
+        ///     Remove diacritics from a string.
+        /// </summary>
+        /// <param name="sText">The input string.</param>
+        /// <returns>The string without diacritics.</returns>
+        public static string RemoveDiacritics(string sText)
+        {
+            string rReturn = string.Empty;
+            if (string.IsNullOrWhiteSpace(sText))
+            {
+                rReturn = sText;
+            }
+            else
+            {
+                sText = sText.Normalize(NormalizationForm.FormD);
+                var chars = sText.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray();
+                rReturn = new string(chars).Normalize(NormalizationForm.FormC);
+                rReturn = AplhaNumericCleaner(rReturn);
+            }
+
+            return rReturn;
+        }
+
+        /// <summary>
+        ///     Clean a string by removing any characters that are not letters, numbers, spaces, dashes, underscores, parentheses, square brackets, commas, semicolons, colons, exclamation marks or periods.
+        /// </summary>
+        /// <returns>
+        ///     The cleaned string.
+        /// </returns>
+        /// <param name="sString">The string to clean.</param>
+        public static string SaltCleaner(string sString)
+        {
+            //GDFBenchmark.Start();
+            string rReturn = SaltCleanerRgx.Replace(sString, string.Empty);
+            //GDFBenchmark.Finish();
+            return rReturn;
+        }
+
+        public static string SpaceCleaner(string sString)
+        {
+            return SpaceCleanerRgx.Replace(sString, string.Empty);
+        }
+
+        /// <summary>
+        ///     Splits the string by Camel Case format.
+        /// </summary>
+        /// <returns>The camel case.</returns>
+        /// <param name="input">The string to be split. </param>
+        public static string SplitCamelCase(string input)
+        {
+            string rReturn = Regex.Replace(input, "([A-Z])", " $1", RegexOptions.ECMAScript).Trim();
+            rReturn = rReturn.Replace("_", string.Empty);
+            return rReturn;
+        }
+
+        /// <summary>
+        ///     Protects the text for CSV export.
+        /// </summary>
+        /// <param name="sText">The text to be protected.</param>
+        /// <returns>The protected text.</returns>
+        public static string TextCSVProtect(string sText)
+        {
+            string rText = sText;
+            rText = rText.Replace(GDFConstants.kStandardSeparator, GDFConstants.kStandardSeparatorSubstitute);
+
+            return rText;
+        }
+
+        /// <summary>
+        ///     Unprotect the text from CSV import.
+        /// </summary>
+        /// <returns>The unprotected text.</returns>
+        /// <param name="sText">The text to unprotect.</param>
+        public static string TextCSVUnprotect(string sText)
+        {
+            string rText = sText;
+            rText = rText.Replace(GDFConstants.kStandardSeparatorSubstitute, GDFConstants.kStandardSeparator);
+            return rText;
+        }
+
+        /// <summary>
+        ///     Protects the input text by replacing occurrences of specific field separator characters with their substituted values.
+        /// </summary>
+        /// <param name="sText">The input text to be protected.</param>
+        /// <returns>The protected text with replaced field separator characters.</returns>
+        public static string TextProtect(string sText)
+        {
+            string rText = sText;
+            if (string.IsNullOrEmpty(sText) == false)
+            {
+                rText = rText.Replace(GDFConstants.kFieldSeparatorA, GDFConstants.kFieldSeparatorASubstitute);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorB, GDFConstants.kFieldSeparatorBSubstitute);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorC, GDFConstants.kFieldSeparatorCSubstitute);
+                // new adds
+                rText = rText.Replace(GDFConstants.kFieldSeparatorD, GDFConstants.kFieldSeparatorDSubstitute);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorE, GDFConstants.kFieldSeparatorESubstitute);
+            }
+
+            return rText;
+        }
+
+        /// <summary>
+        ///     Remove the separator characters from the given text.
+        /// </summary>
+        /// <param name="sText">The text from which to remove the separator characters.</param>
+        /// <returns>The text with separator characters removed.</returns>
+        public static string TextRemoveSeparator(string sText)
+        {
+            string rText = sText;
+            if (string.IsNullOrEmpty(sText) == false)
+            {
+                rText = rText.Replace(GDFConstants.kFieldSeparatorA, string.Empty);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorB, string.Empty);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorC, string.Empty);
+                // new adds
+                rText = rText.Replace(GDFConstants.kFieldSeparatorD, string.Empty);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorE, string.Empty);
+            }
+
+            return rText;
+        }
+
+        /// <summary>
+        ///     Unprotect the text for the separator usage.
+        /// </summary>
+        /// <returns>The unprotect text.</returns>
+        /// <param name="sText">The text to be unprotected.</param>
+        public static string TextUnprotect(string sText)
+        {
+            string rText = sText;
+            if (string.IsNullOrEmpty(sText) == false)
+            {
+                rText = rText.Replace(GDFConstants.kFieldSeparatorASubstitute, GDFConstants.kFieldSeparatorA);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorBSubstitute, GDFConstants.kFieldSeparatorB);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorCSubstitute, GDFConstants.kFieldSeparatorC);
+                // new adds
+                rText = rText.Replace(GDFConstants.kFieldSeparatorDSubstitute, GDFConstants.kFieldSeparatorD);
+                rText = rText.Replace(GDFConstants.kFieldSeparatorESubstitute, GDFConstants.kFieldSeparatorE);
+            }
+
+            return rText;
+        }
+
+        /// <summary>
+        ///     Remove Unix specific characters from a string
+        /// </summary>
+        /// <returns>The cleaned string.</returns>
+        /// <param name="sString">The input string</param>
+        public static string UnixCleaner(string sString)
+        {
+            if (sString != null)
+            {
+                return UnixCleanerRgx.Replace(sString, string.Empty);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        ///     Removes invalid characters from a URL string.
+        /// </summary>
+        /// <param name="sString">The URL string to clean.</param>
+        /// <returns>A cleaned URL string.</returns>
+        public static string URLCleaner(string sString)
+        {
+            return URLCleanerRgx.Replace(sString, string.Empty);
+        }
+
+        #endregion
     }
 }
-

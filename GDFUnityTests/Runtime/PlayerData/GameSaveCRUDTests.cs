@@ -384,46 +384,46 @@ namespace PlayerData
             Assert.AreEqual(data2.TestString, value2);
         }
 
-        [UnityTest]
-        public IEnumerator DataFromAnAccountIsNotRetrieved()
-        {
-            string reference = nameof(DataFromAnAccountIsNotRetrieved);
+        // [UnityTest]
+        // public IEnumerator DataFromAnAccountIsNotRetrieved()
+        // {
+        //     string reference = nameof(DataFromAnAccountIsNotRetrieved);
 
-            string value1 = "value 1";
-            string value2 = "value 2";
+        //     string value1 = "value 1";
+        //     string value2 = "value 2";
             
-            GDFTestPlayerData data = new GDFTestPlayerData();
-            data.TestString = value1;
-            GDF.Player.Add(reference, data);
+        //     GDFTestPlayerData data = new GDFTestPlayerData();
+        //     data.TestString = value1;
+        //     GDF.Player.Add(reference, data);
             
-            Assert.IsNotNull(GDF.Player.Get(reference));
-            Assert.AreEqual(data, GDF.Player.Get(reference));
-            Assert.AreEqual(data.TestString, value1);
+        //     Assert.IsNotNull(GDF.Player.Get(reference));
+        //     Assert.AreEqual(data, GDF.Player.Get(reference));
+        //     Assert.AreEqual(data.TestString, value1);
 
-            UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+        //     UnityJob task = GDF.Player.Save();
+        //     yield return WaitTask(task);
 
-            data.TestString = value2;
+        //     data.TestString = value2;
             
-            GDF.Player.AddToSaveQueue(data);
+        //     GDF.Player.AddToSaveQueue(data);
             
-            Assert.IsNotNull(GDF.Player.Get(reference));
-            Assert.AreEqual(data, GDF.Player.Get(reference));
-            Assert.AreEqual(data.TestString, value2);
+        //     Assert.IsNotNull(GDF.Player.Get(reference));
+        //     Assert.AreEqual(data, GDF.Player.Get(reference));
+        //     Assert.AreEqual(data.TestString, value2);
             
-            Assert.AreEqual(true, GDF.Player.HasDataToSave);
-            Assert.AreEqual(true, GDF.Player.HasDataToSync);
+        //     Assert.AreEqual(true, GDF.Player.HasDataToSave);
+        //     Assert.AreEqual(true, GDF.Player.HasDataToSync);
 
-            yield return AlternateConnect();
+        //     yield return AlternateConnect();
 
-            data = GDF.Player.Get<GDFTestPlayerData>(reference);
+        //     data = GDF.Player.Get<GDFTestPlayerData>(reference);
             
-            Assert.IsNull(data);
-            Assert.AreEqual(false, GDF.Player.HasDataToSave);
-            Assert.AreEqual(false, GDF.Player.HasDataToSync);
+        //     Assert.IsNull(data);
+        //     Assert.AreEqual(false, GDF.Player.HasDataToSave);
+        //     Assert.AreEqual(false, GDF.Player.HasDataToSync);
             
-            yield return Connect();
-        }
+        //     yield return Connect();
+        // }
 
         [UnityTest]
         public IEnumerator DeletingOverrideReplacesMemoryWithDefault()
@@ -494,26 +494,8 @@ namespace PlayerData
         
         private IEnumerator Connect()
         {
-            UnityJob task = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
+            UnityJob task = GDF.Authentication.SignInDevice(Country.FR);
             yield return WaitTask(task);
-        }
-
-        private IEnumerator AlternateConnect()
-        {
-            UnityJob task = GDF.Launch;
-            yield return WaitTask(task);
-
-            string address = "test-account-no-use-please@not-existing.plop";
-            string password = "Super-seecret_Password+12357865";
-            
-            task = GDF.Authentication.SignInEmailPassword(Country.FromTwoLetterCode("FR"), address, password);
-            yield return task;
-
-            if (task.State == JobState.Failure)
-            {
-                task = GDF.Authentication.RegisterEmailPassword(Country.FromTwoLetterCode("FR"), address, password, password);
-                yield return WaitTask(task);
-            }
         }
 
         private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)

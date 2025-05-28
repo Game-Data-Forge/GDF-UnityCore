@@ -19,7 +19,8 @@ namespace GDFUnity
             static public GDFException InvalidOrganization => new GDFException("CFG", 05, $"Configuration does not have a valid {nameof(IRuntimeConfiguration.Organization)} !");
             static public GDFException InvalidPublicToken => new GDFException("CFG", 06, $"Configuration does not have a valid {nameof(IRuntimeConfiguration.PublicToken)} !");
             static public GDFException InvalidChannel => new GDFException("CFG", 07, $"Configuration does not have a valid {nameof(IRuntimeConfiguration.Channel)} !");
-            static public GDFException InvalidAgentPool => new GDFException("CFG", 08, $"Configuration does not have a valid {nameof(IRuntimeConfiguration.AgentPool)} !");
+            static public GDFException InvalidAuthAgentPool => new GDFException("CFG", 08, $"Configuration does not have a valid {nameof(IRuntimeConfiguration.CloudConfig)}.{nameof(CloudConfiguration.Auth)} !");
+            static public GDFException InvalidSyncAgentPool => new GDFException("CFG", 09, $"Configuration does not have a valid {nameof(IRuntimeConfiguration.CloudConfig)}.{nameof(CloudConfiguration.Sync)}  !");
         }
 
         static private IRuntimeConfigurationEngine _instance = null;
@@ -50,27 +51,39 @@ namespace GDFUnity
         {
             if (configuration.Reference == 0)
             {
-                result.Add (RuntimeExceptions.InvalidReference);
+                result.Add(RuntimeExceptions.InvalidReference);
             }
 
             if (string.IsNullOrWhiteSpace(configuration.Name))
             {
-                result.Add (RuntimeExceptions.InvalidName);
+                result.Add(RuntimeExceptions.InvalidName);
             }
 
             if (string.IsNullOrWhiteSpace(configuration.Organization))
             {
-                result.Add (RuntimeExceptions.InvalidOrganization);
+                result.Add(RuntimeExceptions.InvalidOrganization);
             }
 
             if (configuration.Channel == 0)
             {
-                result.Add (RuntimeExceptions.InvalidChannel);
+                result.Add(RuntimeExceptions.InvalidChannel);
             }
 
-            if (configuration.AgentPool.Count == 0)
+            if (configuration.CloudConfig == null)
             {
-                result.Add (RuntimeExceptions.InvalidAgentPool);
+                result.Add(RuntimeExceptions.InvalidAuthAgentPool);
+                result.Add(RuntimeExceptions.InvalidSyncAgentPool);
+                return;
+            }
+
+            if (configuration.CloudConfig.Auth == null)
+            {
+                result.Add(RuntimeExceptions.InvalidAuthAgentPool);
+            }
+
+            if (configuration.CloudConfig.Sync == null)
+            {
+                result.Add(RuntimeExceptions.InvalidSyncAgentPool);
             }
         }
 

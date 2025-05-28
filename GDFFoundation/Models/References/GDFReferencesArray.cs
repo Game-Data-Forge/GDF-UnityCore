@@ -1,30 +1,49 @@
-﻿using System;
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFReferencesArray.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// A generic class that represents an array of GDFReferences.
+    ///     A generic class that represents an array of GDFReferences.
     /// </summary>
     /// <typeparam name="T">The type of GDFReferences in the array.</typeparam>
     [Serializable]
     // TODO change for structure
     public class GDFReferencesArray<T> : IGDFReferenceArray where T : GDFDatabaseObject, IGDFLongReference
     {
-        /// <summary>
-        /// Represents a reference array of type T.
-        /// </summary>
-        /// <typeparam name="T">The type of objects stored in the reference array.</typeparam>
-        private ulong[] ReferenceArray { set; get; } = new ulong[] { };
+        #region Constants
 
         public const char K_SEPARATOR = ',';
 
+        #endregion
+
+        #region Instance fields and properties
+
         /// <summary>
-        /// Represents a collection of references.
+        ///     Represents a collection of references.
         /// </summary>
         /// <typeparam name="T">The type of the references.</typeparam>
         private string _References = string.Empty;
+
+        /// <summary>
+        ///     Represents a reference array of type T.
+        /// </summary>
+        /// <typeparam name="T">The type of objects stored in the reference array.</typeparam>
+        private ulong[] ReferenceArray { set; get; } = new ulong[] { };
 
         /// The GDFReferencesArray class represents an array of references.
         /// References are stored as a comma-separated string.
@@ -44,21 +63,19 @@ namespace GDFFoundation
             }
         }
 
+        #region From interface IGDFReferenceArray
+
         /// <summary>
-        /// Represents a list of references to GDFDatabaseObject objects.
+        ///     Represents a list of references to GDFDatabaseObject objects.
         /// </summary>
         /// <typeparam name="T">The type of GDFDatabaseObject.</typeparam>
         public List<string> ReferencesList { set; get; } = new List<string>();
 
-        /// <summary>
-        /// Represents a class that manages an array of references to database objects.
-        /// </summary>
-        /// <typeparam name="T">The type of the database object.</typeparam>
-        public string SqlValue()
-        {
-            return string.Join(K_SEPARATOR, ReferencesList);
-        }
+        #endregion
 
+        #endregion
+
+        #region Instance constructors and destructors
 
         /// Represents a generic array of references.
         /// @typeparam T The type of the referenced object.
@@ -107,34 +124,53 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Represents an array of references to objects of type T.
+        ///     Represents an array of references to objects of type T.
         /// </summary>
         /// <typeparam name="T">The type of object being referenced.</typeparam>
         public GDFReferencesArray()
         {
         }
 
+        #endregion
+
+        #region Instance methods
+
         /// <summary>
-        /// Retrieves the references from a given string.
+        ///     Adds a value to the GDFReferencesArray.
         /// </summary>
-        /// <param name="sReferencesString">The string containing the references.</param>
-        /// <returns>A list of references extracted from the given string.</returns>
-        private List<ulong> GetReferences(string sReferencesString)
+        /// <typeparam name="T">The type of the value to add.</typeparam>
+        /// <param name="sObject">The value to add.</param>
+        /// <returns>A new GDFReferencesArray instance with the added value.</returns>
+        public GDFReferencesArray<T> AddValue(T sObject)
         {
-            List<ulong> rReferences = new List<ulong>();
-            if (string.IsNullOrEmpty(sReferencesString) == false)
+            if (!ReferencesList.Contains(sObject.Reference.ToString()))
             {
-                foreach (string tRef in sReferencesString.Split(K_SEPARATOR, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    rReferences.Add(ulong.Parse(tRef));
-                }
+                ReferencesList.Add(sObject.Reference.ToString());
             }
 
-            return rReferences;
+            return new GDFReferencesArray<T>(ReferencesList);
         }
 
         /// <summary>
-        /// Adds values to the ReferencesList of the GDFReferencesArray object. </summary> <param name="sReferencesArray">An array of ulong values representing the references to be added.</param> <returns>A new GDFReferencesArray object with the added values.</returns>
+        ///     Adds a single value to the GDFReferencesArray.
+        /// </summary>
+        /// <param name="sObjectReference">The value to add to the GDFReferencesArray.</param>
+        /// <returns>A new instance of GDFReferencesArray with the added value.</returns>
+        public GDFReferencesArray<T> AddValue(string sObjectReference)
+        {
+            if (!ReferencesList.Contains(sObjectReference.ToString()))
+            {
+                ReferencesList.Add(sObjectReference.ToString());
+            }
+
+            return new GDFReferencesArray<T>(ReferencesList);
+        }
+
+        /// <summary>
+        ///     Adds values to the ReferencesList of the GDFReferencesArray object.
+        /// </summary>
+        /// <param name="sReferencesArray">An array of ulong values representing the references to be added.</param>
+        /// <returns>A new GDFReferencesArray object with the added values.</returns>
         /// /
         public GDFReferencesArray<T> AddValues(ulong[] sReferencesArray)
         {
@@ -154,7 +190,7 @@ namespace GDFFoundation
 
 
         /// <summary>
-        /// Adds the values from an array of objects to the GDFReferencesArray.
+        ///     Adds the values from an array of objects to the GDFReferencesArray.
         /// </summary>
         /// <typeparam name="T">The type of objects in the array.</typeparam>
         /// <param name="sObjectsArray">The array of objects to add.</param>
@@ -176,40 +212,29 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Adds a value to the GDFReferencesArray.
+        ///     Retrieves the references from a given string.
         /// </summary>
-        /// <typeparam name="T">The type of the value to add.</typeparam>
-        /// <param name="sObject">The value to add.</param>
-        /// <returns>A new GDFReferencesArray instance with the added value.</returns>
-        public GDFReferencesArray<T> AddValue(T sObject)
+        /// <param name="sReferencesString">The string containing the references.</param>
+        /// <returns>A list of references extracted from the given string.</returns>
+        private List<ulong> GetReferences(string sReferencesString)
         {
-            if (!ReferencesList.Contains(sObject.Reference.ToString()))
+            List<ulong> rReferences = new List<ulong>();
+            if (string.IsNullOrEmpty(sReferencesString) == false)
             {
-                ReferencesList.Add(sObject.Reference.ToString());
+                foreach (string tRef in sReferencesString.Split(K_SEPARATOR, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    rReferences.Add(ulong.Parse(tRef));
+                }
             }
 
-            return new GDFReferencesArray<T>(ReferencesList);
+            return rReferences;
         }
 
         /// <summary>
-        /// Adds a single value to the GDFReferencesArray.
-        /// </summary>
-        /// <param name="sObjectReference">The value to add to the GDFReferencesArray.</param>
-        /// <returns>A new instance of GDFReferencesArray with the added value.</returns>
-        public GDFReferencesArray<T> AddValue(string sObjectReference)
-        {
-            if (!ReferencesList.Contains(sObjectReference.ToString()))
-            {
-                ReferencesList.Add(sObjectReference.ToString());
-            }
-            return new GDFReferencesArray<T>(ReferencesList);
-        }
-
-        /// <summary>
-        /// Removes the specified array of references from the <see cref="GDFReferencesArray{T}"/> object.
+        ///     Removes the specified array of references from the <see cref="GDFReferencesArray{T}" /> object.
         /// </summary>
         /// <param name="sReferencesArray">The array of references to be removed.</param>
-        /// <returns>A new <see cref="GDFReferencesArray{T}"/> object with the references removed.</returns>
+        /// <returns>A new <see cref="GDFReferencesArray{T}" /> object with the references removed.</returns>
         public GDFReferencesArray<T> RemoveValues(ulong[] sReferencesArray)
         {
             if (sReferencesArray != null)
@@ -227,7 +252,7 @@ namespace GDFFoundation
         }
 
         /// <summary>
-        /// Removes the values from the ReferencesList based on the given array of objects.
+        ///     Removes the values from the ReferencesList based on the given array of objects.
         /// </summary>
         /// <typeparam name="T">The type of objects in the ReferencesList.</typeparam>
         /// <param name="sObjectsArray">The array of objects to be removed from the ReferencesList.</param>
@@ -238,15 +263,25 @@ namespace GDFFoundation
             {
                 foreach (T tRef in sObjectsArray)
                 {
-
                     if (ReferencesList.Contains(tRef.ToString() ?? string.Empty))
                     {
                         ReferencesList.Remove(tRef.ToString() ?? string.Empty);
                     }
                 }
             }
+
             return new GDFReferencesArray<T>(ReferencesList);
         }
+
+        /// <summary>
+        ///     Represents a class that manages an array of references to database objects.
+        /// </summary>
+        /// <typeparam name="T">The type of the database object.</typeparam>
+        public string SqlValue()
+        {
+            return string.Join(K_SEPARATOR, ReferencesList);
+        }
+
+        #endregion
     }
 }
-

@@ -8,7 +8,7 @@ namespace GDFEditor
     {
         public new short Channel { get; set; }
         public string Dashboard { get; }
-        public Dictionary<GDFEnvironmentKind, GDFProjectMinimalCredentials> Credentials { get; }
+        public Dictionary<ProjectEnvironment, GDFProjectMinimalCredentials> Credentials { get; }
         public Dictionary<string, short> Channels { get; }
     }
 }

@@ -8,16 +8,16 @@ namespace GDFUnity
 {
     public class RuntimeAuthenticationManager : APIManager, IRuntimeAuthenticationManager
     {
-        private readonly object _taskLock = new object();
-        
+        private readonly object _lock = new object();
+
         private class TokenStorage
         {
             [JsonIgnore]
             public MemoryJwtToken data;
-            public string Country { get; set; }
+            public Country Country { get; set; }
             public string Bearer { get; set; }
 
-            public TokenStorage(string country, string bearer)
+            public TokenStorage(Country country, string bearer)
             {
                 Country = country;
                 Bearer = $"Bearer {bearer}";
@@ -36,14 +36,12 @@ namespace GDFUnity
             }
         }
 
-        static private TokenStorage _Token => new TokenStorage(null, null);
-
         private Notification<MemoryJwtToken> _accountChangingEvent;
         private Notification<MemoryJwtToken> _accountChangedEvent;
         private TokenStorage _token;
         private TokenStorage _autoToken;
-        private Job _task = null;
         private IRuntimeEngine _engine;
+        private Job _job = null;
         private Dictionary<string, string> _headers = new Dictionary<string, string>();
 
         public bool IsConnected => _token != null;
@@ -53,7 +51,7 @@ namespace GDFUnity
             {
                 if (_token == null)
                 {
-                    return _Token.data;
+                    return null;
                 }
                 return _token.data;
             }
@@ -76,6 +74,8 @@ namespace GDFUnity
             }
         }
 
+        protected override Job Job => _job;
+
         public RuntimeAuthenticationManager(IRuntimeEngine engine)
         {
             _engine = engine;
@@ -83,6 +83,8 @@ namespace GDFUnity
             _accountChangedEvent = new Notification<MemoryJwtToken>(_engine.ThreadManager);
 
             _engine.AccountManager.DeletedNotif.onBackgroundThread += SignOutRunner;
+
+            State = ManagerState.Ready;
         }
 
         ~RuntimeAuthenticationManager()
@@ -92,25 +94,28 @@ namespace GDFUnity
 
         public Job SignInDevice(Country country)
         {
-            lock (_taskLock)
+            lock (_lock)
             {
-                _task.EnsureNotInUse();
+                EnsureUseable();
 
-                _task = Job.Run(handler => {
+                _job = Job.Run(handler =>
+                {
+                    using Locker _ = Locker.Lock(this);
+
                     handler.StepAmount = 4;
-                    
+
                     ResetToken(handler.Split());
                     string bearer;
                     DeviceSignInExchange signInPayload = new DeviceSignInExchange()
                     {
                         Channel = _engine.Configuration.Channel,
                         UniqueIdentifier = _engine.DeviceManager.Id,
-                        CountryIso = country.TwoLetterCode
+                        Country = country
                     };
                     try
                     {
                         _engine.ServerManager.FillHeaders(_headers);
-                        bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country.TwoLetterCode, "/api/v1/authentication/device/sign-in"), _headers, signInPayload);
+                        bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country, "/api/v1/authentication/device/sign-in"), _headers, signInPayload);
                     }
                     catch (APIException e)
                     {
@@ -118,7 +123,7 @@ namespace GDFUnity
                         {
                             throw;
                         }
-                        
+
                         DeviceSignUpExchange signUpPayload = new DeviceSignUpExchange()
                         {
                             Channel = _engine.Configuration.Channel,
@@ -126,69 +131,75 @@ namespace GDFUnity
                             Consent = true,
                             ConsentVersion = "1.0.0",
                             GameConsentVersion = "1.0.0",
-                            CountryIso = country.TwoLetterCode
+                            Country = country
                         };
 
                         Debug.LogWarning("Game consent is hard written to 1.0.0 !");
 
                         _engine.ServerManager.FillHeaders(_headers);
-                        bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country.TwoLetterCode, "/api/v1/authentication/device/sign-up"), _headers, signUpPayload);
+                        bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country, "/api/v1/authentication/device/sign-up"), _headers, signUpPayload);
                     }
                     catch
                     {
                         throw;
                     }
-                    SetToken(handler.Split(), new TokenStorage(country.TwoLetterCode, bearer));
+                    SetToken(handler.Split(), new TokenStorage(country, bearer));
                 }, "Device sign in");
 
-                return _task;
+                return _job;
             }
         }
 
-        public Job RegisterEmailPassword(Country country, string email, string password, string confirmPassword)
+        public Job RegisterEmailPassword(Country country, string email)
         {
-            lock (_taskLock)
+            lock (_lock)
             {
-                _task.EnsureNotInUse();
+                EnsureUseable();
 
-                _task = Job.Run(handler => {
+                _job = Job.Run(handler =>
+                {
+                    using Locker _ = Locker.Lock(this);
+
                     handler.StepAmount = 3;
                     long projectId = _engine.Configuration.Reference;
-                    
+
                     ResetToken(handler.Split());
                     string bearer;
                     EmailPasswordSignUpExchange payload = new EmailPasswordSignUpExchange()
                     {
                         Channel = _engine.Configuration.Channel,
                         Email = email,
-                        Password = password,
+                        LanguageIso = "en-US",
                         Consent = true,
                         ConsentVersion = "1.0.0",
                         GameConsentVersion = "1.0.0",
-                        CountryIso = country.TwoLetterCode
+                        Country = country
                     };
 
                     Debug.LogWarning("Game consent is hard written to 1.0.0 !");
 
                     _engine.ServerManager.FillHeaders(_headers);
-                    bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country.TwoLetterCode, "/api/v1/authentication/email-password/sign-up"), _headers, payload);
-                    SetToken(handler.Split(), new TokenStorage(country.TwoLetterCode, bearer));
+                    bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country, "/api/v1/authentication/email-password/sign-up"), _headers, payload);
+                    SetToken(handler.Split(), new TokenStorage(country, bearer));
                 }, "Email/password register");
 
-                return _task;
+                return _job;
             }
         }
 
         public Job SignInEmailPassword(Country country, string email, string password)
         {
-            lock (_taskLock)
+            lock (_lock)
             {
-                _task.EnsureNotInUse();
+                EnsureUseable();
 
-                _task = Job.Run(handler => {
+                _job = Job.Run(handler =>
+                {
+                    using Locker _ = Locker.Lock(this);
+
                     handler.StepAmount = 3;
                     long projectId = _engine.Configuration.Reference;
-                    
+
                     ResetToken(handler.Split());
                     string bearer;
                     EmailPasswordSignInExchange payload = new EmailPasswordSignInExchange()
@@ -196,43 +207,43 @@ namespace GDFUnity
                         Email = email,
                         Password = password,
                         Channel = _engine.Configuration.Channel,
-                        CountryIso = country.TwoLetterCode
+                        Country = country
                     };
 
                     _engine.ServerManager.FillHeaders(_headers);
-                    bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country.TwoLetterCode, "/api/v1/authentication/email-password/sign-in"), _headers, payload);
-                    SetToken(handler.Split(), new TokenStorage(country.TwoLetterCode, bearer));
+                    bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country, "/api/v1/authentication/email-password/sign-in"), _headers, payload);
+                    SetToken(handler.Split(), new TokenStorage(country, bearer));
                 }, "Email/password sign in");
 
-                return _task;
+                return _job;
             }
         }
 
         public Job SignOut()
         {
-            lock (_taskLock)
+            lock (_lock)
             {
-                _task.EnsureNotInUse();
+                EnsureUseable();
 
-                _task = Job.Run(SignOutRunner, "Sign out");
+                _job = Job.Run(SignOutRunner, "Sign out");
 
-                return _task;
+                return _job;
             }
         }
 
         public Job ReSignIn()
         {
-            lock (_taskLock)
+            lock (_lock)
             {
-                _task.EnsureNotInUse();
+                EnsureUseable();
 
-                _task = AutoSignInTask();
+                _job = AutoSignInJob();
 
-                return _task;
+                return _job;
             }
         }
 
-        private Job AutoSignInTask()
+        private Job AutoSignInJob()
         {
             string taskName = "Auto sign in";
             if (!CanAutoReSignIn)
@@ -242,7 +253,10 @@ namespace GDFUnity
 
             TokenStorage token = _autoToken;
 
-            return Job.Run(handler => {
+            return Job.Run(handler =>
+            {
+                using Locker _ = Locker.Lock(this);
+
                 ResetToken(handler);
                 SetToken(handler, token);
             });
@@ -270,6 +284,8 @@ namespace GDFUnity
             {
                 return;
             }
+
+            using Locker _ = Locker.Lock(this);
 
             handler.StepAmount = 3;
             TokenStorage storage = _token;
@@ -303,6 +319,103 @@ namespace GDFUnity
             handler.Step();
 
             AccountChangedNotif?.Invoke(handler.Split(), _token?.data);
+        }
+
+        public Job SignInFacebook(Country country, string appId, string token)
+        {
+            lock (_lock)
+            {
+                EnsureUseable();
+
+                _job = Job.Run(handler =>
+                {
+                    OAuthAuthRunner(handler, GDFOAuthKind.Facebook, country, appId, token);
+                }, "Facebook authentication");
+
+                return _job;
+            }
+        }
+
+        public Job SignInGoogle(Country country, string clientId, string token)
+        {
+            lock (_lock)
+            {
+                EnsureUseable();
+
+                _job = Job.Run(handler =>
+                {
+                    OAuthAuthRunner(handler, GDFOAuthKind.Google, country, clientId, token);
+                }, "Google authentication");
+
+                return _job;
+            }
+        }
+
+        public Job SignInApple(Country country, string clientId, string token)
+        {
+            lock (_lock)
+            {
+                EnsureUseable();
+
+                _job = Job.Run(handler =>
+                {
+                    OAuthAuthRunner(handler, GDFOAuthKind.Apple, country, clientId, token);
+                }, "Apple authentication");
+
+                return _job;
+            }
+        }
+
+        private void OAuthAuthRunner(IJobHandler handler, GDFOAuthKind type, Country country, string clientId, string token)
+        {
+            using Locker _ = Locker.Lock(this);
+
+            handler.StepAmount = 4;
+
+            ResetToken(handler.Split());
+            string bearer;
+            OAuthSignInExchange signInPayload = new OAuthSignInExchange()
+            {
+                OAuth = type,
+                Channel = _engine.Configuration.Channel,
+                Country = country,
+                ClientId = clientId,
+                AccessToken = token
+            };
+            try
+            {
+                _engine.ServerManager.FillHeaders(_headers);
+                bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country, "/api/v1/authentication/oauth/sign-in"), _headers, signInPayload);
+            }
+            catch (APIException e)
+            {
+                if (e.StatusCode != System.Net.HttpStatusCode.Forbidden)
+                {
+                    throw;
+                }
+
+                OAuthSignUpExchange signUpPayload = new OAuthSignUpExchange()
+                {
+                    OAuth = type,
+                    Channel = _engine.Configuration.Channel,
+                    ClientId = clientId,
+                    AccessToken = token,
+                    Consent = true,
+                    ConsentVersion = "1.0.0",
+                    GameConsentVersion = "1.0.0",
+                    Country = country
+                };
+
+                Debug.LogWarning("Game consent is hard written to 1.0.0 !");
+
+                _engine.ServerManager.FillHeaders(_headers);
+                bearer = Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(country, "/api/v1/authentication/oauth/sign-up"), _headers, signUpPayload);
+            }
+            catch
+            {
+                throw;
+            }
+            SetToken(handler.Split(), new TokenStorage(country, bearer));
         }
     }
 }

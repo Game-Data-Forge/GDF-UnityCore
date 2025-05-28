@@ -1,23 +1,44 @@
-﻿using System;
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFDataAreaExtension.cs create at 2025/03/26 17:03:12
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
+using System;
 using System.Collections.Generic;
+
+#endregion
 
 namespace GDFFoundation
 {
     static public class GDFDataAreaExtension
     {
-        public static string ToDNS(GDFDataArea area)
+        #region Static methods
+
+        [Obsolete("This cannot work. It has to take into account formatted (prefix.range.area.domain:port) as well as non formatted (xxx.yyyy.zzz:port / 000.000.000.000:port / localhost:port / ...) addresses.")]
+        static List<string> CreateListOfDomainsName(string prefixe, ushort projectRange, string domain)
         {
-            return area.ToString().ToLower().Replace("_", "-");
+            List<string> list = new List<string>();
+            foreach (GDFDataArea area in Enum.GetValues(typeof(GDFDataArea)))
+            {
+                if (area != GDFDataArea.Unknown)
+                {
+                    list.Add($"{prefixe}.{projectRange:00}.{area.ToServerPrefix()}.{domain}");
+                }
+            }
+
+            return list;
         }
 
-        public static string ToDNS(GDFDataArea area, string domain)
+        public static void InConsole()
         {
-            return ToDNS(area) + "." + domain;
-        }
-
-        static public string ToServerPrefix(this GDFDataArea self)
-        {
-            return ToDNS(self);
+            GDFLogger.Information("DNS for sync game-data-forge.com", CreateListOfDomainsName("sync", 1, "game-data-forge.com").ToArray());
+            GDFLogger.Information("DNS for auth game-data-forge.com", CreateListOfDomainsName("auth", 1, "game-data-forge.com").ToArray());
         }
 
         static public string ToDatabasePrefix(this GDFDataArea self)
@@ -77,25 +98,21 @@ namespace GDFFoundation
             }
         }
 
-        [Obsolete("This cannot work. It has to take into account formatted (prefix.range.area.domain:port) as well as non formatted (xxx.yyyy.zzz:port / 000.000.000.000:port / localhost:port / ...) addresses.")]
-        static List<string> CreateListOfDomainsName(string prefixe, ushort projectRange, string domain)
+        public static string ToDNS(GDFDataArea area)
         {
-            List<string> list = new List<string>();
-            foreach (GDFDataArea area in Enum.GetValues(typeof(GDFDataArea)))
-            {
-                if (area != GDFDataArea.Unknown)
-                {
-                    list.Add($"{prefixe}.{projectRange:00}.{area.ToServerPrefix()}.{domain}");
-                }
-            }
-
-            return list;
+            return area.ToString().ToLower().Replace("_", "-");
         }
 
-        public static void InConsole()
+        public static string ToDNS(GDFDataArea area, string domain)
         {
-            GDFLogger.Information("DNS for sync game-data-forge.com", CreateListOfDomainsName("sync", 1, "game-data-forge.com").ToArray());
-            GDFLogger.Information("DNS for auth game-data-forge.com", CreateListOfDomainsName("auth", 1, "game-data-forge.com").ToArray());
+            return ToDNS(area) + "." + domain;
         }
+
+        static public string ToServerPrefix(this GDFDataArea self)
+        {
+            return ToDNS(self);
+        }
+
+        #endregion
     }
 }

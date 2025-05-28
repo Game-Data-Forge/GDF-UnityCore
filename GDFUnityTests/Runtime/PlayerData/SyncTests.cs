@@ -164,7 +164,7 @@ namespace PlayerData
         
         private IEnumerator Connect()
         {
-            UnityJob task = GDF.Authentication.SignInDevice(Country.FromTwoLetterCode("FR"));
+            UnityJob task = GDF.Authentication.SignInDevice(Country.FR);
             yield return WaitTask(task);
         }
 

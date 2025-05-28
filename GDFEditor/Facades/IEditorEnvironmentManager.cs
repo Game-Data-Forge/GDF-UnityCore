@@ -3,10 +3,10 @@ using GDFRuntime;
 
 namespace GDFEditor
 {
-    public interface IEditorEnvironmentManager : IRuntimeEnvironmentManager
+    public interface IEditorEnvironmentManager : IRuntimeEnvironmentManager, IAsyncManager
     {
-        public Notification<GDFEnvironmentKind> EnvironmentChangingNotif { get; }
-        public Notification<GDFEnvironmentKind> EnvironmentChangedNotif { get; }
-        public Job<GDFEnvironmentKind> SetEnvironment (GDFEnvironmentKind environment);
+        public Notification<ProjectEnvironment> EnvironmentChangingNotif { get; }
+        public Notification<ProjectEnvironment> EnvironmentChangedNotif { get; }
+        public Job<ProjectEnvironment> SetEnvironment (ProjectEnvironment environment);
     }
 }

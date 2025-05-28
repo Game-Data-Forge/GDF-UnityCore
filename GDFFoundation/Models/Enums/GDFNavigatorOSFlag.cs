@@ -1,61 +1,72 @@
-﻿
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// GDFFoundation.csproj GDFNavigatorOSFlag.cs create at 2025/03/25 11:03:36
+// ©2024-2025 idéMobi SARL FRANCE
+
+#endregion
+
+
+#region
 
 using System;
+
+#endregion
 
 namespace GDFFoundation
 {
     /// <summary>
-    /// Represents the flags for Navigator OS of a device.
+    ///     Represents the flags for Navigator OS of a device.
     /// </summary>
     [Serializable]
     [Flags]
     public enum GDFNavigatorOSFlag : int
     {
         /// <summary>
-        /// Represents the None member of the GDFNavigatorOSFlag enumeration.
+        ///     Represents the None member of the GDFNavigatorOSFlag enumeration.
         /// </summary>
         None = 0,
 
         /// <summary>
-        /// Represents the Windows operating system flag for the GDFNavigatorOSFlag enum.
+        ///     Represents the Windows operating system flag for the GDFNavigatorOSFlag enum.
         /// </summary>
         Windows = 1,
 
         /// <summary>
-        /// Represents the macOS operating system flag for the GDFNavigatorOSFlag enum.
+        ///     Represents the macOS operating system flag for the GDFNavigatorOSFlag enum.
         /// </summary>
         MacOS = 2,
 
         /// <summary>
-        /// Linux flag representing the Linux operating system for a device.
+        ///     Linux flag representing the Linux operating system for a device.
         /// </summary>
         Linux = 4,
 
 
         /// <summary>
-        /// Enumerates the operating system flags for GDFNavigator.
+        ///     Enumerates the operating system flags for GDFNavigator.
         /// </summary>
         iOS = 64,
 
         /// <summary>
-        /// Represents the Android operating system flag of the GDFNavigatorOSFlag enum.
+        ///     Represents the Android operating system flag of the GDFNavigatorOSFlag enum.
         /// </summary>
         Android = 128,
 
         /// <summary>
-        /// Represents the flag for the Navigator OS of a device that includes all desktop platforms (Windows, MacOS, and Linux).
+        ///     Represents the flag for the Navigator OS of a device that includes all desktop platforms (Windows, MacOS, and Linux).
         /// </summary>
         AllDesktops = Windows | MacOS | Linux,
 
         /// <summary>
-        /// Represents the flag for All Mobiles in the Navigator OS of a device.
+        ///     Represents the flag for All Mobiles in the Navigator OS of a device.
         /// </summary>
         AllMobiles = iOS | Android,
 
         /// <summary>
-        /// Represents all the flags for Navigator OS of a device.
+        ///     Represents all the flags for Navigator OS of a device.
         /// </summary>
         All = Windows | MacOS | Linux | iOS | Android
     }
 }
-

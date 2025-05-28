@@ -16,7 +16,7 @@ namespace GDFEditor
         /// <summary>
         /// Gets or sets the track kind of the GDFSubMetaData.
         /// </summary>
-        public GDFEnvironmentKind TrackKind { set; get; }
+        public ProjectEnvironment TrackKind { set; get; }
 
         /// <summary>
         /// Represents the state of a sub metadata for GDFSubMetaData.
