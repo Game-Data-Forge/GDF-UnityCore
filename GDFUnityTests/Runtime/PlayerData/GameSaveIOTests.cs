@@ -42,6 +42,31 @@ namespace PlayerData
         }
 
         [UnityTest]
+        public IEnumerator CanDeleteDefaultGameSave()
+        {
+            string reference = nameof(CanDeleteDefaultGameSave);
+            string value1 = "value";
+
+            GDFTestPlayerData data = new GDFTestPlayerData();
+            data.TestString = value1;
+            GDF.Player.Add(reference, data);
+
+            UnityJob task = GDF.Player.Save();
+            yield return WaitTask(task);
+
+            task = GDF.Player.DeleteGameSave();
+            yield return WaitTask(task);
+
+            Assert.IsNull(GDF.Player.Get(reference));
+
+            data = new GDFTestPlayerData();
+
+            GDF.Player.Add(reference, data);
+
+            Assert.IsNotNull(GDF.Player.Get(reference));
+        }
+
+        [UnityTest]
         public IEnumerator CanDeleteGameSave()
         {
             string reference1 = "1" + nameof(CanDeleteGameSave);
@@ -238,6 +263,133 @@ namespace PlayerData
         }
 
         [UnityTest]
+        public IEnumerator CanSaveUpdatedData()
+        {
+            string reference = nameof(CanSaveUpdatedData);
+
+            string value1 = "value 1";
+            string value2 = "value 2";
+            
+            GDFTestPlayerData data = new GDFTestPlayerData();
+            data.TestString = value1;
+            GDF.Player.Add(reference, data);
+            
+            Assert.IsNotNull(GDF.Player.Get(reference));
+            Assert.AreEqual(data, GDF.Player.Get(reference));
+            Assert.AreEqual(data.TestString, value1);
+
+            UnityJob task = GDF.Player.Save();
+            yield return WaitTask(task);
+
+            task = GDF.Player.LoadCommonGameSave();
+            yield return WaitTask(task);
+            
+            data = GDF.Player.Get<GDFTestPlayerData>(reference);
+
+            Assert.AreEqual(data.TestString, value1);
+
+            data.TestString = value2;
+            GDF.Player.AddToSaveQueue(data);
+
+            task = GDF.Player.Save();
+            yield return WaitTask(task);
+            
+            Assert.IsNotNull(GDF.Player.Get(reference));
+            Assert.AreEqual(data, GDF.Player.Get(reference));
+            Assert.AreEqual(data.TestString, value2);
+
+            task = GDF.Player.LoadCommonGameSave();
+            yield return WaitTask(task);
+            
+            Assert.IsNotNull(GDF.Player.Get(reference));
+            Assert.AreNotEqual(data, GDF.Player.Get(reference));
+            Assert.AreEqual(data.TestString, value2);
+        }
+
+        [UnityTest]
+        public IEnumerator CanSaveOnGameSave()
+        {
+            string reference = nameof(CanSaveOnGameSave);
+
+            string value = "value 1";
+            
+            GDFTestPlayerData data = new GDFTestPlayerData();
+            data.TestString = value;
+
+            UnityJob task = GDF.Player.LoadGameSave(1);
+            yield return WaitTask(task);
+
+            GDF.Player.Add(reference, data);
+            
+            Assert.IsNotNull(GDF.Player.Get(reference));
+            Assert.AreEqual(data, GDF.Player.Get(reference));
+            Assert.AreEqual(data.TestString, value);
+
+            task = GDF.Player.Save();
+            yield return WaitTask(task);
+            
+            Assert.IsNotNull(GDF.Player.Get(reference));
+            Assert.AreEqual(data, GDF.Player.Get(reference));
+            Assert.AreEqual(data.TestString, value);
+
+            task = GDF.Player.LoadGameSave(1);
+            yield return WaitTask(task);
+            
+            data = GDF.Player.Get<GDFTestPlayerData>(reference);
+
+            Assert.IsNotNull(data);
+            Assert.AreEqual(data.TestString, value);
+        }
+
+        [UnityTest]
+        public IEnumerator CanSaveUpdatedDataOnGameSave()
+        {
+            string reference = nameof(CanSaveUpdatedDataOnGameSave);
+
+            string value1 = "value 1";
+            string value2 = "value 2";
+            
+            GDFTestPlayerData data = new GDFTestPlayerData();
+            data.TestString = value1;
+
+            UnityJob task = GDF.Player.LoadGameSave(1);
+            yield return WaitTask(task);
+
+            GDF.Player.Add(reference, data);
+            
+            Assert.IsNotNull(GDF.Player.Get(reference));
+            Assert.AreEqual(data, GDF.Player.Get(reference));
+            Assert.AreEqual(data.TestString, value1);
+
+            task = GDF.Player.Save();
+            yield return WaitTask(task);
+
+            task = GDF.Player.LoadGameSave(1);
+            yield return WaitTask(task);
+            
+            data = GDF.Player.Get<GDFTestPlayerData>(reference);
+
+            Assert.AreEqual(data.TestString, value1);
+
+            data.TestString = value2;
+            GDF.Player.AddToSaveQueue(data);
+
+            task = GDF.Player.Save();
+            yield return WaitTask(task);
+            
+            Assert.IsNotNull(GDF.Player.Get(reference));
+            Assert.AreEqual(data, GDF.Player.Get(reference));
+            Assert.AreEqual(data.TestString, value2);
+
+            task = GDF.Player.LoadGameSave(1);
+            yield return WaitTask(task);
+            
+            Assert.IsNotNull(GDF.Player.Get(reference));
+            Assert.AreNotEqual(data, GDF.Player.Get(reference));
+            Assert.AreEqual(data.TestString, value2);
+        }
+
+        [UnityTest]
         public IEnumerator DeleteDeletedDataOnSave()
         {
             string reference = nameof(DeleteDeletedDataOnSave);
@@ -299,7 +451,7 @@ namespace PlayerData
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value2);
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitTask(task);
 
             yield return Connect();
@@ -328,7 +480,7 @@ namespace PlayerData
             UnityJob task = GDF.Player.Save();
             yield return WaitTask(task);
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitTask(task);
 
             yield return Connect();
@@ -389,7 +541,7 @@ namespace PlayerData
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            UnityJob task = GDF.Authentication.SignOut();
+            UnityJob task = GDF.Account.Authentication.SignOut();
             yield return WaitTask(task);
             
             GDF.Kill();
@@ -397,7 +549,7 @@ namespace PlayerData
         
         private IEnumerator Connect()
         {
-            UnityJob task = GDF.Authentication.SignInDevice(Country.FR);
+            UnityJob task = GDF.Account.Authentication.Device.SignIn(Country.FR);
             yield return WaitTask(task);
         }
 

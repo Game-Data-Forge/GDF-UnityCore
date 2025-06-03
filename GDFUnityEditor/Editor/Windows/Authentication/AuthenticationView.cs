@@ -50,7 +50,7 @@ namespace GDFUnity.Editor
                     _message.style.display = DisplayStyle.None;
                     if (AuthenticationSelection.selection != null)
                     {
-                        _window.help.url = AuthenticationSelection.selection.Url;
+                        _window.help.url = AuthenticationSelection.selection.Help;
                     }
                     return;
                 }
@@ -110,11 +110,11 @@ namespace GDFUnity.Editor
                 
                 AuthenticationSelection.onSelectionChanged -= OnSelectionChanged;
                 AuthenticationSelection.onSelectionChanged += OnSelectionChanged;
-                GDF.Authentication.AccountChangedNotif.onMainThread -= OnAuthenticationChanged;
-                GDF.Authentication.AccountChangedNotif.onMainThread += OnAuthenticationChanged;
+                GDF.Account.AccountChanged.onMainThread -= OnAuthenticationChanged;
+                GDF.Account.AccountChanged.onMainThread += OnAuthenticationChanged;
                 
                 OnSelectionChanged(null, AuthenticationSelection.Selection);
-                OnAuthenticationChanged(GDF.Authentication.Token);
+                OnAuthenticationChanged(GDF.Account.Token);
                 
                 Add(_logoutView);
                 Add(_body);
@@ -128,7 +128,7 @@ namespace GDFUnity.Editor
         public void OnDestroy()
         {
             AuthenticationSelection.onSelectionChanged -= OnSelectionChanged;
-            GDF.Authentication.AccountChangedNotif.onMainThread -= OnAuthenticationChanged;
+            GDF.Account.AccountChanged.onMainThread -= OnAuthenticationChanged;
         }
 
         private void OnSelectionChanged(AuthenticationSettingsProvider last, AuthenticationSettingsProvider selection)
@@ -185,7 +185,7 @@ namespace GDFUnity.Editor
         public void Update(AuthenticationSettingsProvider selection)
         {
             _title.text = selection.Title;
-            _window.help.url = selection.Url;
+            _window.help.url = selection.Help;
             country.style.display = selection.NeedCountry ? DisplayStyle.Flex : DisplayStyle.None;
             consent.style.display = selection.NeedConsent ? DisplayStyle.Flex : DisplayStyle.None;
         }

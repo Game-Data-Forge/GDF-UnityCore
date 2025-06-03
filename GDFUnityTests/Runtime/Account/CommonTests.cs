@@ -13,15 +13,15 @@ namespace Account
         [UnityTest]
         public IEnumerator CanDelete()
         {
-            long lastAccount = GDF.Authentication.Token.Account;
+            long lastAccount = GDF.Account.Token.Account;
 
             UnityJob task = GDF.Account.Delete();
             yield return WaitTask(task);
 
-            task = GDF.Authentication.SignInDevice(country);
+            task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitTask(task);
 
-            Assert.AreNotEqual(lastAccount, GDF.Authentication.Token.Account);
+            Assert.AreNotEqual(lastAccount, GDF.Account.Token.Account);
         }
 
         [UnitySetUp]
@@ -30,14 +30,14 @@ namespace Account
             UnityJob task = GDF.Launch;
             yield return WaitTask(task);
             
-            task = GDF.Authentication.SignInDevice(country);
+            task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitTask(task);
         }
 
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            UnityJob task = GDF.Authentication.SignOut();
+            UnityJob task = GDF.Account.Authentication.SignOut();
             yield return WaitTask(task);
 
             GDF.Kill();

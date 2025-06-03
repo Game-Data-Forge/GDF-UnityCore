@@ -21,7 +21,7 @@ namespace Engine
                 string str = GDF.Device.ToString();
             });
             Assert.Throws<GDFException> (() => {
-                string str = GDF.Authentication.ToString();
+                string str = GDF.Account.ToString();
             });
             Assert.Throws<GDFException> (() => {
                 string str = GDF.Player.ToString();
@@ -55,7 +55,7 @@ namespace Engine
 
             Assert.AreEqual(task.State, JobState.Success);
             
-            Job awaitedTask = GDF.Authentication.SignInDevice(Country.FR);
+            Job awaitedTask = GDF.Account.Authentication.Device.SignIn(Country.FR);
             task = GDF.Stop();
 
             yield return task;
@@ -72,7 +72,7 @@ namespace Engine
 
             Assert.AreEqual(task.State, JobState.Success);
             
-            Job awaitedTask = GDF.Authentication.SignInDevice(Country.FR);
+            Job awaitedTask = GDF.Account.Authentication.Device.SignIn(Country.FR);
             GDF.Kill();
 
             Assert.IsFalse(awaitedTask.IsDone);

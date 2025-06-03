@@ -29,9 +29,11 @@ namespace GDFUnity.Editor
         }
 
         internal LoadingView mainView;
+        internal HelpButton help;
+        internal AccountMenu menu;
 
         private AccountLoginView _loginView;
-        private AccountInformation _information;
+        private TwoPaneSplitView _main;
 
         public void CreateGUI()
         {
@@ -39,17 +41,21 @@ namespace GDFUnity.Editor
             mainViewBody.style.flexGrow = 1;
             mainView = new LoadingView(mainViewBody);
             
+            _main = new TwoPaneSplitView(0, 150, TwoPaneSplitViewOrientation.Horizontal);
+            menu = new AccountMenu(this);
+            _main.Add(menu);
+            _main.Add(new AccountView(this));
             _loginView = new AccountLoginView();
-            _information = new AccountInformation(this);
+            help = new HelpButton(HELP_URL, Position.Absolute);
 
             mainView.AddBody(_loginView);
-            mainView.AddBody(_information);
+            mainView.AddBody(_main);
 
             mainView.onDisplayChanged += OnMainViewStateChanged;
             
             mainView.AddPreloader(new EnginePreLoader());
             rootVisualElement.Add(mainView);
-            rootVisualElement.Add(new HelpButton(HELP_URL, Position.Absolute));
+            rootVisualElement.Add(help);
         }
 
         private void OnAccountChanged(MemoryJwtToken token)
@@ -57,13 +63,14 @@ namespace GDFUnity.Editor
             if (token == null)
             {
                 _loginView.style.display = DisplayStyle.Flex;
-                _information.style.display = DisplayStyle.None;
+                _main.style.display = DisplayStyle.None;
+                help.url = HELP_URL;
             }
             else
             {
                 _loginView.style.display = DisplayStyle.None;
-                _information.style.display = DisplayStyle.Flex;
-                _information.Update();
+                _main.style.display = DisplayStyle.Flex;
+                menu.selectedIndex = 0;
             }
         }
 
@@ -71,10 +78,10 @@ namespace GDFUnity.Editor
         {
             if (display == LoadingView.Display.Body)
             {
-                GDFEditor.Authentication.AccountChangedNotif.onMainThread -= OnAccountChanged;
-                GDFEditor.Authentication.AccountChangedNotif.onMainThread += OnAccountChanged;
+                GDFEditor.Account.AccountChanged.onMainThread -= OnAccountChanged;
+                GDFEditor.Account.AccountChanged.onMainThread += OnAccountChanged;
 
-                OnAccountChanged(GDFEditor.Authentication.Token);
+                OnAccountChanged(GDFEditor.Account.Token);
             }
             else
             {
@@ -84,7 +91,7 @@ namespace GDFUnity.Editor
         
         public void OnDestroy()
         {
-            GDFEditor.Authentication.AccountChangedNotif.onMainThread -= OnAccountChanged;
+            GDFEditor.Account.AccountChanged.onMainThread -= OnAccountChanged;
         }
     }
 }

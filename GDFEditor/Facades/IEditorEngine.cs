@@ -11,7 +11,6 @@ namespace GDFEditor
         public new IEditorEnvironmentManager EnvironmentManager { get; }
         public new IEditorDeviceManager DeviceManager { get; }
         public new IEditorAccountManager AccountManager { get; }
-        public new IEditorAuthenticationManager AuthenticationManager { get; }
         public new IEditorPlayerDataManager PlayerDataManager { get; }
         public new IEditorTypeManager TypeManager { get; }
         public new IEditorPlayerPersistanceManager PersistanceManager { get; }

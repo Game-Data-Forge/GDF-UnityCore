@@ -126,7 +126,11 @@ namespace GDFUnity.Editor
             _selection.value = device.Id == GDFEditor.Device.Id;
             _name.tooltip = isDefault ? "Cannot change the name of the actual device." : "";
             
+#if UNITY_6000_0_OR_NEWER
+            _foldout.label.style.paddingLeft = 22;
+#else
             _foldout.label.style.paddingLeft = 20;
+#endif
 
             _foldout.RegisterActionMenu(() => {
                 GenericMenu menu = new GenericMenu();

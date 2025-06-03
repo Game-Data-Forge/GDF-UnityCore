@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using GDFFoundation;
 using GDFRuntime;
-using PlasticPipe.PlasticProtocol.Messages;
 
 namespace GDFUnity
 {
@@ -22,7 +20,7 @@ namespace GDFUnity
             get
             {
                 string agent;
-                Country country = _engine.AuthenticationManager.Token.Country;
+                Country country = _engine.AccountManager.Token.Country;
                 if (!_syncAgent.TryGetValue(country, out agent))
                 {
                     agent = BuildServerAddress(_engine.Configuration.CloudConfig.Sync[country]);

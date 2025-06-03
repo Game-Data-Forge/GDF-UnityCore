@@ -12,7 +12,7 @@ namespace GDFUnity
             static public GDFException BuilderMissing => new GDFException("ENG", 2, "Cannot fetch engine ! Instance missing...");
             static public GDFException NotLaunched => new GDFException("ENG", 3, "The engine is not launched ! Feature inaccessible...");
             static public GDFException LaunchFailed => new GDFException("ENG", 4, "The engine failed to lauch ! Feature inaccessible...");
-            static public GDFException NotConnected => new GDFException("ENG", 5, "Not connected to an account ! Feature inaccessible...");
+            static public GDFException NotAuthenticated => new GDFException("ENG", 5, "Not connected to an account ! Feature inaccessible...");
         }
 
         static private Func<IRuntimeEngine> _instance = null;
@@ -65,9 +65,9 @@ namespace GDFUnity
             get
             {
                 IRuntimeEngine engine = StartedEngine;
-                if (engine.AuthenticationManager.Token == null)
+                if (!engine.AccountManager.IsAuthenticated)
                 {
-                    throw Exceptions.NotConnected;
+                    throw Exceptions.NotAuthenticated;
                 }
 
                 return engine;
@@ -81,8 +81,7 @@ namespace GDFUnity
         static public IRuntimeThreadManager Thread => StartedEngine.ThreadManager;
         static public IRuntimeEnvironmentManager Environment => StartedEngine.EnvironmentManager;
         static public IRuntimeDeviceManager Device => StartedEngine.DeviceManager;
-        static public IRuntimeAuthenticationManager Authentication => StartedEngine.AuthenticationManager;
-        static public IRuntimeAccountManager Account => AuthenticatedEngine.AccountManager;
+        static public IRuntimeAccountManager Account => StartedEngine.AccountManager;
         static public IRuntimePlayerDataManager Player => AuthenticatedEngine.PlayerDataManager;
 
         static public Job Stop()

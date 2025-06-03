@@ -6,7 +6,7 @@ namespace GDFUnity.Editor.ServiceProviders
     {
         public override string Name => "Device";
         public override string Title => "Device authentication";
-        public override string Url => "/unity/windows/authentication/views/device-authentication-view";
+        public override string Help => "/unity/windows/authentication/views/device-authentication-view";
 
         private DeviceSelector _selector;
         private Button _login;
@@ -26,7 +26,7 @@ namespace GDFUnity.Editor.ServiceProviders
             _login = new Button();
             _login.text = "Login";
             _login.clicked += () => {
-                view.Load(GDFEditor.Authentication.SignInDevice(view.country.value));
+                view.Load(GDFEditor.Account.Authentication.Device.SignIn(view.country.value));
             };
             _login.style.width = 100;
             _login.SetEnabled(view.consent.value);

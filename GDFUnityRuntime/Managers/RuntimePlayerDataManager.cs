@@ -29,9 +29,9 @@ namespace GDFUnity
 
             public Lock Use(IRuntimeEngine engine)
             {
-                long account = engine.AuthenticationManager.Token?.Account ?? 0;
+                long account = engine.AccountManager.Token?.Account ?? 0;
                 Monitor.Enter(_lock);
-                if (account != (engine.AuthenticationManager.Token?.Account ?? 0))
+                if (account != (engine.AccountManager.Token?.Account ?? 0))
                 {
                     Dispose();
                     throw Exceptions.UserChanged;
@@ -350,9 +350,9 @@ namespace GDFUnity
         public RuntimePlayerDataManager(IRuntimeEngine engine)
         {
             _engine = engine;
-            _engine.AuthenticationManager.AccountChangingNotif.onBackgroundThread += OnAccountChanging;
-            _engine.AuthenticationManager.AccountChangedNotif.onBackgroundThread += OnAccountChanged;
-            _engine.AccountManager.DeletingNotif.onBackgroundThread += PurgeRunner;
+            _engine.AccountManager.AccountChanging.onBackgroundThread += OnAccountChanging;
+            _engine.AccountManager.AccountChanged.onBackgroundThread += OnAccountChanged;
+            _engine.AccountManager.AccountDeleting.onBackgroundThread += PurgeRunner;
 
             _gameSaveCache = new Cache(this);
             _commonCache = new Cache(this);
@@ -362,9 +362,9 @@ namespace GDFUnity
 
         ~RuntimePlayerDataManager()
         {
-            _engine.AccountManager.DeletingNotif.onBackgroundThread -= PurgeRunner;
-            _engine.AuthenticationManager.AccountChangedNotif.onBackgroundThread -= OnAccountChanged;
-            _engine.AuthenticationManager.AccountChangingNotif.onBackgroundThread -= OnAccountChanging;
+            _engine.AccountManager.AccountDeleting.onBackgroundThread -= PurgeRunner;
+            _engine.AccountManager.AccountChanged.onBackgroundThread -= OnAccountChanged;
+            _engine.AccountManager.AccountChanging.onBackgroundThread -= OnAccountChanging;
         }
 
         public Job LoadCommonGameSave()
@@ -443,8 +443,8 @@ namespace GDFUnity
                 storage.Modification = storage.Creation;
                 storage.GameSave = _gameSave;
                 storage.Project = _engine.Configuration.Reference;
-                storage.Account = _engine.AuthenticationManager.Token.Account;
-                storage.Range = _engine.AuthenticationManager.Token.Range;
+                storage.Account = _engine.AccountManager.Token.Account;
+                storage.Range = _engine.AccountManager.Token.Range;
                 storage.Channels = data.Channels;
                 storage.Trashed = data.Trashed;
                 
@@ -552,11 +552,16 @@ namespace GDFUnity
 
                 storage.Trashed = data.Trashed;
                 storage.Modification = GDFDatetime.Now;
-                FillData(data, storage);
 
                 if (data.Trashed)
                 {
                     TrashData(cache, storage, data);
+                }
+                else
+                {
+                    FillData(data, storage);
+                    storage.ClassName = _engine.TypeManager.GetClassName(data.GetType());
+                    storage.Json = Serialize(data);
                 }
                 
                 _saveQueue.Add(storage);
@@ -853,6 +858,7 @@ namespace GDFUnity
                 storage.Trashed = true;
                 GDFPlayerData data = cache.Get(storage.Reference);
                 TrashData(cache, storage, data);
+                _saveQueue.Add(storage);
                 handler.Step();
             }
         }
@@ -875,11 +881,11 @@ namespace GDFUnity
 
                 _engine.PersistanceManager.Purge(handler.Split());
 
-                Country country = _engine.AuthenticationManager.Token.Country;
+                Country country = _engine.AccountManager.Token.Country;
 
                 _headers.Clear();
-                _engine.ServerManager.FillHeaders(_headers, _engine.AuthenticationManager.Bearer);
-                Delete<int>(handler.Split(), _engine.ServerManager.BuildAuthURL(country, "/api/v1/player-data"), _headers);
+                _engine.ServerManager.FillHeaders(_headers, _engine.AccountManager.Bearer);
+                Delete<int>(handler.Split(), _engine.ServerManager.BuildSyncURL("/api/v1/player-data"), _headers);
             }
         }
 
@@ -930,6 +936,10 @@ namespace GDFUnity
             _loadDataBuffer.Clear();
             _loadDataToSyncBuffer.Clear();
             _engine.PersistanceManager.Load(handler.Split(), gameSave, _loadDataBuffer, _loadDataToSyncBuffer);
+            for (int i = _loadDataBuffer.Count - 1; i >= 0; i--)
+            {
+                _loadDataBuffer[i].GameSave = gameSave;
+            }
             UpdateStorage(handler.Split(), cache);
         }
 
@@ -970,10 +980,10 @@ namespace GDFUnity
                 _syncQueue.Fill(exchange.Storages, GDFConstants.K_STORAGE_SYNC_LIMIT);
                 
                 _headers.Clear();
-                _engine.ServerManager.FillHeaders(_headers, _engine.AuthenticationManager.Bearer);
+                _engine.ServerManager.FillHeaders(_headers, _engine.AccountManager.Bearer);
                 try
                 {
-                    Post<string>(handler.Split(), _engine.ServerManager.BuildAuthURL(_engine.AuthenticationManager.Token.Country, "/api/v1/player-data"), _headers, exchange);
+                    Post<string>(handler.Split(), _engine.ServerManager.BuildSyncURL("/api/v1/player-data"), _headers, exchange);
                 }
                 catch (APIException e)
                 {
@@ -1003,12 +1013,9 @@ namespace GDFUnity
                 references.Clear();
 
                 _headers.Clear();
-                _engine.ServerManager.FillHeaders(_headers, _engine.AuthenticationManager.Bearer);
+                _engine.ServerManager.FillHeaders(_headers, _engine.AccountManager.Bearer);
 
-                pagination = Get<PlayerDataPagination>(handler.Split(),
-                    _engine.ServerManager.BuildAuthURL(_engine.AuthenticationManager.Token.Country,
-                    "/api/v1/player-data/" + _syncTime.ToISO8601().ToBase64URL()),
-                    _headers);
+                pagination = Get<PlayerDataPagination>(handler.Split(), _engine.ServerManager.BuildSyncURL("/api/v1/player-data/" + _syncTime.ToISO8601().ToBase64URL()), _headers);
 
                 if (pagination.Items.Count == 0)
                 {
@@ -1069,8 +1076,8 @@ namespace GDFUnity
             handler.StepAmount = _loadDataBuffer.Count + _loadDataToSyncBuffer.Count;
             foreach (GDFPlayerDataStorage storage in _loadDataBuffer)
             {
-                storage.Account = _engine.AuthenticationManager.Token.Account;
-                storage.Range = _engine.AuthenticationManager.Token.Range;
+                storage.Account = _engine.AccountManager.Token.Account;
+                storage.Range = _engine.AccountManager.Token.Range;
                 storage.Project = _engine.Configuration.Reference;
                 storage.ClassName = _references[storage.Reference].Classname;
                 cache.Add(storage.Reference, storage);
@@ -1080,8 +1087,8 @@ namespace GDFUnity
             handler.StepAmount = _loadDataToSyncBuffer.Count;
             foreach (GDFPlayerDataStorage storage in _loadDataToSyncBuffer)
             {
-                storage.Account = _engine.AuthenticationManager.Token.Account;
-                storage.Range = _engine.AuthenticationManager.Token.Range;
+                storage.Account = _engine.AccountManager.Token.Account;
+                storage.Range = _engine.AccountManager.Token.Range;
                 storage.Project = _engine.Configuration.Reference;
                 _syncQueue.Add(storage);
                 handler.Step();

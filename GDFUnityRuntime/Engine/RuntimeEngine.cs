@@ -43,7 +43,6 @@ namespace GDFUnity
         private IRuntimeEnvironmentManager _environmentManager;
         private IRuntimeDeviceManager _deviceManager;
         private IRuntimeAccountManager _accountManager;
-        private IRuntimeAuthenticationManager _authenticationManager;
         private IRuntimePlayerDataManager _playerDataManager;
         private IRuntimeTypeManager _typeManager;
         private IRuntimePlayerPersistanceManager _persistanceManager;
@@ -56,7 +55,6 @@ namespace GDFUnity
         public IRuntimeEnvironmentManager EnvironmentManager => _environmentManager;
         public IRuntimeDeviceManager DeviceManager => _deviceManager;
         public IRuntimeAccountManager AccountManager => _accountManager;
-        public IRuntimeAuthenticationManager AuthenticationManager => _authenticationManager;
         public IRuntimePlayerDataManager PlayerDataManager => _playerDataManager;
         public IRuntimeTypeManager TypeManager => _typeManager;
         public IRuntimePlayerPersistanceManager PersistanceManager => _persistanceManager;
@@ -73,7 +71,6 @@ namespace GDFUnity
             _environmentManager = new RuntimeEnvironmentManager(this);
             _deviceManager = new RuntimeDeviceManager();
             _accountManager = new RuntimeAccountManager(this);
-            _authenticationManager = new RuntimeAuthenticationManager(this);
             _typeManager = new RuntimeTypeManager();
             _persistanceManager = new RuntimePlayerPersistanceManager(this);
             _playerDataManager = new RuntimePlayerDataManager(this);
@@ -88,16 +85,13 @@ namespace GDFUnity
         {
             GameObject.Destroy(_gameObject);
             return Job.Run(async handler => {
-                handler.StepAmount = 3;
+                handler.StepAmount = 2;
                 try
                 {
                     await _playerDataManager.Stop();
                     handler.Step();
                     
                     await _accountManager.Stop();
-                    handler.Step();
-
-                    await _authenticationManager.Stop();
                     handler.Step();
                 }
                 finally

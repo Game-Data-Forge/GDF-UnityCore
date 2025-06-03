@@ -30,17 +30,17 @@ namespace GDFFoundation
         /// <summary>
         ///     Regular expression for removing non-alphabetic characters.
         /// </summary>
-        private static readonly Regex AplhaCleanerRgx = new Regex("[^a-zA-Z]", RegexOptions.Compiled);
+        private static readonly Regex AlphaCleanerRgx = new Regex("[^a-zA-Z]", RegexOptions.Compiled);
 
         /// <summary>
         ///     Class containing methods for cleaning strings of non-alphanumeric characters.
         /// </summary>
-        private static readonly Regex AplhaNumericCleanerRgx = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
+        private static readonly Regex AlphaNumericCleanerRgx = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
 
         /// <summary>
         ///     Regex pattern for converting alphanumeric characters to numeric characters.
         /// </summary>
-        private static readonly Regex AplhaNumericToNumericRgx = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
+        private static readonly Regex AlphaNumericToNumericRgx = new Regex("[^a-zA-Z0-9]", RegexOptions.Compiled);
 
         /// <summary>
         ///     Class containing regular expression for cleaning email strings.
@@ -77,9 +77,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sString">The input string.</param>
         /// <returns>The string with all non-alphabetic characters removed.</returns>
-        public static string AplhaCleaner(string sString)
+        public static string AlphaCleaner(string sString)
         {
-            return AplhaCleanerRgx.Replace(sString, string.Empty);
+            return AlphaCleanerRgx.Replace(sString, string.Empty);
         }
 
         /// <summary>
@@ -87,9 +87,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sString">The string to clean.</param>
         /// <returns>The cleaned string without any non-alphanumeric characters.</returns>
-        public static string AplhaNumericCleaner(string sString)
+        public static string AlphaNumericCleaner(string sString)
         {
-            return AplhaNumericCleanerRgx.Replace(sString, string.Empty);
+            return AlphaNumericCleanerRgx.Replace(sString, string.Empty);
         }
 
         /// <summary>
@@ -97,9 +97,9 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sString">The alphanumeric string to convert.</param>
         /// <returns>The numeric string.</returns>
-        public static string AplhaNumericToNumeric(string sString)
+        public static string AlphaNumericToNumeric(string sString)
         {
-            string rReturn = AplhaNumericToNumericRgx.Replace(sString, string.Empty).ToUpper();
+            string rReturn = AlphaNumericToNumericRgx.Replace(sString, string.Empty).ToUpper();
             rReturn = rReturn.Replace("A", "1");
             rReturn = rReturn.Replace("B", "2");
             rReturn = rReturn.Replace("C", "7");
@@ -262,7 +262,7 @@ namespace GDFFoundation
                 sText = sText.Normalize(NormalizationForm.FormD);
                 var chars = sText.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray();
                 rReturn = new string(chars).Normalize(NormalizationForm.FormC);
-                rReturn = AplhaNumericCleaner(rReturn);
+                rReturn = AlphaNumericCleaner(rReturn);
             }
 
             return rReturn;

@@ -116,6 +116,10 @@ namespace GDFFoundation
 
         public long Project { get; set; }
         public long RowId { get; set; }
+        
+        public string SignUpApiUrl { get; set; } = string.Empty;
+        public string SignLostApiUrl { get; set; } = string.Empty;
+        public string EmailFrom { get; set; } = string.Empty;
 
         #endregion
 
@@ -187,11 +191,13 @@ namespace GDFFoundation
     public class GDFProjectCredentials : IGDFDbStorage, IGDFWritableData, IGDFWritableLongReference
     {
         #region Instance fields and properties
-
-        /// <summary>
-        ///     Environment of this instance (use to change the table usage)
-        /// </summary>
-        // TODO rename Environment
+        
+        [GDFDbLength(128)]
+        public string SignUpApiUrl { get; set; } = string.Empty;
+        [GDFDbLength(128)]
+        public string SignLostApiUrl { get; set; } = string.Empty;
+        [GDFDbLength(128)]
+        public string EmailFrom { get; set; } = string.Empty;
         public ProjectEnvironment Environment { set; get; } = ProjectEnvironment.Development;
 
         public string Game { get; set; } = "Game Name";

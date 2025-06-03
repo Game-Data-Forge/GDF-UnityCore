@@ -53,7 +53,6 @@ namespace GDFUnity.Editor
         private IEditorEnvironmentManager _environmentManager;
         private IEditorDeviceManager _deviceManager;
         private IEditorAccountManager _accountManager;
-        private IEditorAuthenticationManager _authenticationManager;
         private IEditorPlayerDataManager _playerDataManager;
         private IEditorTypeManager _typeManager;
         private IEditorPlayerPersistanceManager _persistanceManager;
@@ -66,7 +65,6 @@ namespace GDFUnity.Editor
         public IEditorEnvironmentManager EnvironmentManager => _environmentManager;
         public IEditorDeviceManager DeviceManager => _deviceManager;
         public IEditorAccountManager AccountManager => _accountManager;
-        public IEditorAuthenticationManager AuthenticationManager => _authenticationManager;
         public IEditorPlayerDataManager PlayerDataManager => _playerDataManager;
         public IEditorTypeManager TypeManager => _typeManager;
         public IEditorPlayerPersistanceManager PersistanceManager => _persistanceManager;
@@ -78,7 +76,6 @@ namespace GDFUnity.Editor
         IRuntimeEnvironmentManager IRuntimeEngine.EnvironmentManager => EnvironmentManager;
         IRuntimeDeviceManager IRuntimeEngine.DeviceManager => DeviceManager;
         IRuntimeAccountManager IRuntimeEngine.AccountManager => AccountManager;
-        IRuntimeAuthenticationManager IRuntimeEngine.AuthenticationManager => AuthenticationManager;
         IRuntimePlayerDataManager IRuntimeEngine.PlayerDataManager => PlayerDataManager;
         IRuntimeTypeManager IRuntimeEngine.TypeManager => TypeManager;
         IRuntimePlayerPersistanceManager IRuntimeEngine.PersistanceManager => PersistanceManager;
@@ -92,7 +89,6 @@ namespace GDFUnity.Editor
             _environmentManager = new EditorEnvironmentManager(this);
             _deviceManager = new EditorDeviceManager(this);
             _accountManager = new EditorAccountManager(this);
-            _authenticationManager = new EditorAuthenticationManager(this);
             _typeManager = new EditorTypeManager();
             _persistanceManager = new EditorPlayerPersistanceManager(this);
             _playerDataManager = new EditorPlayerDataManager(this);
@@ -106,7 +102,7 @@ namespace GDFUnity.Editor
         public Job Stop()
         {
             return Job.Run(async handler => {
-                handler.StepAmount = 4;
+                handler.StepAmount = 3;
                 try
                 {
                     await _playerDataManager.Stop();
@@ -116,9 +112,6 @@ namespace GDFUnity.Editor
                     handler.Step();
 
                     await _environmentManager.Stop();
-                    handler.Step();
-
-                    await _authenticationManager.Stop();
                     handler.Step();
                 }
                 finally

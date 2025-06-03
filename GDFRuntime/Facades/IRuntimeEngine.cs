@@ -13,7 +13,6 @@ namespace GDFRuntime
         public IRuntimeEnvironmentManager EnvironmentManager { get; }
         public IRuntimeDeviceManager DeviceManager { get; }
         public IRuntimeAccountManager AccountManager { get; }
-        public IRuntimeAuthenticationManager AuthenticationManager { get; }
         public IRuntimePlayerDataManager PlayerDataManager { get; }
         public IRuntimeTypeManager TypeManager { get; }
         public IRuntimePlayerPersistanceManager PersistanceManager { get; }

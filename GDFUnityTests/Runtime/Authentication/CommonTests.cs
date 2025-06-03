@@ -15,62 +15,62 @@ namespace Authentication
         [UnityTest]
         public IEnumerator CanSignOut()
         {
-            UnityJob task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitJob(task);
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);
         }
         
         [UnityTest]
         public IEnumerator CanSignOutMulitpleTime()
         {
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Authentication.SignOut();
+            UnityJob task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);
             
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);
             
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);
             
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);
             
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
         }
 
         [UnityTest]
         public IEnumerator CanDetectConnectionState()
         {
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitJob(task);
 
-            Assert.IsTrue(GDF.Authentication.IsConnected);
+            Assert.IsTrue(GDF.Account.IsAuthenticated);
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);
             
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
         }
         
         [UnityTest]
         public IEnumerator CanConnectWithoutDisconnecting()
         {
-            UnityJob task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitJob(task);
 
-            task = GDF.Authentication.SignInDevice(country);
+            task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitJob(task);
 
             Assert.AreEqual(task.State, JobState.Success);
@@ -79,13 +79,13 @@ namespace Authentication
         [UnityTest]
         public IEnumerator CanBeNotifiedOfAccountStateChanged()
         {
-            GDF.Authentication.AccountChangedNotif.onBackgroundThread += OnAutenticationChanged;
-            GDF.Authentication.AccountChangedNotif.onMainThread += OnAutenticationChanged;
+            GDF.Account.AccountChanged.onBackgroundThread += OnAutenticationChanged;
+            GDF.Account.AccountChanged.onMainThread += OnAutenticationChanged;
             
             Assert.IsFalse(triggeredImmediate);
             Assert.IsFalse(triggeredDelay);
 
-            UnityJob task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitJob(task);
 
             Assert.IsTrue(triggeredImmediate);
@@ -97,7 +97,7 @@ namespace Authentication
 
             triggeredImmediate = false;
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);
 
             Assert.IsTrue(triggeredImmediate);
@@ -111,13 +111,13 @@ namespace Authentication
         [UnityTest]
         public IEnumerator CanBeNotifiedOfAccountStateChanging()
         {
-            GDF.Authentication.AccountChangingNotif.onBackgroundThread += OnAutenticationChanging;
-            GDF.Authentication.AccountChangingNotif.onMainThread += OnAutenticationChanging;
+            GDF.Account.AccountChanging.onBackgroundThread += OnAutenticationChanging;
+            GDF.Account.AccountChanging.onMainThread += OnAutenticationChanging;
             
             Assert.IsFalse(triggeredImmediate);
             Assert.IsFalse(triggeredDelay);
 
-            UnityJob task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitJobStarted(task);
 
             Assert.IsTrue(triggeredImmediate);
@@ -131,7 +131,7 @@ namespace Authentication
 
             triggeredImmediate = false;
             
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitJobStarted(task);
 
             Assert.IsTrue(triggeredImmediate);
@@ -147,17 +147,17 @@ namespace Authentication
         [UnityTest]
         public IEnumerator DeleteAccountDisconnect()
         {
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitJob(task);
             
-            Assert.IsTrue(GDF.Authentication.IsConnected);
+            Assert.IsTrue(GDF.Account.IsAuthenticated);
 
             task = GDF.Account.Delete();
             yield return WaitJob(task);
             
-            Assert.IsFalse(GDF.Authentication.IsConnected);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
         }
 
         private void OnAutenticationChanged(MemoryJwtToken token)
@@ -192,12 +192,12 @@ namespace Authentication
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            GDF.Authentication.AccountChangingNotif.onBackgroundThread -= OnAutenticationChanging;
-            GDF.Authentication.AccountChangingNotif.onMainThread -= OnAutenticationChanging;
-            GDF.Authentication.AccountChangedNotif.onBackgroundThread -= OnAutenticationChanged;
-            GDF.Authentication.AccountChangedNotif.onMainThread -= OnAutenticationChanged;
+            GDF.Account.AccountChanging.onBackgroundThread -= OnAutenticationChanging;
+            GDF.Account.AccountChanging.onMainThread -= OnAutenticationChanging;
+            GDF.Account.AccountChanged.onBackgroundThread -= OnAutenticationChanged;
+            GDF.Account.AccountChanged.onMainThread -= OnAutenticationChanged;
 
-            if (GDF.Authentication.IsConnected)
+            if (GDF.Account.IsAuthenticated)
             {
                 UnityJob task = GDF.Account.Delete();
                 yield return WaitJob(task);

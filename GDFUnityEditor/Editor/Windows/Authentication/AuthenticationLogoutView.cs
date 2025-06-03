@@ -27,7 +27,7 @@ namespace GDFUnity.Editor
             logout.text = "Logout";
             logout.style.width = 100;
             logout.clicked += () => {
-                Load(GDF.Authentication.SignOut());
+                Load(GDF.Account.Authentication.SignOut());
             };
             
             Button account = new Button();

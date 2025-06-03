@@ -6,26 +6,16 @@ namespace GDFUnity.Editor
     public class Environment : VisualElement
     {
         private EnumField _field;
+        private LoadingView _mainView;
 
         public Environment(LoadingView mainView) : base()
         {
+            _mainView = mainView;
             style.marginLeft = 7;
 
-            mainView.onDisplayChanged += display => {
-                if (display == LoadingView.Display.PreLoader) return;
+            mainView.onDisplayChanged += OnDisplayReady;
 
-                _field = new EnumField("Environment", GDFEditor.Environment.Environment);
-                _field.RegisterValueChangedCallback((evt) => {
-                    _field.SetValueWithoutNotify(GDFEditor.Environment.Environment);
-                    IJob task = GDFEditor.Environment.SetEnvironment((ProjectEnvironment)evt.newValue);
-                    mainView.AddLoader(task, OnSetEnvironmentDone);
-                    _field.SetEnabled(false);
-                });
-
-                Add(_field);
-
-                GDFEditor.Environment.EnvironmentChangedNotif.onMainThread += OnEnvironmentChanged;
-            };
+            OnDisplayReady(_mainView.MainDisplay);
         }
 
         public Environment(EnvironmentSettingsProvider provider) : this(provider.mainView)
@@ -33,7 +23,24 @@ namespace GDFUnity.Editor
 
         ~Environment()
         {
-            GDFEditor.Environment.EnvironmentChangedNotif.onMainThread -= OnEnvironmentChanged;
+            GDFEditor.Environment.EnvironmentChanged.onMainThread -= OnEnvironmentChanged;
+        }
+
+        private void OnDisplayReady(LoadingView.Display display)
+        {
+            if (display == LoadingView.Display.PreLoader) return;
+
+            _field = new EnumField("Environment", GDFEditor.Environment.Environment);
+            _field.RegisterValueChangedCallback((evt) => {
+                _field.SetValueWithoutNotify(GDFEditor.Environment.Environment);
+                IJob task = GDFEditor.Environment.SetEnvironment((ProjectEnvironment)evt.newValue);
+                _mainView.AddLoader(task, OnSetEnvironmentDone);
+                _field.SetEnabled(false);
+            });
+
+            Add(_field);
+
+            GDFEditor.Environment.EnvironmentChanged.onMainThread += OnEnvironmentChanged;
         }
 
         private void OnSetEnvironmentDone(IJob task)

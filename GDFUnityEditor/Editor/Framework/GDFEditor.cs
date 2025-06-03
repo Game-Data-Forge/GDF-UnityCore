@@ -56,9 +56,9 @@ namespace GDFUnity.Editor
             get
             {
                 IEditorEngine engine = StartedEngine;
-                if (engine.AuthenticationManager.Token == null)
+                if (!engine.AccountManager.IsAuthenticated)
                 {
-                    throw GDF.Exceptions.NotConnected;
+                    throw GDF.Exceptions.NotAuthenticated;
                 }
 
                 return engine;
@@ -72,9 +72,8 @@ namespace GDFUnity.Editor
         static public IEditorThreadManager Thread => StartedEngine.ThreadManager;
         static public IEditorEnvironmentManager Environment => StartedEngine.EnvironmentManager;
         static public IEditorDeviceManager Device => StartedEngine.DeviceManager;
-        static public IEditorAuthenticationManager Authentication => StartedEngine.AuthenticationManager;
         static public IEditorTypeManager Types => StartedEngine.TypeManager;
-        static public IEditorAccountManager Account => AuthenticatedEngine.AccountManager;
+        static public IEditorAccountManager Account => StartedEngine.AccountManager;
         static public IEditorPlayerDataManager Player => AuthenticatedEngine.PlayerDataManager;
 
         static public Job Stop()

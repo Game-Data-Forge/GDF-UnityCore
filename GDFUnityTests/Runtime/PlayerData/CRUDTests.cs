@@ -71,7 +71,7 @@ namespace PlayerData
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.Reference, reference);
             Assert.AreEqual(data.GameSave, GDF.Player.GameSave);
-            Assert.AreEqual(data.Account, GDF.Authentication.Token.Account);
+            Assert.AreEqual(data.Account, GDF.Account.Token.Account);
         }
 
         [Test]
@@ -363,7 +363,7 @@ namespace PlayerData
         [UnityTearDown]
         public IEnumerator TearDown()
         {
-            UnityJob task = GDF.Authentication.SignOut();
+            UnityJob task = GDF.Account.Authentication.SignOut();
             yield return WaitTask(task);
             
             GDF.Kill();
@@ -371,7 +371,7 @@ namespace PlayerData
         
         private IEnumerator Connect()
         {
-            UnityJob task = GDF.Authentication.SignInDevice(country);
+            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
             yield return WaitTask(task);
         }
 

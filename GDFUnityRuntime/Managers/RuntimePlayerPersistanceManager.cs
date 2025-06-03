@@ -15,12 +15,12 @@ namespace GDFUnity
         public RuntimePlayerPersistanceManager(IRuntimeEngine engine)
         {
             _engine = engine;
-            _engine.AuthenticationManager.AccountChangedNotif.onBackgroundThread += OnAccountChanged;
+            _engine.AccountManager.AccountChanged.onBackgroundThread += OnAccountChanged;
         }
         
         ~RuntimePlayerPersistanceManager()
         {
-            _engine.AuthenticationManager.AccountChangedNotif.onBackgroundThread -= OnAccountChanged;
+            _engine.AccountManager.AccountChanged.onBackgroundThread -= OnAccountChanged;
         }
 
         public void LoadReference(IJobHandler handler, List<PlayerReferenceStorage> references)
@@ -143,7 +143,7 @@ namespace GDFUnity
 
         public void Purge(IJobHandler handler)
         {
-            string path = GetFilePath(_engine.AuthenticationManager.Token);
+            string path = GetFilePath(_engine.AccountManager.Token);
             if (File.Exists(path))
             {
                 File.Delete(path);

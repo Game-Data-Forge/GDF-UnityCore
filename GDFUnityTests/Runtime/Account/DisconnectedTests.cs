@@ -22,7 +22,7 @@ namespace Account
             UnityJob task = GDF.Launch;
             yield return WaitTask(task);
 
-            task = GDF.Authentication.SignOut();
+            task = GDF.Account.Authentication.SignOut();
             yield return WaitTask(task);
         }
 

@@ -52,7 +52,7 @@ namespace PlayerData
             UnityJob task = (Job)GDF.Launch;
             yield return WaitTask(task);
 
-            task = (Job)GDF.Authentication.SignOut();
+            task = (Job)GDF.Account.Authentication.SignOut();
             yield return WaitTask(task);
         }
 

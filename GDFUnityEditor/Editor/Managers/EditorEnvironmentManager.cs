@@ -20,8 +20,8 @@ namespace GDFUnity.Editor
         private EnvironmentConfiguration _environment;
         private IEditorEngine _engine;
 
-        public Notification<ProjectEnvironment> EnvironmentChangingNotif => _EnvironmentChangingEvent;
-        public Notification<ProjectEnvironment> EnvironmentChangedNotif => _EnvironmentChangedEvent;
+        public Notification<ProjectEnvironment> EnvironmentChanging => _EnvironmentChangingEvent;
+        public Notification<ProjectEnvironment> EnvironmentChanged => _EnvironmentChangedEvent;
         public ProjectEnvironment Environment => _environment.Environment;
 
         protected override Job Job => _job;
@@ -58,7 +58,7 @@ namespace GDFUnity.Editor
                 return Job<ProjectEnvironment>.Success(environment, taskName);
             }
 
-            if (GDF.Authentication.IsConnected)
+            if (GDF.Account.IsAuthenticated)
             {
                 if (!EditorUtility.DisplayDialog("Account conflict", "You are trying to change the environment while connected to an account"+
                 "\nProceeding will disconnect the current account.", "Ok", "Cancel"))
@@ -72,14 +72,14 @@ namespace GDFUnity.Editor
 
                 handler.StepAmount = 3;
 
-                EnvironmentChangingNotif.Invoke(handler.Split(), environment);
+                EnvironmentChanging.Invoke(handler.Split(), environment);
 
                 _environment.Environment = environment;
 
                 handler.Step();
                 GDFUserSettings.Instance.Save(_environment, container: _engine.Configuration.Reference.ToString());
 
-                EnvironmentChangedNotif.Invoke(handler.Split(), environment);
+                EnvironmentChanged.Invoke(handler.Split(), environment);
                 return environment;
             }, taskName);
         }
