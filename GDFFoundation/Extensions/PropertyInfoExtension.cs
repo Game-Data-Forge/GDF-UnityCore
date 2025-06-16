@@ -10,6 +10,7 @@
 #region
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 #endregion
@@ -65,6 +66,54 @@ namespace GDFFoundation
             }
 
             return null;
+        }
+        
+        static public List<T> ComplexGetCustomAttributes<T>(this PropertyInfo self) where T : Attribute
+        {
+            List<T> result = new List<T>();
+            IEnumerable<T> attributes = self.GetCustomAttributes<T>();
+            if (attributes != null)
+            {
+                result.AddRange(attributes);
+            }
+
+            PropertyInfo other;
+            Type[] interfaces = self.DeclaringType.GetInterfaces();
+            if (interfaces != null)
+            {
+                for (int i = 0; i < interfaces.Length; i++)
+                {
+                    other = interfaces[i].GetProperty(self.Name);
+                    if (other == null)
+                    {
+                        continue;
+                    }
+
+                    IEnumerable<T> otherAttributes = other.ComplexGetCustomAttributes<T>();
+                    if (otherAttributes != null)
+                    {
+                        result.AddRange(otherAttributes);
+                    }
+                }
+            }
+
+            Type parentType = self.DeclaringType.BaseType;
+            while (parentType != null)
+            {
+                other = parentType.GetProperty(self.Name);
+                if (other == null)
+                {
+                    parentType = parentType.BaseType;
+                    continue;
+                }
+                IEnumerable<T> otherAttributes = other.ComplexGetCustomAttributes<T>();
+                if (otherAttributes != null)
+                {
+                    result.AddRange(otherAttributes);
+                }
+            }
+
+            return result;
         }
 
         #endregion

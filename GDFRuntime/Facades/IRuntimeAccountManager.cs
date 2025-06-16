@@ -9,23 +9,23 @@ namespace GDFRuntime
         {
             public interface IRuntimeDevice
             {
-                public Job SignIn(Country country);
+                public Job Login(Country country);
             }
             public interface IRuntimeEmailPassword
             {
                 public Job Register(Country country, string email);
-                public Job SignIn(Country country, string email, string password);
+                public Job Login(Country country, string email, string password);
                 public Job Rescue(Country country, string email);
             }
-            public interface IRuntimeReSign
+            public interface IRuntimeLastSession
             {
                 public bool IsAvailable { get; }
-                public Job SignIn();
+                public Job Login();
             }
 
             public IRuntimeDevice Device { get; }
             public IRuntimeEmailPassword EmailPassword { get; }
-            public IRuntimeReSign ReSign { get; }
+            public IRuntimeLastSession LastSession { get; }
 
             public Job SignOut();
         }
@@ -37,7 +37,9 @@ namespace GDFRuntime
         }
 
         public bool IsAuthenticated { get; }
-        public MemoryJwtToken Token { get; }
+        public long Reference { get; }
+        public int Range { get; }
+        public Country Country { get; }
         public string Bearer { get; }
 
         public Notification<MemoryJwtToken> AccountChanging { get; }

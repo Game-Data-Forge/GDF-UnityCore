@@ -11,7 +11,7 @@ namespace GDFUnity
 
         public abstract IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeDevice Device { get; }
         public abstract IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeEmailPassword EmailPassword { get; }
-        public abstract IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeReSign ReSign { get; }
+        public abstract IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeLastSession LastSession { get; }
 
         public CoreAccountAuthentication(CoreAccountManager manager)
         {
@@ -56,7 +56,7 @@ namespace GDFUnity
     public class CoreAccountAuthentication<T, U, V> : CoreAccountAuthentication
         where T : CoreAuthenticationDevice
         where U : CoreAuthenticationEmailPassword
-        where V : CoreAuthenticationReSign
+        where V : CoreAuthenticationLastSession
     {
         protected T _device;
         protected U _emailPassword;
@@ -64,7 +64,7 @@ namespace GDFUnity
 
         public override IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeDevice Device => _device;
         public override IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeEmailPassword EmailPassword => _emailPassword;
-        public override IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeReSign ReSign => _reSign;
+        public override IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeLastSession LastSession => _reSign;
 
         public CoreAccountAuthentication(CoreAccountManager manager) : base(manager)
         {

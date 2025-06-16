@@ -6,6 +6,7 @@ using GDFFoundation;
 using System.Threading;
 using System;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Tools.Tasks
 {
@@ -136,7 +137,10 @@ namespace Tools.Tasks
                 return true;
             });
 
+            Debug.unityLogger.logEnabled = false;
             yield return task;
+            Debug.unityLogger.logEnabled = true;
+            
             Assert.AreEqual(task.State, JobState.Failure);
             Assert.AreEqual(task.Error.GetType(), typeof(TestException));
             Assert.IsNotNull(task.Error);

@@ -29,9 +29,9 @@ namespace GDFUnity
 
             public Lock Use(IRuntimeEngine engine)
             {
-                long account = engine.AccountManager.Token?.Account ?? 0;
+                long account = engine.AccountManager.IsAuthenticated ? engine.AccountManager.Reference : 0;
                 Monitor.Enter(_lock);
-                if (account != (engine.AccountManager.Token?.Account ?? 0))
+                if (account != (engine.AccountManager.IsAuthenticated ? engine.AccountManager.Reference : 0))
                 {
                     Dispose();
                     throw Exceptions.UserChanged;
@@ -443,8 +443,8 @@ namespace GDFUnity
                 storage.Modification = storage.Creation;
                 storage.GameSave = _gameSave;
                 storage.Project = _engine.Configuration.Reference;
-                storage.Account = _engine.AccountManager.Token.Account;
-                storage.Range = _engine.AccountManager.Token.Range;
+                storage.Account = _engine.AccountManager.Reference;
+                storage.Range = _engine.AccountManager.Range;
                 storage.Channels = data.Channels;
                 storage.Trashed = data.Trashed;
                 
@@ -881,7 +881,7 @@ namespace GDFUnity
 
                 _engine.PersistanceManager.Purge(handler.Split());
 
-                Country country = _engine.AccountManager.Token.Country;
+                Country country = _engine.AccountManager.Country;
 
                 _headers.Clear();
                 _engine.ServerManager.FillHeaders(_headers, _engine.AccountManager.Bearer);
@@ -1076,8 +1076,8 @@ namespace GDFUnity
             handler.StepAmount = _loadDataBuffer.Count + _loadDataToSyncBuffer.Count;
             foreach (GDFPlayerDataStorage storage in _loadDataBuffer)
             {
-                storage.Account = _engine.AccountManager.Token.Account;
-                storage.Range = _engine.AccountManager.Token.Range;
+                storage.Account = _engine.AccountManager.Reference;
+                storage.Range = _engine.AccountManager.Range;
                 storage.Project = _engine.Configuration.Reference;
                 storage.ClassName = _references[storage.Reference].Classname;
                 cache.Add(storage.Reference, storage);
@@ -1087,8 +1087,8 @@ namespace GDFUnity
             handler.StepAmount = _loadDataToSyncBuffer.Count;
             foreach (GDFPlayerDataStorage storage in _loadDataToSyncBuffer)
             {
-                storage.Account = _engine.AccountManager.Token.Account;
-                storage.Range = _engine.AccountManager.Token.Range;
+                storage.Account = _engine.AccountManager.Reference;
+                storage.Range = _engine.AccountManager.Range;
                 storage.Project = _engine.Configuration.Reference;
                 _syncQueue.Add(storage);
                 handler.Step();

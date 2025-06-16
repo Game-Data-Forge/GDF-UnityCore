@@ -126,7 +126,7 @@ namespace GDFUnity.Editor
             mainView.AddBody(new ProjectInformation(this));
 
             rootElement.Add(mainView);
-            rootElement.Add(new HelpButton("/unity/gup-configuration", Position.Absolute));
+            rootElement.Add(new HelpButton("/unity/configuration/overview", Position.Absolute));
         }
 
         public void RequestConfigurationUpdate()

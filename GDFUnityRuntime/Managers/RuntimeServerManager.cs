@@ -20,7 +20,7 @@ namespace GDFUnity
             get
             {
                 string agent;
-                Country country = _engine.AccountManager.Token.Country;
+                Country country = _engine.AccountManager.Country;
                 if (!_syncAgent.TryGetValue(country, out agent))
                 {
                     agent = BuildServerAddress(_engine.Configuration.CloudConfig.Sync[country]);

@@ -15,7 +15,7 @@ namespace Authentication
         [UnityTest]
         public IEnumerator CanSignOut()
         {
-            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
+            UnityJob task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitJob(task);
 
             task = GDF.Account.Authentication.SignOut();
@@ -53,7 +53,7 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
+            UnityJob task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitJob(task);
 
             Assert.IsTrue(GDF.Account.IsAuthenticated);
@@ -67,10 +67,10 @@ namespace Authentication
         [UnityTest]
         public IEnumerator CanConnectWithoutDisconnecting()
         {
-            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
+            UnityJob task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitJob(task);
 
-            task = GDF.Account.Authentication.Device.SignIn(country);
+            task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitJob(task);
 
             Assert.AreEqual(task.State, JobState.Success);
@@ -85,7 +85,7 @@ namespace Authentication
             Assert.IsFalse(triggeredImmediate);
             Assert.IsFalse(triggeredDelay);
 
-            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
+            UnityJob task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitJob(task);
 
             Assert.IsTrue(triggeredImmediate);
@@ -117,7 +117,7 @@ namespace Authentication
             Assert.IsFalse(triggeredImmediate);
             Assert.IsFalse(triggeredDelay);
 
-            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
+            UnityJob task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitJobStarted(task);
 
             Assert.IsTrue(triggeredImmediate);
@@ -149,7 +149,7 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
+            UnityJob task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitJob(task);
             
             Assert.IsTrue(GDF.Account.IsAuthenticated);

@@ -237,7 +237,6 @@ namespace GDFUnity.Editor
             splitView.Add(footer);
 
             Add(splitView);
-            //Add(logo);
         }
 
         public LoadingView() : this (new VisualElement())
@@ -248,6 +247,22 @@ namespace GDFUnity.Editor
         public void AddBody(VisualElement element)
         {
             _body.Add(element);
+        }
+
+        public void AddCriticalLoader(IJob task, Action<IJob> onDone = null)
+        {
+            SetBodyEnabled(false);
+            AddLoader(task, job =>
+            {
+                try
+                {
+                    onDone?.Invoke(job);
+                }
+                finally
+                {
+                    SetBodyEnabled(true);
+                }
+            });
         }
 
         public void AddLoader(IJob task, Action<IJob> onDone)
@@ -276,16 +291,11 @@ namespace GDFUnity.Editor
             }
         }
 
-        public void SetBodyEnabled(bool value)
+        private void SetBodyEnabled(bool value)
         {
             _body.SetEnabled(value);
         }
-
-        public void SetFooterEnabled(bool value)
-        {
-            _footer.SetEnabled(value);
-        }
-
+        
         private void CheckOperations(float _)
         {
             if (_operations.Count == 0)
@@ -295,7 +305,7 @@ namespace GDFUnity.Editor
                 _spinner.Stop();
             }
 
-            for (int i = _operations.Count - 1; i >=0; i--)
+            for (int i = _operations.Count - 1; i >= 0; i--)
             {
                 if (_operations[i].task.IsDone)
                 {
@@ -304,7 +314,7 @@ namespace GDFUnity.Editor
                     _operations.RemoveAt(i);
                 }
             }
-            
+
             UpdateProgressBar();
         }
 

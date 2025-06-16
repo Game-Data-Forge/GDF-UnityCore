@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using GDFFoundation;
+using GDFUnity.Editor.ServiceProviders;
 using UnityEditor;
 using UnityEngine.UIElements;
 
@@ -7,7 +9,7 @@ namespace GDFUnity.Editor
 {
     public class AccountMenu : ListView
     {
-        private class MenuLabel : VisualElement, IPoolItem
+        private class Element : VisualElement, IPoolItem
         {
             private TextElement _label;
 
@@ -17,7 +19,7 @@ namespace GDFUnity.Editor
                 set => _label.text = value;
             }
 
-            public MenuLabel() : base()
+            public Element() : base()
             {
                 style.paddingLeft = EditorGUIUtility.singleLineHeight;
                 style.whiteSpace = WhiteSpace.NoWrap;
@@ -41,11 +43,16 @@ namespace GDFUnity.Editor
             }
         }
 
-        private List<AccountViewProvider> _providers = null;
+        public event Action authenticationDisplayed;
+        public event Action accountDisplayed;
+
+        private List<IWindowView<AccountWindow>> _authenticationViews = null;
+        private List<IWindowView<AccountWindow>> _accountViews = null;
+        private List<IWindowView<AccountWindow>> _views = null;
 
         public AccountMenu(AccountWindow window)
         {
-            Pool<MenuLabel> pool = new Pool<MenuLabel>();
+            Pool<Element> pool = new Pool<Element>();
 
             style.flexGrow = 1;
             horizontalScrollingEnabled = false;
@@ -54,26 +61,46 @@ namespace GDFUnity.Editor
             makeItem = () => pool.Get();
             bindItem = (ve, i) =>
             {
-                MenuLabel label = ve as MenuLabel;
-                label.text = _providers[i].Name;
+                Element label = ve as Element;
+                label.text = _views[i].Name;
             };
-            destroyItem = (ve) => (ve as MenuLabel).Dispose();
-
-            BuildItems(window);
-
-            itemsSource = _providers;
+            destroyItem = (ve) => (ve as Element).Dispose();
         }
 
-        private void BuildItems(AccountWindow window)
+        public void BuildViews(AccountWindow window, AccountView view)
         {
-            if (_providers != null) return;
-
-            _providers = new List<AccountViewProvider>
+            _accountViews = new List<IWindowView<AccountWindow>>
             {
-                new AccountProviderInformation(),
-                new AccountProviderCredentials(window),
-                new AccountProviderManagement(window)
+                new InformationView(),
+                // new CredentialsView(window),
+                new ManagementView(window)
             };
+
+            _authenticationViews = new List<IWindowView<AccountWindow>>
+            {
+                new DeviceView(view),
+                new EmailPasswordView(view),
+                new LastSessionView(view)
+            };
+        }
+
+        public void AuthenticationDisplay()
+        {
+            SetDisplay(_authenticationViews);
+            authenticationDisplayed?.Invoke();
+        }
+
+        public void AccountDisplay()
+        {
+            SetDisplay(_accountViews);
+            accountDisplayed?.Invoke();
+        }
+
+        private void SetDisplay(List<IWindowView<AccountWindow>> views)
+        {
+            _views = views;
+            itemsSource = _views;
+            selectedIndex = 0;
         }
     }
 }

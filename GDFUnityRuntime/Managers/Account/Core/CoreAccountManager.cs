@@ -48,8 +48,12 @@ namespace GDFUnity
 
         internal Job job = null;
         protected override Job Job => job;
+        
+        public long Reference => Token.Account;
+        public int Range => Token.Range;
+        public Country Country => Token.Country;
 
-        public MemoryJwtToken Token => storage?.data;
+        protected MemoryJwtToken Token => storage?.data;
         public string Bearer => storage?.Bearer;
 
         public Notification<MemoryJwtToken> AccountChanging => _accountChanging;
@@ -62,7 +66,6 @@ namespace GDFUnity
 
         public abstract IRuntimeAccountManager.IRuntimeAuthentication Authentication { get; }
         public abstract IRuntimeAccountManager.IRuntimeCredentials Credentials { get; }
-
 
         public CoreAccountManager(IRuntimeEngine engine)
         {

@@ -33,7 +33,7 @@ namespace GDFUnity.Editor
             
             Add(addButton);
             Add(_searchField);
-            Add(new HelpButton("/unity/windows/devices-window", Position.Relative));
+            Add(new HelpButton("/unity/editor-windows/devices", Position.Relative));
         }
     }
 }

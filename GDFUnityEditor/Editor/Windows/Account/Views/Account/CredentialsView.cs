@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using GDFFoundation;
-using UnityEditor;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
 {
-    public class AccountProviderCredentials : AccountViewProvider
+    public class CredentialsView : IWindowView<AccountWindow>
     {
         private class Credentials : VisualElement, IPoolItem
         {
@@ -48,14 +47,14 @@ namespace GDFUnity.Editor
 
         static private Pool<Credentials> _pool = new Pool<Credentials>();
 
-        public override string Name => "Credentials";
-        public override string Title => "Account credentials";
-        public override string Help => null;
+        public string Name => "Credentials";
+        public string Title => "Account credentials";
+        public string Help => null;
 
         private AccountWindow _window;
         private VisualElement _body;
 
-        public AccountProviderCredentials(AccountWindow window)
+        public CredentialsView(AccountWindow window)
         {
             _window = window;
 
@@ -63,20 +62,19 @@ namespace GDFUnity.Editor
             _body.style.flexGrow = 1;
         }
 
-        public override void OnActivate(AccountView view, VisualElement rootElement)
+        public void OnActivate(AccountWindow window, WindowView<AccountWindow> view)
         {
-            rootElement.Add(_body);
+            view.Add(_body);
             Update();
         }
 
-        public override void OnDeactivate(AccountView view, VisualElement rootElement)
+        public void OnDeactivate(AccountWindow window, WindowView<AccountWindow> view)
         {
 
         }
 
         private void Update()
         {
-            _window.rootVisualElement.SetEnabled(false);
             foreach (VisualElement element in _body.hierarchy.Children())
             {
                 Credentials credentials = element as Credentials;
@@ -86,7 +84,7 @@ namespace GDFUnity.Editor
             }
             _body.Clear();
 
-            _window.mainView.AddLoader(GDF.Account.Credentials.Refresh(), job =>
+            _window.MainView.AddCriticalLoader(GDF.Account.Credentials.Refresh(), job =>
             {
                 List<GDFAccountSign> signs = GDF.Account.Credentials.Credentials;
 
@@ -96,8 +94,6 @@ namespace GDFUnity.Editor
                     credentials.SetSign(sign);
                     _body.Add(credentials);
                 }
-
-                _window.rootVisualElement.SetEnabled(true);
             });
         }
     }

@@ -2,7 +2,7 @@
 
 // Game-Data-Forge Solution
 // Written by CONTART Jean-François & BOULOGNE Quentin
-// GDFFoundation.csproj GDFDatabaseConnectionSsl.cs create at 2025/03/25 11:03:36
+// GDFFoundation.csproj DatabaseConnectionSecurity.cs create at 2025/03/25 11:03:36
 // ©2024-2025 idéMobi SARL FRANCE
 
 #endregion
@@ -20,8 +20,7 @@ namespace GDFFoundation
     ///     Represents an SSL/TLS encryption level for a database connection where the certificate authority (CA) is verified.
     /// </summary>
     [Serializable]
-    [Obsolete("to rename DatabaseConnectionSecurity")]
-    public enum GDFDatabaseConnectionSsl
+    public enum DatabaseConnectionSecurity
     {
         /// <summary>
         ///     Specifies that no SSL/TLS encryption is used for the database connection.

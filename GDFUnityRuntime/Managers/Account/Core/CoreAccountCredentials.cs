@@ -43,8 +43,7 @@ namespace GDFUnity
                 {
                     using IDisposable _ = _manager.Lock();
 
-                    MemoryJwtToken token = _manager.Token;
-                    string url = _manager.GenerateURL(token.Country, "/api/v1/accounts/" + token.Account + "/signs");
+                    string url = _manager.GenerateURL(_manager.Country, "/api/v1/accounts/" + _manager.Reference + "/signs");
 
                     IEnumerable<GDFAccountSign> response = _manager.Delete<IEnumerable<GDFAccountSign>>(handler, url);
                     if (_credentials == null)

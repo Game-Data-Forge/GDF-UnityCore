@@ -5,14 +5,14 @@ using static GDFUnity.CoreAccountManager;
 
 namespace GDFUnity
 {
-    public abstract class CoreAuthenticationReSign : IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeReSign
+    public abstract class CoreAuthenticationLastSession : IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeLastSession
     {
         public abstract bool IsAvailable { get; }
 
-        public abstract Job SignIn();
+        public abstract Job Login();
     }
 
-    public class CoreAuthenticationReSign<T> : CoreAuthenticationReSign where T : IRuntimeEngine
+    public class CoreAuthenticationLastSession<T> : CoreAuthenticationLastSession where T : IRuntimeEngine
     {
         private T _engine;
         private CoreAccountManager _manager;
@@ -28,7 +28,7 @@ namespace GDFUnity
         }
         private string _Container => $"{_engine.Configuration.Reference}/{_engine.EnvironmentManager.Environment.ToLongString()}";
 
-        public CoreAuthenticationReSign(T engine, CoreAccountManager manager)
+        public CoreAuthenticationLastSession(T engine, CoreAccountManager manager)
         {
             _engine = engine;
             _manager = manager;
@@ -37,13 +37,13 @@ namespace GDFUnity
             _manager.AccountChanged.onBackgroundThread += OnAccountChanged;
         }
 
-        ~CoreAuthenticationReSign()
+        ~CoreAuthenticationLastSession()
         {
             _manager.AccountChanging.onBackgroundThread -= OnAccountChanging;
             _manager.AccountChanged.onBackgroundThread -= OnAccountChanged;
         }
 
-        public override Job SignIn()
+        public override Job Login()
         {
             lock (_manager.LOCK)
             {

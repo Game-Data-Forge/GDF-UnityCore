@@ -23,7 +23,7 @@ namespace GDFFoundation
     {
         #region Constants
 
-        private const string _ISO_8601_FORMAT = "yyyy-MM-dd HH:mm:ss.fff";
+        private const string _ISO_8601_FORMAT = "yyyy-MM-dd HH:mm:ss.ffffff";
 
         #endregion
 
@@ -33,6 +33,7 @@ namespace GDFFoundation
         ///     Get the current GDF <see cref="DateTime" />.
         /// </summary>
         static public DateTime Now => DateTime.UtcNow;
+        static public string NowISO => ToISO(Now);
 
         #endregion
 

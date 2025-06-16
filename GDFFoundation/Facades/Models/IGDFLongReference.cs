@@ -13,6 +13,10 @@ namespace GDFFoundation
     {
         #region Instance fields and properties
 
+        /// <summary>
+        /// Gets or sets the unique identifier for the entity. This property represents a reference of type <see cref="long"/>.
+        /// Access to modify this property is restricted by the <see cref="GDFDbAccessAttribute"/> with <see cref="GDFDbColumnAccess"/> set to <see cref="GDFDbColumnAccess.Deny"/> for updates.
+        /// </summary>
         [GDFDbAccess(updateAccess = GDFDbColumnAccess.Deny)]
         public long Reference { get; }
 

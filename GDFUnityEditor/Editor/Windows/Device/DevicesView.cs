@@ -11,17 +11,13 @@ namespace GDFUnity.Editor
         private List<Device> _devices;
         private DevicesToolbar _toolbar;
 
-        public DevicesView(DevicesWindow window, DevicesToolbar toolbar) : base(ScrollViewMode.Vertical)
+        public DevicesView(DevicesToolbar toolbar) : base(ScrollViewMode.Vertical)
         {
-            window.mainView.onDisplayChanged += display => {
-                if (display == LoadingView.Display.PreLoader) return;
+            _toolbar = toolbar;
+            _devices = GDFEditor.Device.Devices;
 
-                _toolbar = toolbar;
-                _devices = GDFEditor.Device.Devices;
-
-                GDFEditor.Device.onDeviceChanged += UpdateList;
-                UpdateList();
-            };
+            GDFEditor.Device.onDeviceChanged += UpdateList;
+            UpdateList();
         }
 
         public void OnDestroy()

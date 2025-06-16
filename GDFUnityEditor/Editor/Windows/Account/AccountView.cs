@@ -1,51 +1,71 @@
+using System;
+using GDFFoundation;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
 {
-    public class AccountView : ScrollView
+    public class AccountView : WindowView<AccountWindow>
     {
-        private AccountViewProvider _current;
+        internal ButtonList buttons;
+        internal Environment environment;
+        internal CountryField country;
+        internal Toggle consent;
 
-        private TitleLabel _title;
-        private VisualElement _body;
-        private AccountWindow _window;
+        public AccountWindow Window => _window;
 
-        public AccountView(AccountWindow window) : base(ScrollViewMode.Vertical)
+        public AccountView(AccountWindow window) : base(window)
         {
-            _window = window;
-            style.flexGrow = 1;
-
-            _title = new TitleLabel();
-            _title.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Bold;
-            _title.style.marginTop = 23;
-            _title.style.marginBottom = 20;
-            _title.style.marginLeft = 23;
-            _title.style.marginRight = 23;
-
-            _body = new VisualElement();
-            _body.style.paddingLeft = 23;
-            _body.style.paddingRight = 23;
-
-            _window.menu.selectionChanged += selection => {
-                foreach (object item in selection)
-                {
-                    SetProvider(item as AccountViewProvider);
-                    return;
-                }
+            AccountMenu menu = _window.menu;
+            menu.selectionChanged += selection =>
+            {
+                Current = menu.selectedItem as IWindowView<AccountWindow>;
+            };
+            menu.itemsSourceChanged += () =>
+            {
+                Current = menu.selectedItem as IWindowView<AccountWindow>;
+            };
+            menu.accountDisplayed += () =>
+            {
+                buttons.style.display = DisplayStyle.None;
+            };
+            menu.authenticationDisplayed += () =>
+            {
+                buttons.style.display = DisplayStyle.Flex;
             };
 
-            Add(_title);
-            Add(_body);
+            buttons = new ButtonList();
+            buttons.style.flexDirection = FlexDirection.Row;
+            buttons.style.paddingTop = 20;
+            buttons.style.paddingBottom = 20;
+            buttons.style.flexShrink = 0;
+
+            environment = new Environment(window.MainView);
+            environment.style.marginBottom = 20;
+            environment.style.marginLeft = 0;
+
+            country = new CountryField();
+            country.style.marginBottom = 10;
+
+            consent = new Toggle("Agree to the TOS");
+            consent.style.marginTop = 40;
+
+            AddBody(buttons);
         }
 
-        public void SetProvider(AccountViewProvider provider)
+        protected override void SetView(IWindowView<AccountWindow> view)
         {
-            _current?.OnDeactivate(this, _body);
-            _body.Clear();
-            _current = provider;
+            buttons.Clear();
+            base.SetView(view);
+        }
+
+        internal void Load(IJob load, Action<IJob> onDone = null)
+        {
+            _window.MainView.AddCriticalLoader(load, onDone);
+        }
+
+        internal void Update()
+        {
             _title.text = _current.Title;
-            _window.help.url = provider.Help;
-            _current.OnActivate(this, _body);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
+            UnityJob task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitTask(task);
 
             Assert.AreEqual(task.State, JobState.Success);
@@ -27,7 +27,7 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Account.Authentication.Device.SignIn(country);
+            UnityJob task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitTask(task);
 
             Assert.AreEqual(task.State, JobState.Success);
@@ -39,7 +39,7 @@ namespace Authentication
             Assert.AreEqual(task.State, JobState.Success);
             Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            task = GDF.Account.Authentication.Device.SignIn(country);
+            task = GDF.Account.Authentication.Device.Login(country);
             yield return WaitTask(task);
 
             Assert.AreEqual(task.State, JobState.Success);

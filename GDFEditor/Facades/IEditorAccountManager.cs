@@ -1,3 +1,4 @@
+using GDFFoundation;
 using GDFRuntime;
 
 namespace GDFEditor
@@ -14,14 +15,14 @@ namespace GDFEditor
             {
                 
             }
-            public interface IEditorReSign : IRuntimeReSign
+            public interface IEditorLastSession : IRuntimeLastSession
             {
                 
             }
 
             public new IEditorDevice Device { get; }
             public new IEditorEmailPassword EmailPassword { get; }
-            public new IEditorReSign ReSign { get; }
+            public new IEditorLastSession LastSession { get; }
 
         }
 
@@ -30,6 +31,7 @@ namespace GDFEditor
             
         }
 
+        public MemoryJwtToken Token { get; }
         public new IEditorAuthentication Authentication { get; }
         public new IEditorCredentials Credentials { get; }
     }

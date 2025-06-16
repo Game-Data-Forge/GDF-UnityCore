@@ -1,13 +1,12 @@
 using GDFFoundation;
-using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
 {
-    public class AccountProviderInformation : AccountViewProvider
+    public class InformationView : IWindowView<AccountWindow>
     {
-        public override string Name => "Information";
-        public override string Title => "Account information";
-        public override string Help => null;
+        public string Name => "Information";
+        public string Title => "Account information";
+        public string Help => "/unity/editor-windows/account/account/information";
 
         private LabelField _environment;
         private LabelField _country;
@@ -17,7 +16,7 @@ namespace GDFUnity.Editor
         private LabelField _token;
         private LabelField _bearer;
 
-        public AccountProviderInformation()
+        public InformationView()
         {
             _environment = new LabelField();
             _environment.text = "Environment";
@@ -44,7 +43,7 @@ namespace GDFUnity.Editor
             _bearer.text = "JWT Bearer";
         }
 
-        public override void OnActivate(AccountView view, VisualElement rootElement)
+        public void OnActivate(AccountWindow window, WindowView<AccountWindow> view)
         {
             Country country = GDFEditor.Account.Token.Country;
             MemoryJwtToken token = GDFEditor.Account.Token;
@@ -57,18 +56,15 @@ namespace GDFUnity.Editor
             _token.value = $"{token.Token}";
             _bearer.value = $"{GDFEditor.Account.Bearer}";
             
-            rootElement.Add(_environment);
-            rootElement.Add(_country);
-            rootElement.Add(_channel);
-            rootElement.Add(_range);
-            rootElement.Add(_account);
-            rootElement.Add(_token);
-            rootElement.Add(_bearer);
+            view.Add(_environment);
+            view.Add(_country);
+            view.Add(_channel);
+            view.Add(_range);
+            view.Add(_account);
+            view.Add(_token);
+            view.Add(_bearer);
         }
 
-        public override void OnDeactivate(AccountView view, VisualElement rootElement)
-        {
-            
-        }
+        public void OnDeactivate(AccountWindow window, WindowView<AccountWindow> view) { }
     }
 }

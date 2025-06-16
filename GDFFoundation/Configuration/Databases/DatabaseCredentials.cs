@@ -21,6 +21,19 @@ namespace GDFFoundation
     [Serializable]
     public class DatabaseCredentials
     {
+
+        public static DatabaseCredentials Default = new DatabaseCredentials()
+        {
+            Engine = DatabaseEngine.MySql,
+            Server = "127.0.0.1",
+            User = "User",
+            Database = "Database",
+            TableFormat = "Unknwon_{0}",
+            Port = 3306,
+            Password = "YourPassword",
+            Secure = DatabaseConnectionSecurity.Preferred
+        };
+        
         #region Instance fields and properties
 
         /// <summary>
@@ -50,7 +63,7 @@ namespace GDFFoundation
         /// <summary>
         ///     The Secure property represents the SSL/TLS security level for a database connection.
         /// </summary>
-        public GDFDatabaseConnectionSsl Secure { set; get; } = GDFDatabaseConnectionSsl.Required;
+        public DatabaseConnectionSecurity Secure { set; get; } = DatabaseConnectionSecurity.Required;
 
         /// <summary>
         ///     Represents the credentials for connecting to a server.
@@ -99,9 +112,31 @@ namespace GDFFoundation
 
         #region Instance methods
 
+        /// <summary>
+        /// Creates a copy of the current <see cref="DatabaseCredentials"/> instance.
+        /// </summary>
+        /// <returns>
+        /// A new <see cref="DatabaseCredentials"/> instance with the same property values as the original.
+        /// </returns>
         public DatabaseCredentials Copy()
         {
             return new DatabaseCredentials(this);
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="DatabaseCredentials"/> with the specified table format, while retaining the properties of the original instance.
+        /// </summary>
+        /// <param name="tableFormat">
+        /// The new table format to be applied to the copied <see cref="DatabaseCredentials"/> instance.
+        /// </param>
+        /// <returns>
+        /// A new instance of <see cref="DatabaseCredentials"/> with the updated table format.
+        /// </returns>
+        public DatabaseCredentials CopyWithNewTableFormat(string tableFormat)
+        {
+            DatabaseCredentials result = new DatabaseCredentials(this);
+            result.TableFormat = tableFormat;
+            return result;
         }
 
         /// <summary>
@@ -171,7 +206,7 @@ namespace GDFFoundation
         /// <summary>
         ///     The Secure property represents the SSL/TLS security level for a database connection.
         /// </summary>
-        public GDFDatabaseConnectionSsl Secure { set; get; } = GDFDatabaseConnectionSsl.Required;
+        public DatabaseConnectionSecurity Secure { set; get; } = DatabaseConnectionSecurity.Required;
 
         /// <summary>
         ///     Represents the credentials for connecting to a server.

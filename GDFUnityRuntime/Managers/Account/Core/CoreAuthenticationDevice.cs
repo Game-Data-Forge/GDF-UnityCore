@@ -8,7 +8,7 @@ namespace GDFUnity
 {
     public abstract class CoreAuthenticationDevice : IRuntimeAccountManager.IRuntimeAuthentication.IRuntimeDevice
     {
-        public abstract Job SignIn(Country country);
+        public abstract Job Login(Country country);
     }
 
     public class CoreAuthenticationDevice<T> : CoreAuthenticationDevice where T : IRuntimeEngine
@@ -22,7 +22,7 @@ namespace GDFUnity
             _manager = manager;
         }
 
-        public override Job SignIn(Country country)
+        public override Job Login(Country country)
         {
             lock (_manager.LOCK)
             {

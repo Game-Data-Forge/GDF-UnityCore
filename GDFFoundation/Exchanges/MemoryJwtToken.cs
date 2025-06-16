@@ -27,6 +27,7 @@ namespace GDFFoundation
         public long Project { get; set; }
         public int Range { get; set; }
         public string Token { get; set; }
+        public DateTime LastSync { get; set; }
 
         #endregion
 
@@ -39,6 +40,7 @@ namespace GDFFoundation
             Account = 0;
             Range = 0;
             Token = string.Empty;
+            LastSync = GDFDatetime.Now;
         }
 
         #endregion

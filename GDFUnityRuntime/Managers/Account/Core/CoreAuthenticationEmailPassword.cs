@@ -10,7 +10,7 @@ namespace GDFUnity
     {
         public abstract Job Register(Country country, string email);
         public abstract Job Rescue(Country country, string email);
-        public abstract Job SignIn(Country country, string email, string password);
+        public abstract Job Login(Country country, string email, string password);
     }
 
     public class CoreAuthenticationEmailPassword<T> : CoreAuthenticationEmailPassword where T : IRuntimeEngine
@@ -92,7 +92,7 @@ namespace GDFUnity
             }
         }
 
-        public override Job SignIn(Country country, string email, string password)
+        public override Job Login(Country country, string email, string password)
         {
             lock (_manager.LOCK)
             {

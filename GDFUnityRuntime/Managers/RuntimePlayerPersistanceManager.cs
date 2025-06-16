@@ -143,7 +143,7 @@ namespace GDFUnity
 
         public void Purge(IJobHandler handler)
         {
-            string path = GetFilePath(_engine.AccountManager.Token);
+            string path = GetFilePath(_engine.AccountManager.Reference);
             if (File.Exists(path))
             {
                 File.Delete(path);
@@ -177,16 +177,16 @@ namespace GDFUnity
 
             handler.StepAmount = 2;
 
-            string path = GetFilePath(token);
+            string path = GetFilePath(token.Account);
 
             handler.Step();
 
             _connection = new SQLiteDbConnection(path);
         }
 
-        private string GetFilePath(MemoryJwtToken token)
+        private string GetFilePath(long account)
         {
-            _root = Path.Combine(GDFUserSettings.Instance.GetDataPath(_engine.Configuration.Reference), token.Account.ToString());
+            _root = Path.Combine(GDFUserSettings.Instance.GetDataPath(_engine.Configuration.Reference), account.ToString());
             if (!Directory.Exists(_root))
             {
                 Directory.CreateDirectory(_root);

@@ -1,4 +1,5 @@
 using GDFEditor;
+using GDFFoundation;
 
 namespace GDFUnity.Editor
 {
@@ -6,7 +7,9 @@ namespace GDFUnity.Editor
     {
         IEditorAccountManager.IEditorAuthentication IEditorAccountManager.Authentication => _authentication;
         IEditorAccountManager.IEditorCredentials IEditorAccountManager.Credentials => _credentials;
-        
+
+        MemoryJwtToken IEditorAccountManager.Token => Token;
+
         public EditorAccountManager(IEditorEngine engine) : base(engine)
         {
             _authentication = new EditorAccountAuthentication(engine, this);
