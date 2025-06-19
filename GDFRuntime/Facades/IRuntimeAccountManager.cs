@@ -7,6 +7,11 @@ namespace GDFRuntime
     {
         public interface IRuntimeAuthentication
         {
+            public interface IRuntimeLocal
+            {
+                public bool Exists { get; }
+                public Job Login();
+            }
             public interface IRuntimeDevice
             {
                 public Job Login(Country country);
@@ -23,6 +28,7 @@ namespace GDFRuntime
                 public Job Login();
             }
 
+            public IRuntimeLocal Local { get; }
             public IRuntimeDevice Device { get; }
             public IRuntimeEmailPassword EmailPassword { get; }
             public IRuntimeLastSession LastSession { get; }
@@ -37,6 +43,7 @@ namespace GDFRuntime
         }
 
         public bool IsAuthenticated { get; }
+        public bool IsLocal { get; }
         public long Reference { get; }
         public int Range { get; }
         public Country Country { get; }

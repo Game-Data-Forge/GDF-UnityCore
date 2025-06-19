@@ -118,7 +118,7 @@ namespace GDFUnity
                     string url = _manager.GenerateURL(country, "/api/v1/authentication/email-password/sign-in");
                     bearer = _manager.Post<string>(handler.Split(), url, payload);
                     _manager.SetToken(handler.Split(), new TokenStorage(country, bearer));
-                }, "Email/password sign in");
+                }, "Email/password login");
 
                 return _manager.job;
             }

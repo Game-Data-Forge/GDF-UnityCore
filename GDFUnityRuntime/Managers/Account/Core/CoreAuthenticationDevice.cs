@@ -75,7 +75,7 @@ namespace GDFUnity
                         throw;
                     }
                     _manager.SetToken(handler.Split(), new TokenStorage(country, bearer));
-                }, "Device sign in");
+                }, "Device login");
 
                 return _manager.job;
             }

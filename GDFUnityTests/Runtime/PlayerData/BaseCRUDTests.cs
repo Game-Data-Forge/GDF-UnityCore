@@ -11,10 +11,8 @@ using GDFRuntime;
 
 namespace PlayerData
 {
-    public class CRUDTests
+    public abstract class BaseCRUDTests
     {
-        Country country = Country.FR;
-
         [Test]
         public void CannotAddNull()
         {
@@ -312,7 +310,7 @@ namespace PlayerData
             Assert.AreEqual(false, state.state.HasFlag(DataState.Syncable));
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             state = GDF.Player.GetState(data);
             
@@ -329,7 +327,7 @@ namespace PlayerData
             Assert.AreEqual(true, state.state.HasFlag(DataState.Syncable));
 
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = GDF.Player.Get<GDFTestPlayerData>(reference);
             
@@ -352,7 +350,7 @@ namespace PlayerData
         public IEnumerator SetUp()
         {
             UnityJob task = GDF.Launch;
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             yield return Connect();
 
@@ -364,24 +362,20 @@ namespace PlayerData
         public IEnumerator TearDown()
         {
             UnityJob task = GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             GDF.Kill();
         }
         
-        private IEnumerator Connect()
-        {
-            UnityJob task = GDF.Account.Authentication.Device.Login(country);
-            yield return WaitTask(task);
-        }
+        protected abstract IEnumerator Connect();
 
-        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
+        protected IEnumerator WaitJob(UnityJob job, JobState expectedState = JobState.Success)
         {
-            yield return task;
+            yield return job;
 
-            if (task.State != expectedState)
+            if (job.State != expectedState)
             {
-                Assert.Fail("Task '" + task.Name + "' finished with the unexpected state '" + task.State + "' !\n" + task.Error);
+                Assert.Fail("Task '" + job.Name + "' finished with the unexpected state '" + job.State + "' !\n" + job.Error);
             }
         }
     }

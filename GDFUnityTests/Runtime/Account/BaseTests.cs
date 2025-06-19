@@ -6,44 +6,49 @@ using UnityEngine.TestTools;
 
 namespace Account
 {
-    public class CommonTests
+    public abstract class BaseTests
     {
-        Country country = Country.FR;
-
         [UnityTest]
         public IEnumerator CanDelete()
         {
             long lastAccount = GDF.Account.Reference;
 
             UnityJob task = GDF.Account.Delete();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
-            task = GDF.Account.Authentication.Device.Login(country);
-            yield return WaitTask(task);
+            task = Authenticate();
+            yield return WaitJob(task);
 
-            Assert.AreNotEqual(lastAccount, GDF.Account.Reference);
+            if (!GDF.Account.IsLocal)
+            {
+                Assert.AreNotEqual(lastAccount, GDF.Account.Reference);
+            }
+
+            Assert.IsTrue(GDF.Account.IsAuthenticated);
         }
 
         [UnitySetUp]
         public IEnumerator Setup()
         {
             UnityJob task = GDF.Launch;
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
-            task = GDF.Account.Authentication.Device.Login(country);
-            yield return WaitTask(task);
+            task = Authenticate();
+            yield return WaitJob(task);
         }
 
         [UnityTearDown]
         public IEnumerator TearDown()
         {
             UnityJob task = GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             GDF.Kill();
         }
 
-        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
+        protected abstract Job Authenticate();
+
+        protected IEnumerator WaitJob(UnityJob task, JobState expectedState = JobState.Success)
         {
             yield return task;
 

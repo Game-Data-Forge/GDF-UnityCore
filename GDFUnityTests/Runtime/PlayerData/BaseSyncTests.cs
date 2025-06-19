@@ -8,9 +8,8 @@ using GDFUnity.Tests;
 
 namespace PlayerData
 {
-    public class SyncTests
+    public abstract class BaseSyncTests
     {
-
         [UnityTest]
         public IEnumerator KnowsIfThereAreDataToSync()
         {
@@ -27,14 +26,14 @@ namespace PlayerData
             Assert.AreEqual(false, GDF.Player.HasDataToSync);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.AreEqual(true, GDF.Player.HasDataToSync);
 
             GDF.Player.Delete(data);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.AreEqual(true, GDF.Player.HasDataToSync);
         }
@@ -56,7 +55,7 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value1);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data.TestString = value2;
             
@@ -67,7 +66,7 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value2);
 
             task = GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             yield return Connect();
 
@@ -93,22 +92,22 @@ namespace PlayerData
             }
 
             UnityJob task = GDF.Player.Sync();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             List<GDFTestPlayerData> list = GDF.Player.Get<GDFTestPlayerData>();
             Assert.GreaterOrEqual(list.Count, count);
             
             task = GDF.Player.Purge();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             list = GDF.Player.Get<GDFTestPlayerData>();
             Assert.AreEqual(0, list.Count);
 
             task = GDF.Player.Sync();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             list = GDF.Player.Get<GDFTestPlayerData>();
             Assert.GreaterOrEqual(list.Count, 0);
@@ -132,10 +131,10 @@ namespace PlayerData
             }
 
             UnityJob task = GDF.Player.Sync();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             list = GDF.Player.Get<GDFTestPlayerData>();
             Assert.Greater(list.Count, 0);
@@ -145,7 +144,7 @@ namespace PlayerData
         public IEnumerator SetUp()
         {
             UnityJob task = GDF.Launch;
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             yield return Connect();
 
@@ -157,24 +156,20 @@ namespace PlayerData
         public IEnumerator TearDown()
         {
             UnityJob task = GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             GDF.Kill();
         }
-        
-        private IEnumerator Connect()
-        {
-            UnityJob task = GDF.Account.Authentication.Device.Login(Country.FR);
-            yield return WaitTask(task);
-        }
 
-        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
-        {
-            yield return task;
+        protected abstract IEnumerator Connect();
 
-            if (task.State != expectedState)
+        protected IEnumerator WaitJob(UnityJob job, JobState expectedState = JobState.Success)
+        {
+            yield return job;
+
+            if (job.State != expectedState)
             {
-                Assert.Fail("Task '" + task.Name + "' finished with the unexpected state '" + task.State + "' !\n" + task.Error);
+                Assert.Fail("Task '" + job.Name + "' finished with the unexpected state '" + job.State + "' !\n" + job.Error);
             }
         }
     }

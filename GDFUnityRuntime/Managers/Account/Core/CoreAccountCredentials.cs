@@ -35,9 +35,17 @@ namespace GDFUnity
 
         public override Job Refresh()
         {
+            string jobName = "Get account credentials";
+            
             lock (_manager.LOCK)
             {
                 _manager.EnsureUseable();
+
+                if (_manager.IsLocal)
+                {
+                    _manager.job = Job.Success(jobName);
+                    return _manager.job;
+                }
 
                 _manager.job = Job.Run(handler =>
                 {
@@ -59,7 +67,7 @@ namespace GDFUnity
                     {
                         _credentials.Add(sign);
                     }
-                }, "Get account credentials");
+                }, jobName);
 
                 return _manager.job;
             }

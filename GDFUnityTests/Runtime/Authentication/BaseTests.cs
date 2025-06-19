@@ -6,16 +6,51 @@ using UnityEngine.TestTools;
 
 namespace Authentication
 {
-    public class CommonTests
+    public abstract class BaseTests
     {
         bool triggeredImmediate = false;
         bool triggeredDelay = false;
-        Country country = Country.FR;
+        
+        [UnityTest]
+        public IEnumerator CanSignIn()
+        {
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
+
+            UnityJob task = Authenticate();
+            yield return WaitJob(task);
+
+            Assert.AreEqual(task.State, JobState.Success);
+            Assert.IsTrue(GDF.Account.IsAuthenticated);
+        }
+        
+        [UnityTest]
+        public IEnumerator CanReSignIn()
+        {
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
+
+            UnityJob task = Authenticate();
+            yield return WaitJob(task);
+
+            Assert.AreEqual(task.State, JobState.Success);
+            Assert.IsTrue(GDF.Account.IsAuthenticated);
+
+            task = GDF.Account.Authentication.SignOut();
+            yield return WaitJob(task);
+
+            Assert.AreEqual(task.State, JobState.Success);
+            Assert.IsFalse(GDF.Account.IsAuthenticated);
+
+            task = Authenticate();
+            yield return WaitJob(task);
+
+            Assert.AreEqual(task.State, JobState.Success);
+            Assert.IsTrue(GDF.Account.IsAuthenticated);
+        }
 
         [UnityTest]
         public IEnumerator CanSignOut()
         {
-            UnityJob task = GDF.Account.Authentication.Device.Login(country);
+            UnityJob task = Authenticate();
             yield return WaitJob(task);
 
             task = GDF.Account.Authentication.SignOut();
@@ -53,7 +88,7 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Account.Authentication.Device.Login(country);
+            UnityJob task = Authenticate();
             yield return WaitJob(task);
 
             Assert.IsTrue(GDF.Account.IsAuthenticated);
@@ -67,10 +102,10 @@ namespace Authentication
         [UnityTest]
         public IEnumerator CanConnectWithoutDisconnecting()
         {
-            UnityJob task = GDF.Account.Authentication.Device.Login(country);
+            UnityJob task = Authenticate();
             yield return WaitJob(task);
 
-            task = GDF.Account.Authentication.Device.Login(country);
+            task = Authenticate();
             yield return WaitJob(task);
 
             Assert.AreEqual(task.State, JobState.Success);
@@ -85,7 +120,7 @@ namespace Authentication
             Assert.IsFalse(triggeredImmediate);
             Assert.IsFalse(triggeredDelay);
 
-            UnityJob task = GDF.Account.Authentication.Device.Login(country);
+            UnityJob task = Authenticate();
             yield return WaitJob(task);
 
             Assert.IsTrue(triggeredImmediate);
@@ -117,7 +152,7 @@ namespace Authentication
             Assert.IsFalse(triggeredImmediate);
             Assert.IsFalse(triggeredDelay);
 
-            UnityJob task = GDF.Account.Authentication.Device.Login(country);
+            UnityJob task = Authenticate();
             yield return WaitJobStarted(task);
 
             Assert.IsTrue(triggeredImmediate);
@@ -134,6 +169,8 @@ namespace Authentication
             task = GDF.Account.Authentication.SignOut();
             yield return WaitJobStarted(task);
 
+            yield return null;
+
             Assert.IsTrue(triggeredImmediate);
             Assert.IsFalse(task.IsDone);
             
@@ -149,7 +186,7 @@ namespace Authentication
         {
             Assert.IsFalse(GDF.Account.IsAuthenticated);
 
-            UnityJob task = GDF.Account.Authentication.Device.Login(country);
+            UnityJob task = Authenticate();
             yield return WaitJob(task);
             
             Assert.IsTrue(GDF.Account.IsAuthenticated);
@@ -159,6 +196,8 @@ namespace Authentication
             
             Assert.IsFalse(GDF.Account.IsAuthenticated);
         }
+
+        protected abstract Job Authenticate();
 
         private void OnAutenticationChanged(MemoryJwtToken token)
         {

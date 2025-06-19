@@ -33,8 +33,8 @@ namespace GDFUnity
             handler.StepAmount = 2;
             using (IDBConnection connection = _connection.Open())
             {
-                PlayerReferenceDAL.Instance.Validate(handler.Split(), _connection);
-                PlayerReferenceDAL.Instance.Get(handler.Split(), _connection, references);
+                PlayerReferenceDAL.Instance.Validate(handler.Split(), connection);
+                PlayerReferenceDAL.Instance.Get(handler.Split(), connection, references);
             }
         }
         
@@ -134,11 +134,10 @@ namespace GDFUnity
 
         public void SaveSyncDate(IJobHandler handler, DateTime syncDate)
         {
-            using (IDBConnection connection = _connection.Open())
-            {
-                PlayerSyncDateDAL.Instance.Validate(handler.Split(), _connection);
-                PlayerSyncDateDAL.Instance.Record(handler.Split(), connection, syncDate);
-            }
+            using IDBConnection connection = _connection.Open();
+            
+            PlayerSyncDateDAL.Instance.Validate(handler.Split(), _connection);
+            PlayerSyncDateDAL.Instance.Record(handler.Split(), connection, syncDate);
         }
 
         public void Purge(IJobHandler handler)
@@ -147,6 +146,21 @@ namespace GDFUnity
             if (File.Exists(path))
             {
                 File.Delete(path);
+            }
+        }
+
+        public void Migrate(IJobHandler handler)
+        {
+            string localPath = GetFilePath(0);
+            string onlinePath = GetFilePath(_engine.AccountManager.Reference);
+
+            if (File.Exists(localPath))
+            {
+                File.Copy(localPath, onlinePath, true);
+            }
+            else if (File.Exists(onlinePath))
+            {
+                File.Delete(onlinePath);
             }
         }
 

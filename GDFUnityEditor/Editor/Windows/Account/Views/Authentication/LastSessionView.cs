@@ -28,6 +28,12 @@ namespace GDFUnity.Editor.ServiceProviders
             GDF.Account.AccountChanged.onMainThread += OnAccountChanged;
         }
 
+        ~LastSessionView()
+        {
+            GDFEditor.Environment.EnvironmentChanged.onMainThread -= OnEnvironmentChanged;
+            GDF.Account.AccountChanged.onMainThread -= OnAccountChanged;
+        }
+
         protected override void OnActivate(AccountWindow window, AccountView view)
         {
             view.buttons.Add(_login);

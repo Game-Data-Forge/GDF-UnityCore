@@ -8,7 +8,7 @@ using GDFUnity.Tests;
 
 namespace PlayerData
 {
-    public class GameSaveCRUDTests
+    public abstract class BaseGameSaveCRUDTests
     {
         [Test]
         public void CannotUseInvalidGameSave()
@@ -37,10 +37,10 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value1);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = new GDFTestPlayerData();
             data.TestString = value2;
@@ -54,10 +54,10 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value2);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             task = GDF.Player.LoadGameSave(0);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = GDF.Player.Get<GDFTestPlayerData>(reference);
             Assert.AreEqual(data, GDF.Player.Get(reference));
@@ -88,10 +88,10 @@ namespace PlayerData
             Assert.AreEqual(list[1].TestString, value2);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = new GDFTestPlayerData();
             data.TestString = value11;
@@ -129,10 +129,10 @@ namespace PlayerData
             Assert.AreEqual(data1.TestString, value1);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             GDFTestChildPlayerData data2 = new GDFTestChildPlayerData();
             data2.TestString = value2;
@@ -163,10 +163,10 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value1);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = new GDFTestPlayerData();
             data.TestString = value2;
@@ -206,10 +206,10 @@ namespace PlayerData
             GDF.Player.Add(data);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = new GDFTestPlayerData();
             data.TestString = value11;
@@ -250,10 +250,10 @@ namespace PlayerData
             GDF.Player.Add(reference, data);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = new GDFTestPlayerData();
             data.TestString = value2;
@@ -291,10 +291,10 @@ namespace PlayerData
             GDF.Player.Add(reference, data);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = new GDFTestPlayerData();
             data.TestString = value2;
@@ -325,10 +325,10 @@ namespace PlayerData
             GDF.Player.Add(reference, data);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = new GDFTestPlayerData();
             data.TestString = value2;
@@ -396,10 +396,10 @@ namespace PlayerData
             GDF.Player.Add(reference, data);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = new GDFTestPlayerData();
             data.TestString = value2;
@@ -434,7 +434,7 @@ namespace PlayerData
         public IEnumerator SetUp()
         {
             UnityJob task = GDF.Launch;
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             yield return Connect();
 
@@ -446,24 +446,20 @@ namespace PlayerData
         public IEnumerator TearDown()
         {
             UnityJob task = GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             GDF.Kill();
         }
-        
-        private IEnumerator Connect()
-        {
-            UnityJob task = GDF.Account.Authentication.Device.Login(Country.FR);
-            yield return WaitTask(task);
-        }
 
-        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
-        {
-            yield return task;
+        protected abstract IEnumerator Connect();
 
-            if (task.State != expectedState)
+        protected IEnumerator WaitJob(UnityJob job, JobState expectedState = JobState.Success)
+        {
+            yield return job;
+
+            if (job.State != expectedState)
             {
-                Assert.Fail("Task '" + task.Name + "' finished with the unexpected state '" + task.State + "' !\n" + task.Error);
+                Assert.Fail("Task '" + job.Name + "' finished with the unexpected state '" + job.State + "' !\n" + job.Error);
             }
         }
     }

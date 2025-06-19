@@ -10,7 +10,7 @@ namespace GDFUnity
     {
         internal readonly object LOCK = new object();
 
-        internal class TokenStorage
+        public class TokenStorage
         {
             [JsonIgnore]
             public MemoryJwtToken data;
@@ -49,9 +49,9 @@ namespace GDFUnity
         internal Job job = null;
         protected override Job Job => job;
         
-        public long Reference => Token.Account;
-        public int Range => Token.Range;
-        public Country Country => Token.Country;
+        public long Reference => Token?.Account ?? -1;
+        public int Range => Token?.Range ?? -1;
+        public Country Country => Token?.Country ?? Country.None;
 
         protected MemoryJwtToken Token => storage?.data;
         public string Bearer => storage?.Bearer;
@@ -63,6 +63,7 @@ namespace GDFUnity
         public Notification AccountDeleted => _accountDeleted;
 
         public abstract bool IsAuthenticated { get; }
+        public abstract bool IsLocal { get; }
 
         public abstract IRuntimeAccountManager.IRuntimeAuthentication Authentication { get; }
         public abstract IRuntimeAccountManager.IRuntimeCredentials Credentials { get; }
@@ -132,11 +133,11 @@ namespace GDFUnity
 
     public class CoreAccountManager<T, U> : CoreAccountManager where T : CoreAccountAuthentication where U : CoreAccountCredentials
     {
-
         protected T _authentication;
         protected U _credentials;
 
         public override bool IsAuthenticated => storage != null;
+        public override bool IsLocal => Reference == 0;
 
         public override IRuntimeAccountManager.IRuntimeAuthentication Authentication => _authentication;
         public override IRuntimeAccountManager.IRuntimeCredentials Credentials => _credentials;
@@ -166,8 +167,15 @@ namespace GDFUnity
 
                     AccountDeleting.Invoke(handler.Split());
 
-                    string url = GenerateURL(token.Country, "/api/v1/accounts/" + token.Account);
-                    Delete<int>(handler.Split(), url);
+                    if (!IsLocal)
+                    {
+                        string url = GenerateURL(token.Country, "/api/v1/accounts/" + token.Account);
+                        Delete<int>(handler.Split(), url);
+                    }
+                    else
+                    {
+                        handler.Step();
+                    }
 
                     AccountDeleted.Invoke(handler.Split());
                 }, "Delete Account");

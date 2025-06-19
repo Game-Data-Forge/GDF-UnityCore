@@ -7,7 +7,7 @@ using GDFUnity.Tests;
 
 namespace PlayerData
 {
-    public class GameSaveIOTests
+    public abstract class BaseGameSaveIOTests
     {
         [UnityTest]
         public IEnumerator CanChangeGameSave()
@@ -17,7 +17,7 @@ namespace PlayerData
             UnityJob task = GDF.Player.LoadGameSave(1);
             Assert.AreEqual(gameSave, GDF.Player.GameSave);
 
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.AreEqual(1, GDF.Player.GameSave);
         }
@@ -30,13 +30,13 @@ namespace PlayerData
             UnityJob task = GDF.Player.LoadGameSave(1);
             Assert.AreEqual(gameSave, GDF.Player.GameSave);
 
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.AreEqual(1, GDF.Player.GameSave);
 
             task = GDF.Player.LoadCommonGameSave();
             
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.AreEqual(gameSave, GDF.Player.GameSave);
         }
@@ -52,10 +52,10 @@ namespace PlayerData
             GDF.Player.Add(reference, data);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.DeleteGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.IsNull(GDF.Player.Get(reference));
 
@@ -79,20 +79,20 @@ namespace PlayerData
             GDF.Player.Add(reference1, data1);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             GDFTestPlayerData data2 = new GDFTestPlayerData();
             data2.TestString = value2;
             GDF.Player.Add(reference2, data2);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.DeleteGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.IsNull(GDF.Player.Get(reference2));
 
@@ -119,7 +119,7 @@ namespace PlayerData
             Assert.AreEqual(true, GDF.Player.HasDataToSave);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.AreEqual(false, GDF.Player.HasDataToSave);
 
@@ -128,7 +128,7 @@ namespace PlayerData
             Assert.AreEqual(true, GDF.Player.HasDataToSave);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.AreEqual(false, GDF.Player.HasDataToSave);
         }
@@ -145,14 +145,14 @@ namespace PlayerData
             GDF.Player.Add(reference, data);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             data.TestString = value2;
 
             GDF.Player.AddToSaveQueue(data);
 
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.AreEqual(data.TestString, value2);
 
@@ -179,7 +179,7 @@ namespace PlayerData
             Assert.AreEqual(false, GDF.Player.HasDataToSync);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.AreEqual(false, GDF.Player.HasDataToSave);
             Assert.AreEqual(true, GDF.Player.HasDataToSync);
@@ -195,7 +195,7 @@ namespace PlayerData
             Assert.AreEqual(true, GDF.Player.HasDataToSync);
             
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.AreEqual(false, GDF.Player.HasDataToSave);
             Assert.AreEqual(true, GDF.Player.HasDataToSync);
@@ -208,7 +208,7 @@ namespace PlayerData
             Assert.AreEqual(true, GDF.Player.HasDataToSync);
             
             task = GDF.Player.Purge();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.AreEqual(false, GDF.Player.HasDataToSave);
             Assert.AreEqual(false, GDF.Player.HasDataToSync);
@@ -216,7 +216,7 @@ namespace PlayerData
             Assert.IsNull(GDF.Player.Get(reference));
 
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             Assert.IsNull(GDF.Player.Get(reference));
 
@@ -228,7 +228,7 @@ namespace PlayerData
             Assert.IsNotNull(GDF.Player.Get(reference));
             
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
         }
 
         [UnityTest]
@@ -247,14 +247,14 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value);
 
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             data = GDF.Player.Get<GDFTestPlayerData>(reference);
 
@@ -279,10 +279,10 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value1);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             data = GDF.Player.Get<GDFTestPlayerData>(reference);
 
@@ -292,14 +292,14 @@ namespace PlayerData
             GDF.Player.AddToSaveQueue(data);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value2);
 
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
             Assert.AreNotEqual(data, GDF.Player.Get(reference));
@@ -317,7 +317,7 @@ namespace PlayerData
             data.TestString = value;
 
             UnityJob task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             GDF.Player.Add(reference, data);
             
@@ -326,14 +326,14 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             data = GDF.Player.Get<GDFTestPlayerData>(reference);
 
@@ -353,7 +353,7 @@ namespace PlayerData
             data.TestString = value1;
 
             UnityJob task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             GDF.Player.Add(reference, data);
             
@@ -362,10 +362,10 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value1);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             data = GDF.Player.Get<GDFTestPlayerData>(reference);
 
@@ -375,14 +375,14 @@ namespace PlayerData
             GDF.Player.AddToSaveQueue(data);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
             Assert.AreEqual(data, GDF.Player.Get(reference));
             Assert.AreEqual(data.TestString, value2);
 
             task = GDF.Player.LoadGameSave(1);
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
             Assert.AreNotEqual(data, GDF.Player.Get(reference));
@@ -405,7 +405,7 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNotNull(GDF.Player.Get(reference));
             Assert.AreEqual(data, GDF.Player.Get(reference));
@@ -414,12 +414,12 @@ namespace PlayerData
             GDF.Player.Delete(data);
 
             task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNull(GDF.Player.Get(reference));
 
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             Assert.IsNull(GDF.Player.Get(reference));
         }
@@ -441,7 +441,7 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value1);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data.TestString = value2;
             
@@ -452,7 +452,7 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value2);
 
             task = GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             yield return Connect();
 
@@ -478,10 +478,10 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             yield return Connect();
 
@@ -507,7 +507,7 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value1);
 
             UnityJob task = GDF.Player.Save();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data.TestString = value2;
             
@@ -518,7 +518,7 @@ namespace PlayerData
             Assert.AreEqual(data.TestString, value2);
 
             task = GDF.Player.LoadCommonGameSave();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             data = GDF.Player.Get<GDFTestPlayerData>(reference);
             
@@ -530,7 +530,7 @@ namespace PlayerData
         public IEnumerator SetUp()
         {
             UnityJob task = GDF.Launch;
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             yield return Connect();
 
@@ -542,24 +542,20 @@ namespace PlayerData
         public IEnumerator TearDown()
         {
             UnityJob task = GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
             
             GDF.Kill();
         }
         
-        private IEnumerator Connect()
-        {
-            UnityJob task = GDF.Account.Authentication.Device.Login(Country.FR);
-            yield return WaitTask(task);
-        }
+        protected abstract IEnumerator Connect();
 
-        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
+        protected IEnumerator WaitJob(UnityJob job, JobState expectedState = JobState.Success)
         {
-            yield return task;
+            yield return job;
 
-            if (task.State != expectedState)
+            if (job.State != expectedState)
             {
-                Assert.Fail("Task '" + task.Name + "' finished with the unexpected state '" + task.State + "' !\n" + task.Error);
+                Assert.Fail("Task '" + job.Name + "' finished with the unexpected state '" + job.State + "' !\n" + job.Error);
             }
         }
     }

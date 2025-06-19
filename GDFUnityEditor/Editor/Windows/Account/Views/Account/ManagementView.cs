@@ -11,6 +11,7 @@ namespace GDFUnity.Editor
 
         private AccountWindow _window;
         private Button _logout;
+        private Button _migrate;
         private Button _purge;
         private Button _delete;
 
@@ -21,6 +22,10 @@ namespace GDFUnity.Editor
             _logout = new Button(Logout);
             _logout.text = "Sign out";
             _logout.tooltip = "Sign out from the account.";
+
+            _migrate = new Button(Migrate);
+            _migrate.text = "Migrate local data";
+            _migrate.tooltip = "Migrates the local account data into the current account.";
 
             _purge = new Button(Purge);
             _purge.text = "Purge account data";
@@ -34,8 +39,11 @@ namespace GDFUnity.Editor
         public void OnActivate(AccountWindow window, WindowView<AccountWindow> view)
         {
             view.Add(_logout);
+            view.Add(_migrate);
             view.Add(_purge);
             view.Add(_delete);
+
+            _migrate.SetEnabled(!GDF.Account.IsLocal && GDF.Account.Authentication.Local.Exists);
         }
 
         public void OnDeactivate(AccountWindow window, WindowView<AccountWindow> view)
@@ -68,6 +76,17 @@ namespace GDFUnity.Editor
             }
             
             _window.MainView.AddCriticalLoader(GDF.Player.Purge());
+        }
+        
+        private void Migrate()
+        {
+            if (!EditorUtility.DisplayDialog("Migrate local data", "You are about to migrate all local account data into the current account. This will erase all disk data of the current account to replace them with the local account's data."+
+                "\nThis operation cannot be reversed. Do you wish to proceed?", "Yes", "No"))
+            {
+                return;
+            }
+            
+            _window.MainView.AddCriticalLoader(GDF.Player.MigrateLocalData());
         }
     }
 }

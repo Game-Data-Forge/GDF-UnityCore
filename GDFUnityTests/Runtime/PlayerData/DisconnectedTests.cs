@@ -50,10 +50,10 @@ namespace PlayerData
         public IEnumerator SetUp()
         {
             UnityJob task = (Job)GDF.Launch;
-            yield return WaitTask(task);
+            yield return WaitJob(task);
 
             task = (Job)GDF.Account.Authentication.SignOut();
-            yield return WaitTask(task);
+            yield return WaitJob(task);
         }
 
         [TearDown]
@@ -62,13 +62,13 @@ namespace PlayerData
             GDF.Kill();
         }
         
-        private IEnumerator WaitTask(UnityJob task, JobState expectedState = JobState.Success)
+        private IEnumerator WaitJob(UnityJob job, JobState expectedState = JobState.Success)
         {
-            yield return task;
+            yield return job;
 
-            if (task.State != expectedState)
+            if (job.State != expectedState)
             {
-                Assert.Fail("Task '" + task.Name + "' finished with the unexpected state '" + task.State + "' !\n" + task.Error);
+                Assert.Fail("Task '" + job.Name + "' finished with the unexpected state '" + job.State + "' !\n" + job.Error);
             }
         }
     }

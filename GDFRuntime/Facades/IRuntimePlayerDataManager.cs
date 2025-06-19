@@ -32,7 +32,9 @@ namespace GDFRuntime
 
         public Job Save();
         public Job Sync();
-        
+
         public Job Purge();
+        
+        public Job MigrateLocalData();
     }
 }

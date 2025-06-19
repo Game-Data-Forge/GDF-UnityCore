@@ -654,6 +654,30 @@ namespace GDFUnity
             }
         }
 
+        public Job MigrateLocalData()
+        {
+            string jobName = "Purge data";
+            lock (_taskLock)
+            {
+                EnsureUseable();
+
+                if (_engine.AccountManager.IsLocal)
+                {
+                    _job = Job.Success(jobName);
+                    return _job;
+                }
+                
+                if (!_engine.AccountManager.Authentication.Local.Exists)
+                {
+                    _job = Job.Success(jobName);
+                    return _job;
+                }
+
+                _job = Job.Run(MigrationRunner, jobName);
+                return _job;
+            }
+        }
+
         private void TrashData(Cache cache, GDFPlayerDataStorage storage, GDFPlayerData data)
         {
             FillData(data, storage);
@@ -666,7 +690,7 @@ namespace GDFUnity
             {
                 return;
             }
-            
+
             if (storage.GameSave == 0)
             {
                 return;
@@ -832,7 +856,23 @@ namespace GDFUnity
             using(_lock.Use(_engine))
             {
                 SaveRunnerUnsafe(handler.Split());
+                if (_engine.AccountManager.IsLocal)
+                {
+                    return;
+                }
                 SyncRunnerUnsafe(handler.Split());
+            }
+        }
+
+        private void MigrationRunner(IJobHandler handler)
+        {
+            using Locker _ = Locker.Lock(this);
+
+            handler.StepAmount = 2;
+            using (_lock.Use(_engine))
+            {
+                _engine.PersistanceManager.Migrate(handler.Split());
+                LoadRunner(handler.Split(), _gameSave);
             }
         }
 
@@ -880,6 +920,11 @@ namespace GDFUnity
                 _syncTime = DateTime.MinValue;
 
                 _engine.PersistanceManager.Purge(handler.Split());
+
+                if (_engine.AccountManager.IsLocal)
+                {
+                    return;
+                }
 
                 Country country = _engine.AccountManager.Country;
 

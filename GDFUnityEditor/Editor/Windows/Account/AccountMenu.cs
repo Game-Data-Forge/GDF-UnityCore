@@ -78,6 +78,7 @@ namespace GDFUnity.Editor
 
             _authenticationViews = new List<IWindowView<AccountWindow>>
             {
+                new LocalView(view),
                 new DeviceView(view),
                 new EmailPasswordView(view),
                 new LastSessionView(view)

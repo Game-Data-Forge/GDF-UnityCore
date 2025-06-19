@@ -7,6 +7,10 @@ namespace GDFEditor
     {
         public interface IEditorAuthentication : IRuntimeAuthentication
         {
+            public interface IEditorLocal : IRuntimeLocal
+            {
+                
+            }
             public interface IEditorDevice : IRuntimeDevice
             {
                 
@@ -20,6 +24,7 @@ namespace GDFEditor
                 
             }
 
+            public new IEditorLocal Local { get; }
             public new IEditorDevice Device { get; }
             public new IEditorEmailPassword EmailPassword { get; }
             public new IEditorLastSession LastSession { get; }

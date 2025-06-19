@@ -14,16 +14,16 @@ namespace GDFUnity
 
     public class CoreAuthenticationLastSession<T> : CoreAuthenticationLastSession where T : IRuntimeEngine
     {
-        private T _engine;
+        protected T _engine;
+        protected TokenStorage _storage;
         private CoreAccountManager _manager;
-        private TokenStorage _reSignStorage;
 
         public override bool IsAvailable
         {
             get
             {
                 LoadStorage();
-                return _reSignStorage != null;
+                return _storage != null;
             }
         }
         private string _Container => $"{_engine.Configuration.Reference}/{_engine.EnvironmentManager.Environment.ToLongString()}";
@@ -58,12 +58,11 @@ namespace GDFUnity
         private void OnAccountChanging(IJobHandler handler, MemoryJwtToken value)
         {
             GDFUserSettings.Instance.Delete<TokenStorage>(container: _Container);
-            _reSignStorage = null;
+            _storage = null;
         }
 
         private void OnAccountChanged(IJobHandler handler, MemoryJwtToken value)
         {
-            _reSignStorage = null;
             if (_manager.storage == null) return;
 
             GDFUserSettings.Instance.Save(_manager.storage, container: _Container);
@@ -71,20 +70,20 @@ namespace GDFUnity
 
         private void LoadStorage()
         {
-            if (_reSignStorage != null) return;
+            if (_storage != null) return;
 
-            _reSignStorage = GDFUserSettings.Instance.LoadOrDefault<TokenStorage>(null, container: _Container);
+            _storage = GDFUserSettings.Instance.LoadOrDefault<TokenStorage>(null, container: _Container);
         }
 
         private Job AutoSignInJob()
         {
-            string taskName = "Auto sign in";
+            string taskName = "Last session login";
             if (!IsAvailable)
             {
                 return Job.Failure(new GDFException("ACC", 1, ""), taskName);
             }
 
-            TokenStorage token = _reSignStorage;
+            TokenStorage token = _storage;
 
             return Job.Run(handler =>
             {
