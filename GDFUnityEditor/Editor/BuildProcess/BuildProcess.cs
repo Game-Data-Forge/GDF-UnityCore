@@ -15,6 +15,7 @@ namespace GDFUnity.Editor
             try
             {
                 GDFLogger.Debug("Started GDF Build process...");
+                GDFEditor.Launch.Wait();
                 IRuntimeConfiguration configuration = EditorConfigurationEngine.Instance.CreateRuntimeConfiguration();
                 EditorConfigurationEngine.Instance.Save(configuration);
                 GDFLogger.Debug("GDF Build process done !");

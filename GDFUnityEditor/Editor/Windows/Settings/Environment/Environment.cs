@@ -1,4 +1,6 @@
 using GDFFoundation;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
@@ -12,7 +14,8 @@ namespace GDFUnity.Editor
             style.marginLeft = 7;
 
             _field = new EnumField("Environment", GDFEditor.Environment.Environment);
-            _field.RegisterValueChangedCallback((evt) => {
+            _field.RegisterValueChangedCallback((evt) =>
+            {
                 _field.SetValueWithoutNotify(GDFEditor.Environment.Environment);
                 IJob task = GDFEditor.Environment.SetEnvironment((ProjectEnvironment)evt.newValue);
                 loadingView.AddLoader(task, OnSetEnvironmentDone);
@@ -22,13 +25,17 @@ namespace GDFUnity.Editor
             Add(_field);
 
             GDFEditor.Environment.EnvironmentChanged.onMainThread += OnEnvironmentChanged;
+            EditorApplication.playModeStateChanged += OnDomainChange;
+            
+            if (Application.isPlaying)
+            {
+                OnDomainChange(PlayModeStateChange.EnteredPlayMode);
+            }
         }
-
-        public Environment(EnvironmentSettingsProvider provider) : this(provider.mainView)
-        { }
 
         ~Environment()
         {
+            EditorApplication.playModeStateChanged -= OnDomainChange;
             GDFEditor.Environment.EnvironmentChanged.onMainThread -= OnEnvironmentChanged;
         }
 
@@ -40,6 +47,11 @@ namespace GDFUnity.Editor
         private void OnEnvironmentChanged (ProjectEnvironment environment)
         {
             _field.SetValueWithoutNotify(GDFEditor.Environment.Environment);
+        }
+
+        private void OnDomainChange(PlayModeStateChange state)
+        {
+            SetEnabled(state == PlayModeStateChange.EnteredEditMode);
         }
     }
 }

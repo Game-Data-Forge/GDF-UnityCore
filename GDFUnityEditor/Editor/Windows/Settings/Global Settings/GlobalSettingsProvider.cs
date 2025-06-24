@@ -3,6 +3,7 @@ using GDFEditor;
 using GDFFoundation;
 using GDFUnityEditor;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
@@ -109,6 +110,12 @@ namespace GDFUnity.Editor
             }
             
             _state = State.Ready;
+            EditorApplication.playModeStateChanged += OnDomainChange;
+        }
+
+        ~GlobalSettingsProvider()
+        {
+            EditorApplication.playModeStateChanged -= OnDomainChange;
         }
 
         public override void OnActivate(string searchContext, VisualElement rootElement)
@@ -116,7 +123,7 @@ namespace GDFUnity.Editor
             rootElement.Add(new TitleLabel("Game Data Forge"));
 
             mainView = new LoadingView(new ScrollView(ScrollViewMode.Vertical));
-            
+
             mainView.AddBody(new CategoryLabel("Dashboard connection"));
             mainView.AddBody(new ServerAddress(this));
             _roleToken = new RoleToken(this);
@@ -127,6 +134,11 @@ namespace GDFUnity.Editor
 
             rootElement.Add(mainView);
             rootElement.Add(new HelpButton("/unity/configuration/overview", Position.Absolute));
+
+            if (Application.isPlaying)
+            {
+                OnDomainChange(PlayModeStateChange.EnteredPlayMode);
+            }
         }
 
         public void RequestConfigurationUpdate()
@@ -151,6 +163,11 @@ namespace GDFUnity.Editor
                     GDFUserSettings.Instance.DeleteProject(oldReference);
                 }
             }
+        }
+
+        private void OnDomainChange(PlayModeStateChange state)
+        {
+            mainView?.SetEnabled(state == PlayModeStateChange.EnteredEditMode);
         }
     }
 }

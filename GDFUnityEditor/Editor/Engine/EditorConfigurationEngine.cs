@@ -35,7 +35,9 @@ namespace GDFUnity.Editor
                 return _instance;
             }
         }
-        
+
+        static public event Action<bool> onConfigurationChange;
+
         private SettingsManager _manager = new SettingsManager();
 
         public List<GDFException> ValidationReport(IEditorConfiguration configuration)
@@ -145,15 +147,16 @@ namespace GDFUnity.Editor
                 }
 
                 ProjectSettings.Instance.Save(configuration, _CFG_FILE_NAME);
-            }
-            catch (ArgumentNullException)
-            {
-                ProjectSettings.Instance.Delete(typeof(EditorConfiguration), _CFG_FILE_NAME);
+                onConfigurationChange?.Invoke(true);
             }
             catch (Exception e)
             {
                 ProjectSettings.Instance.Delete(typeof(EditorConfiguration), _CFG_FILE_NAME);
-                GDFLogger.Error(e);
+                if (e is not ArgumentNullException)
+                {
+                    GDFLogger.Error(e);
+                }
+                onConfigurationChange?.Invoke(false);
             }
         }
 

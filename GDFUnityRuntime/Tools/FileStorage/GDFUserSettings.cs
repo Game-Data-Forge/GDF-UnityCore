@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using GDFFoundation;
+using GDFRuntime;
 using Newtonsoft.Json;
 
 namespace GDFUnity
@@ -12,14 +14,38 @@ namespace GDFUnity
         "GameDataForge";
 #endif
 
-        protected override Formatting _Formatting => Formatting.Indented;
+        static public string ProjectContainer(IRuntimeEngine engine)
+        {
+            return engine.Configuration.Reference.ToString();
+        }
+
+        static public string EnvironmentContainer(IRuntimeEngine engine)
+        {
+#if UNITY_EDITOR
+            return Path.Combine(ProjectContainer(engine), engine.EnvironmentManager.Environment.ToLongString());
+#else
+            return ProjectContainer(engine);
+#endif
+        }
+
+        static public string AccountContainer(IRuntimeEngine engine)
+        {
+            return Path.Combine(EnvironmentContainer(engine), engine.AccountManager.Identity);
+        }
+
+        protected override Formatting _Formatting =>
+#if UNITY_EDITOR
+            Formatting.Indented;
+#else
+            Formatting.None;
+#endif
 
         public string GetDataPath(long projectReference)
         {
             return GenerateContainerName(projectReference.ToString());
         }
 
-        protected override string GenerateContainerName(string container)
+        public override string GenerateContainerName(string container)
         {
             if (container == null)
             {

@@ -10,6 +10,9 @@ namespace PlayerData
 {
     public abstract class BaseSyncTests
     {
+        bool triggeredImmediate = false;
+        bool triggeredDelay = false;
+
         [UnityTest]
         public IEnumerator KnowsIfThereAreDataToSync()
         {
@@ -139,10 +142,73 @@ namespace PlayerData
             list = GDF.Player.Get<GDFTestPlayerData>();
             Assert.Greater(list.Count, 0);
         }
-        
+
+        [UnityTest]
+        public IEnumerator CanBeNotifiedOfSynced()
+        {
+            GDF.Player.Synced.onBackgroundThread += OnSynced;
+            GDF.Player.Synced.onMainThread += OnSynced;
+
+            Assert.IsFalse(triggeredImmediate);
+            Assert.IsFalse(triggeredDelay);
+
+            UnityJob task = GDF.Player.Sync();
+            yield return WaitJob(task);
+            
+            Assert.IsTrue(triggeredImmediate);
+
+            yield return null;
+            yield return null;
+            
+            Assert.IsTrue(triggeredDelay);
+        }
+
+        [UnityTest]
+        public IEnumerator CanBeNotifiedOfSyncing()
+        {
+            GDF.Player.Syncing.onBackgroundThread += OnSyncing;
+            GDF.Player.Syncing.onMainThread += OnSyncing;
+
+            Assert.IsFalse(triggeredImmediate);
+            Assert.IsFalse(triggeredDelay);
+
+            UnityJob task = GDF.Player.Sync();
+            yield return WaitJobStarted(task);
+            
+            Assert.IsTrue(triggeredImmediate);
+            Assert.IsFalse(task.IsDone);
+
+            yield return null;
+            
+            Assert.IsTrue(triggeredDelay);
+        }
+
+        private void OnSynced()
+        {
+            triggeredDelay = true;
+        }
+
+        private void OnSynced(IJobHandler handler)
+        {
+            triggeredImmediate = true;
+        }
+
+        private void OnSyncing()
+        {
+            triggeredDelay = true;
+        }
+
+        private void OnSyncing(IJobHandler handler)
+        {
+            triggeredImmediate = true;
+        }
+
         [UnitySetUp]
         public IEnumerator SetUp()
         {
+            triggeredImmediate = false;
+            triggeredDelay = false;
+
             UnityJob task = GDF.Launch;
             yield return WaitJob(task);
 
@@ -155,6 +221,11 @@ namespace PlayerData
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            GDF.Player.Syncing.onBackgroundThread -= OnSyncing;
+            GDF.Player.Syncing.onMainThread -= OnSyncing;
+            GDF.Player.Synced.onBackgroundThread -= OnSynced;
+            GDF.Player.Synced.onMainThread -= OnSynced;
+
             UnityJob task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);
             
@@ -170,6 +241,14 @@ namespace PlayerData
             if (job.State != expectedState)
             {
                 Assert.Fail("Task '" + job.Name + "' finished with the unexpected state '" + job.State + "' !\n" + job.Error);
+            }
+        }
+
+        private IEnumerator WaitJobStarted(IJob job)
+        {
+            while (job.State == JobState.Pending)
+            {
+                yield return job;
             }
         }
     }

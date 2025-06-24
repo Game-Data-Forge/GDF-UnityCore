@@ -17,7 +17,6 @@ namespace GDFUnity.Editor
             window.Focus();
         }
 
-        internal HelpButton help;
         internal AccountMenu menu;
 
         public void OnDestroy()
@@ -36,7 +35,9 @@ namespace GDFUnity.Editor
             main.Add(menu);
             main.Add(view);
 
-            help = new HelpButton(HELP_URL, Position.Absolute);
+            HelpButton help = new HelpButton(HELP_URL, Position.Absolute);
+
+            RegisterHelp(help);
 
             MainView.AddBody(main);
             MainView.AddBody(help);

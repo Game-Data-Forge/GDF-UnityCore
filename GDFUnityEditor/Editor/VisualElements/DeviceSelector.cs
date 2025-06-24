@@ -1,4 +1,6 @@
 using GDFEditor;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor
@@ -18,7 +20,8 @@ namespace GDFUnity.Editor
             _devices.formatSelectedValueCallback += Display;
             _devices.formatListItemCallback += Display;
 
-            _devices.RegisterValueChangedCallback((ev) => {
+            _devices.RegisterValueChangedCallback((ev) =>
+            {
                 GDFEditor.Device.Select(ev.newValue);
             });
 
@@ -34,6 +37,18 @@ namespace GDFUnity.Editor
             Add(manage);
 
             OnDeviceChanged(GDFEditor.Device.Current);
+            
+            EditorApplication.playModeStateChanged += OnDomainChange;
+            
+            if (Application.isPlaying)
+            {
+                OnDomainChange(PlayModeStateChange.EnteredPlayMode);
+            }
+        }
+
+        ~DeviceSelector()
+        {
+            EditorApplication.playModeStateChanged -= OnDomainChange;
         }
 
         private string Display(Device device)
@@ -45,6 +60,11 @@ namespace GDFUnity.Editor
         {
             _devices.choices = GDFEditor.Device.Devices;
             _devices.value = device;
+        }
+
+        private void OnDomainChange(PlayModeStateChange state)
+        {
+            SetEnabled(state == PlayModeStateChange.EnteredEditMode);
         }
     }
 }

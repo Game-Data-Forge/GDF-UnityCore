@@ -15,10 +15,7 @@ namespace GDFUnity.Editor
 
         private DevicesView deviceView;
 
-        public void OnDestroy()
-        {
-            deviceView.OnDestroy();
-        }
+        protected override bool DisableInPlayMode => true;
 
         protected override void GUIReady()
         {
@@ -29,6 +26,12 @@ namespace GDFUnity.Editor
             MainView.AddBody(deviceView);
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            deviceView.OnDestroy();
+        }
+        
         protected override GUIContent GenerateTitle()
         {
             return new GUIContent("Devices", DefaultIcon);

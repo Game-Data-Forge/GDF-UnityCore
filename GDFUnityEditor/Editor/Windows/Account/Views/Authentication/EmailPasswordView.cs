@@ -7,7 +7,7 @@ namespace GDFUnity.Editor.ServiceProviders
         private class LoginState : AuthenticationViewState
         {
             public override string Name => "Login";
-            public override string Help => null;//"/unity/windows/authentication/views/email-password-authentication-view#the-login-page";
+            public override string Help => "/unity/editor-windows/account/authentication/email-password#the-login-page";
 
             private EmailPasswordView _view;
 
@@ -86,7 +86,7 @@ namespace GDFUnity.Editor.ServiceProviders
         private class RescueState : AuthenticationViewState
         {
             public override string Name => "Rescue";
-            public override string Help => null;//"/unity/windows/authentication/views/email-password-authentication-view#the-rescue-page";
+            public override string Help => "/unity/editor-windows/account/authentication/email-password#the-lost-password-page";
 
             private EmailPasswordView _view;
 
@@ -146,7 +146,7 @@ namespace GDFUnity.Editor.ServiceProviders
         private class RegisterState : AuthenticationViewState
         {
             public override string Name => "Register";
-            public override string Help => "/unity/editor-windows/account/authentication/email-password";
+            public override string Help => "/unity/editor-windows/account/authentication/email-password#the-register-page";
 
             private EmailPasswordView _view;
 

@@ -72,13 +72,7 @@ namespace GDFFoundation
         /// </summary>
         /// <returns>A new commit ID as a signed 64-bit integer.</returns>
         public Int64 GenerateNewCommitId();
-
-        /// <summary>
-        ///     Retrieves the database credentials that are required to connect to a database.
-        /// </summary>
-        /// <returns>The database credentials.</returns>
-        public GDFDatabaseCredentials GetCredential();
-
+        
         /// <summary>
         ///     Gets the current system date and time.
         /// </summary>

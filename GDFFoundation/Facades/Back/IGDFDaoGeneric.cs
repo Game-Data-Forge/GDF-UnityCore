@@ -153,12 +153,6 @@ namespace GDFFoundation
         public T GetByReference<T>(ProjectEnvironment sEnvironment, long sProjectReference, string sReference) where T : GDFBasicData, IGDFWritableLongReference;
 
         /// <summary>
-        ///     Retrieves the database credentials.
-        /// </summary>
-        /// <returns>The database credentials.</returns>
-        public GDFDatabaseCredentials GetCredential();
-
-        /// <summary>
         ///     Retrieves the current datetime.
         /// </summary>
         /// <returns>The current datetime.</returns>

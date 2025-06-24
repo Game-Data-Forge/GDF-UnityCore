@@ -33,8 +33,8 @@ namespace GDFUnity.Editor
 
         public enum Display
         {
-            Body = 0,
-            PreLoader = 1
+            PreLoader = 0,
+            Body = 1
         }
 
         private struct Operation
@@ -166,7 +166,7 @@ namespace GDFUnity.Editor
                 {
                     _body.style.display = DisplayStyle.None;
                     _preLoader.style.display = DisplayStyle.Flex;
-                    _preLoader.PreLoad(this);
+                    _preLoader.PreLoad();
                 }
 
                 onDisplayChanged?.Invoke(value);
@@ -185,7 +185,8 @@ namespace GDFUnity.Editor
             footer.style.minHeight = 40;
 
             Toolbar toolbar = new Toolbar();
-            ToolbarButton clear = new ToolbarButton(() => {
+            ToolbarButton clear = new ToolbarButton(() =>
+            {
                 foreach (Card card in _footer.Children().Cast<Card>())
                 {
                     card.Dispose();
@@ -214,19 +215,19 @@ namespace GDFUnity.Editor
 
             VisualElement logo = new VisualElement();
             logo.style.backgroundImage = Background.FromTexture2D(_Logo);
-            logo.style.backgroundSize = new BackgroundSize(20,20);
+            logo.style.backgroundSize = new BackgroundSize(20, 20);
             logo.style.position = Position.Absolute;
             logo.style.top = 0;
             logo.style.right = 0;
             logo.style.width = 20;
             logo.style.height = 20;
-            
+
             _footer = new ScrollView(ScrollViewMode.Vertical);
             _footer.style.flexGrow = 1;
             _footer.style.flexShrink = 0;
 
             footerBody.Add(_footer);
-            
+
             footer.Add(footerBody);
 
             _mainFrame = new VisualElement();
@@ -247,6 +248,11 @@ namespace GDFUnity.Editor
         public void AddBody(VisualElement element)
         {
             _body.Add(element);
+        }
+
+        public new void Clear()
+        {
+            _body.Clear();
         }
 
         public void AddCriticalLoader(IJob task, Action<IJob> onDone = null)
@@ -279,8 +285,12 @@ namespace GDFUnity.Editor
 
         public void AddPreloader(PreLoader preLoader)
         {
+            if (preLoader == null) return;
+
             _preLoader = preLoader;
+            _preLoader.SetView(this);
             _mainFrame.Add(_preLoader);
+
             if (!_preLoader.IsLoaded)
             {
                 MainDisplay = Display.PreLoader;

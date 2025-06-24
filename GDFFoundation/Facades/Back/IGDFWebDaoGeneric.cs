@@ -125,12 +125,6 @@ namespace GDFFoundation
         public T GetByReference<T>(ProjectEnvironment sEnvironment, long sProjectReference, string sReference) where T : GDFLocalWebData;
 
         /// <summary>
-        ///     Retrieves the credentials for the database.
-        /// </summary>
-        /// <returns>The credentials for the database.</returns>
-        public GDFDatabaseCredentials GetCredential();
-
-        /// <summary>
         ///     Retrieves the first record of type T from the specified environment, project, and where clause.
         /// </summary>
         /// <typeparam name="T">The type of record to retrieve. Must inherit from GDFLocalWebData.</typeparam>

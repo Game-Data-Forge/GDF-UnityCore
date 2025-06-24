@@ -11,28 +11,12 @@ namespace GDFUnity
 
         static FileStorage()
         {
-            ROOT = 
+            ROOT =
 #if UNITY_EDITOR
         Path.Combine(Application.dataPath, "..");
 #else
         Application.persistentDataPath;
 #endif
-        }
-    }
-
-    public abstract class FileStorage<T> : FileStorage where T : FileStorage<T>, new()
-    {
-        static private T _instance = null;
-        static public T Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new T();
-                }
-                return _instance;
-            }
         }
 
         protected abstract Formatting _Formatting { get; }
@@ -77,7 +61,7 @@ namespace GDFUnity
         {
             Save(data, GeneratePath(type, name, container));
         }
-        
+
         public void Delete<U>(string name = null, string container = null)
         {
             Delete(typeof(U), name, container);
@@ -96,6 +80,15 @@ namespace GDFUnity
             return Exists(GeneratePath(type, name, container));
         }
 
+        public virtual string GenerateContainerName(string container)
+        {
+            if (container == null)
+            {
+                return ROOT;
+            }
+            return Path.Combine(ROOT, container);
+        }
+
         protected virtual string GenerateFileName(Type type)
         {
             if (type == null)
@@ -111,7 +104,7 @@ namespace GDFUnity
             return type.Name + ".json";
         }
 
-        protected virtual string GeneratePath (Type type, string name, string container)
+        protected virtual string GeneratePath(Type type, string name, string container)
         {
             if (name == null)
             {
@@ -123,15 +116,6 @@ namespace GDFUnity
             }
 
             return Path.Combine(GenerateContainerName(container), name);
-        }
-
-        protected virtual string GenerateContainerName(string container)
-        {
-            if (container == null)
-            {
-                return ROOT;
-            }
-            return Path.Combine(ROOT, container);
         }
 
         protected object Load(Type type, string path)
@@ -171,6 +155,21 @@ namespace GDFUnity
         protected bool Exists(string path)
         {
             return File.Exists(path);
+        }
+    }
+    public abstract class FileStorage<T> : FileStorage where T : FileStorage<T>, new()
+    {
+        static private T _instance;
+        static public T Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new T();
+                }
+                return _instance;
+            }
         }
     }
 }

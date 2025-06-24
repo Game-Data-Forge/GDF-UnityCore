@@ -48,6 +48,8 @@ namespace GDFRuntime
         public int Range { get; }
         public Country Country { get; }
         public string Bearer { get; }
+        public string LocalIdentity { get; }
+        public string Identity { get; }
 
         public Notification<MemoryJwtToken> AccountChanging { get; }
         public Notification<MemoryJwtToken> AccountChanged { get; }

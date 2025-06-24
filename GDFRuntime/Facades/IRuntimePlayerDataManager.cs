@@ -10,6 +10,11 @@ namespace GDFRuntime
         public bool HasDataToSave { get; }
         public bool HasDataToSync { get; }
 
+        public Notification Syncing { get; }
+        public Notification Synced { get; }
+        public Notification Saving { get; }
+        public Notification Saved { get; }
+
         public Job LoadCommonGameSave();
         public Job LoadGameSave(byte gameSave);
         public Job DeleteGameSave();

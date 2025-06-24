@@ -99,7 +99,7 @@ namespace GDFUnity.Editor
             };
             
             long reference = _engine.Configuration.Reference;
-            _configuration = GDFUserSettings.Instance.LoadOrDefault(new DeviceConfiguration(), container: reference.ToString());
+            _configuration = GDFUserSettings.Instance.LoadOrDefault(new DeviceConfiguration());
 
             _currentDevice = _configuration.Current < 0 ? _actualDevice : _configuration.Devices[_configuration.Current];
         }
@@ -162,7 +162,7 @@ namespace GDFUnity.Editor
         {
             long reference = _engine.Configuration.Reference;
             _configuration.Current = _configuration.Devices.IndexOf(_currentDevice);
-            GDFUserSettings.Instance.Save(_configuration, container: reference.ToString());
+            GDFUserSettings.Instance.Save(_configuration);
         }
     }
 }

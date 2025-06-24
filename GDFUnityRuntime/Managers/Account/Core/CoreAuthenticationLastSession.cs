@@ -26,7 +26,6 @@ namespace GDFUnity
                 return _storage != null;
             }
         }
-        private string _Container => $"{_engine.Configuration.Reference}/{_engine.EnvironmentManager.Environment.ToLongString()}";
 
         public CoreAuthenticationLastSession(T engine, CoreAccountManager manager)
         {
@@ -57,7 +56,7 @@ namespace GDFUnity
 
         private void OnAccountChanging(IJobHandler handler, MemoryJwtToken value)
         {
-            GDFUserSettings.Instance.Delete<TokenStorage>(container: _Container);
+            GDFUserSettings.Instance.Delete<TokenStorage>(container: GDFUserSettings.EnvironmentContainer(_engine));
             _storage = null;
         }
 
@@ -65,14 +64,14 @@ namespace GDFUnity
         {
             if (_manager.storage == null) return;
 
-            GDFUserSettings.Instance.Save(_manager.storage, container: _Container);
+            GDFUserSettings.Instance.Save(_manager.storage, container: GDFUserSettings.EnvironmentContainer(_engine));
         }
 
         private void LoadStorage()
         {
             if (_storage != null) return;
 
-            _storage = GDFUserSettings.Instance.LoadOrDefault<TokenStorage>(null, container: _Container);
+            _storage = GDFUserSettings.Instance.LoadOrDefault<TokenStorage>(null, container: GDFUserSettings.EnvironmentContainer(_engine));
         }
 
         private Job AutoSignInJob()

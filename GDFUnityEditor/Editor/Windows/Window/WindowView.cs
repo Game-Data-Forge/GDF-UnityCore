@@ -64,8 +64,12 @@ namespace GDFUnity.Editor
             _body.Clear();
             _current = view;
             _title.text = _current?.Title;
-            //_window.help.url = provider.Help;
             _current?.OnActivate(_window, this);
+
+            Window window = _window as Window;
+            if (window == null) return;
+            
+            window.helpUrl = _current?.Help;
         }
     }
 }

@@ -3,13 +3,16 @@ using Newtonsoft.Json;
 
 namespace GDFUnity.Editor
 {
-    public class ProjectSettings : FileStorage<ProjectSettings>
+    public class ProjectSettings : FileStorage
     {
         private const string _CONTAINER = "ProjectSettings";
 
+        static private ProjectSettings _instance = new ProjectSettings();
+        static public ProjectSettings Instance => _instance;
+
         protected override Formatting _Formatting => Formatting.Indented;
 
-        protected override string GenerateContainerName(string container)
+        public override string GenerateContainerName(string container)
         {
             if (container == null)
             {

@@ -340,16 +340,30 @@ namespace GDFUnity
         private Job _job = null;
         private Dictionary<string, string> _headers = new Dictionary<string, string>();
         private DateTime _syncTime;
+        private Notification _syncing;
+        private Notification _synced;
+        private Notification _saving;
+        private Notification _saved;
 
         public byte GameSave => _gameSave;
         public bool HasDataToSave => _saveQueue.Count != 0;
         public bool HasDataToSync => _syncQueue.Count != 0;
+        public Notification Syncing => _syncing;
+        public Notification Synced => _synced;
+        public Notification Saving => _saving;
+        public Notification Saved => _saved;
 
         protected override Job Job => _job;
 
         public RuntimePlayerDataManager(IRuntimeEngine engine)
         {
             _engine = engine;
+
+            _syncing = new Notification(engine.ThreadManager);
+            _synced = new Notification(engine.ThreadManager);
+            _saving = new Notification(engine.ThreadManager);
+            _saved = new Notification(engine.ThreadManager);
+
             _engine.AccountManager.AccountChanging.onBackgroundThread += OnAccountChanging;
             _engine.AccountManager.AccountChanged.onBackgroundThread += OnAccountChanged;
             _engine.AccountManager.AccountDeleting.onBackgroundThread += PurgeRunner;
@@ -842,9 +856,19 @@ namespace GDFUnity
         {
             using Locker _ = Locker.Lock(this);
 
-            using(_lock.Use(_engine))
+            handler.StepAmount = 3;
+
+            using (_lock.Use(_engine))
             {
-                SaveRunnerUnsafe(handler);
+                Saving.Invoke(handler.Split());
+                try
+                {
+                    SaveRunnerUnsafe(handler.Split());
+                }
+                finally
+                {
+                    Saved.Invoke(handler.Split());
+                }
             }
         }
 
@@ -852,15 +876,23 @@ namespace GDFUnity
         {
             using Locker _ = Locker.Lock(this);
 
-            handler.StepAmount = 2;
-            using(_lock.Use(_engine))
+            handler.StepAmount = 4;
+            using (_lock.Use(_engine))
             {
-                SaveRunnerUnsafe(handler.Split());
-                if (_engine.AccountManager.IsLocal)
+                Syncing.Invoke(handler.Split());
+                try
                 {
-                    return;
+                    SaveRunnerUnsafe(handler.Split());
+                    if (_engine.AccountManager.IsLocal)
+                    {
+                        return;
+                    }
+                    SyncRunnerUnsafe(handler.Split());
                 }
-                SyncRunnerUnsafe(handler.Split());
+                finally
+                {
+                    Synced.Invoke(handler.Split());
+                }
             }
         }
 

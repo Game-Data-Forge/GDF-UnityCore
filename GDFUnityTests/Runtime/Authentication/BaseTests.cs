@@ -224,6 +224,7 @@ namespace Authentication
         {
             triggeredImmediate = false;
             triggeredDelay = false;
+            
             UnityJob task = GDF.Launch;
             yield return WaitJob(task);
         }

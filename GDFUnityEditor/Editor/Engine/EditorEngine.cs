@@ -2,11 +2,14 @@
 using GDFRuntime;
 using UnityEditor;
 using GDFFoundation;
+using System;
+using UnityEngine;
 
 namespace GDFUnity.Editor
 {
     public class EditorEngine : IEditorEngine
     {
+        static private DateTime nextCheck = DateTime.MinValue;
         static private readonly object _lock = new object();
         static private EditorEngine _instance = null;
         static private EditorEngine Instance
@@ -17,10 +20,18 @@ namespace GDFUnity.Editor
                 {
                     lock (_lock)
                     {
-                        IEditorConfiguration configuration = EditorConfigurationEngine.Instance.Load();
+                        DateTime now = GDFDatetime.Now;
                         if (_instance == null)
                         {
+                            nextCheck = now.AddSeconds(10);
+
+                            IEditorConfiguration configuration = EditorConfigurationEngine.Instance.Load();
                             _instance = new EditorEngine(configuration);
+                        }
+                        else if (nextCheck < now)
+                        {
+                            nextCheck = now.AddSeconds(10);
+                            EditorConfigurationEngine.Instance.Load();
                         }
                     }
                 }

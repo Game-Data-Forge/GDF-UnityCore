@@ -5,9 +5,21 @@ namespace GDFUnity.Editor
 {
     public class EnginePreLoader : PreLoader
     {
-        public override bool IsLoaded => GDFEditor.Launch.IsDone;
+        public override bool IsLoaded
+        {
+            get
+            {
+                try
+                {
+                    return GDFEditor.Launch.IsDone;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
-        private LoadingView _view;
         private HelpBox _helpBox;
         private Button _button;
 
@@ -22,11 +34,16 @@ namespace GDFUnity.Editor
 
             Add(_helpBox);
             Add(_button);
+
+            EditorConfigurationEngine.onConfigurationChange += valid =>
+            {
+                _view.MainDisplay = LoadingView.Display.PreLoader;
+                PreLoad();
+            };
         }
 
-        public override void PreLoad(LoadingView view)
+        public override void PreLoad()
         {
-            _view = view;
             try
             {
                 IJob job = GDFEditor.Launch;

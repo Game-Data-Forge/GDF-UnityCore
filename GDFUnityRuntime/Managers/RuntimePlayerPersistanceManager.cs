@@ -142,7 +142,7 @@ namespace GDFUnity
 
         public void Purge(IJobHandler handler)
         {
-            string path = GetFilePath(_engine.AccountManager.Reference);
+            string path = GetFilePath(GDF.Account.Identity);
             if (File.Exists(path))
             {
                 File.Delete(path);
@@ -151,8 +151,8 @@ namespace GDFUnity
 
         public void Migrate(IJobHandler handler)
         {
-            string localPath = GetFilePath(0);
-            string onlinePath = GetFilePath(_engine.AccountManager.Reference);
+            string localPath = GetFilePath(GDF.Account.LocalIdentity);
+            string onlinePath = GetFilePath(GDF.Account.Identity);
 
             if (File.Exists(localPath))
             {
@@ -191,16 +191,16 @@ namespace GDFUnity
 
             handler.StepAmount = 2;
 
-            string path = GetFilePath(token.Account);
+            string path = GetFilePath(GDF.Account.Identity);
 
             handler.Step();
 
             _connection = new SQLiteDbConnection(path);
         }
 
-        private string GetFilePath(long account)
+        private string GetFilePath(string identity)
         {
-            _root = Path.Combine(GDFUserSettings.Instance.GetDataPath(_engine.Configuration.Reference), account.ToString());
+            _root = Path.Combine(GDFUserSettings.Instance.GenerateContainerName(GDFUserSettings.EnvironmentContainer(_engine)), identity);
             if (!Directory.Exists(_root))
             {
                 Directory.CreateDirectory(_root);

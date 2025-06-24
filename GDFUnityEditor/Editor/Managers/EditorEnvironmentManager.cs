@@ -31,7 +31,7 @@ namespace GDFUnity.Editor
         public EditorEnvironmentManager(IEditorEngine engine)
         {
             _engine = engine;
-            _environment = GDFUserSettings.Instance.LoadOrDefault(new EnvironmentConfiguration(), container: engine.Configuration.Reference.ToString());
+            _environment = GDFUserSettings.Instance.LoadOrDefault(new EnvironmentConfiguration(), container: GDFUserSettings.ProjectContainer(_engine));
             _EnvironmentChangingEvent = new Notification<ProjectEnvironment>(engine.ThreadManager);
             _EnvironmentChangedEvent = new Notification<ProjectEnvironment>(engine.ThreadManager);
 
@@ -77,7 +77,7 @@ namespace GDFUnity.Editor
                 _environment.Environment = environment;
 
                 handler.Step();
-                GDFUserSettings.Instance.Save(_environment, container: _engine.Configuration.Reference.ToString());
+                GDFUserSettings.Instance.Save(_environment, container: GDFUserSettings.ProjectContainer(_engine));
 
                 EnvironmentChanged.Invoke(handler.Split(), environment);
                 return environment;

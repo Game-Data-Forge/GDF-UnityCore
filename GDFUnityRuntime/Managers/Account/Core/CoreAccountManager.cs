@@ -55,6 +55,18 @@ namespace GDFUnity
 
         protected MemoryJwtToken Token => storage?.data;
         public string Bearer => storage?.Bearer;
+        public string LocalIdentity => "0@LOCAL";
+        public string Identity
+        {
+            get
+            {
+                if (IsLocal)
+                {
+                    return LocalIdentity;
+                }
+                return Reference + "@" + Range;
+            }
+        }
 
         public Notification<MemoryJwtToken> AccountChanging => _accountChanging;
         public Notification<MemoryJwtToken> AccountChanged => _accountChanged;

@@ -26,8 +26,7 @@ namespace GDFUnity
                 return _storage != null;
             }
         }
-        private string _Container => $"{_engine.Configuration.Reference}/{_engine.EnvironmentManager.Environment.ToLongString()}";
-
+        
         public CoreAuthenticationLocal(T engine, CoreAccountManager manager)
         {
             _engine = engine;
@@ -66,7 +65,8 @@ namespace GDFUnity
                             Range = 0,
                             Token = "LOCAL",
                         }).ToBase64URL() + ".###");
-                        GDFUserSettings.Instance.Save(_storage, container: _Container);
+
+                        GDFUserSettings.Instance.Save(_storage, container: GDFUserSettings.EnvironmentContainer(_engine));
                     }
                     _manager.SetToken(handler.Split(), _storage);
                 }, "Local login");
@@ -82,7 +82,7 @@ namespace GDFUnity
                 return;
             }
 
-            GDFUserSettings.Instance.Delete<TokenStorage>(null, container: _Container);
+            GDFUserSettings.Instance.Delete<TokenStorage>(container: GDFUserSettings.EnvironmentContainer(_engine));
             _storage = null;
         }
 
@@ -90,7 +90,7 @@ namespace GDFUnity
         {
             if (_storage != null) return;
 
-            _storage = GDFUserSettings.Instance.LoadOrDefault<TokenStorage>(null, container: _Container);
+            _storage = GDFUserSettings.Instance.LoadOrDefault<TokenStorage>(null, container: GDFUserSettings.EnvironmentContainer(_engine));
         }
     }
 }

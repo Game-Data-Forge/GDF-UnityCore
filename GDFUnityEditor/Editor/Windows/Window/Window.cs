@@ -20,6 +20,8 @@ namespace GDFUnity.Editor
 
         private GUIContent _title = null;
         private LoadingView _mainView = null;
+        private HelpButton _help;
+
         public GUIContent Title
         {
             get
@@ -33,6 +35,17 @@ namespace GDFUnity.Editor
             }
         }
         public LoadingView MainView => _mainView;
+        public string helpUrl
+        {
+            get => _help?.url;
+            set
+            {
+                if (_help == null) return;
+                _help.url = value;
+            }
+        }
+
+        protected virtual bool DisableInPlayMode => false;
 
         public void CreateGUI()
         {
@@ -44,6 +57,25 @@ namespace GDFUnity.Editor
             _mainView.onDisplayChanged += Display;
 
             Display(_mainView.MainDisplay);
+
+            if (!DisableInPlayMode) return;
+            
+            if (Application.isPlaying)
+            {
+                OnDomainChange(PlayModeStateChange.EnteredPlayMode);
+            }
+
+            EditorApplication.playModeStateChanged += OnDomainChange;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            EditorApplication.playModeStateChanged -= OnDomainChange;
+        }
+
+        public void RegisterHelp(HelpButton help)
+        {
+            _help = help;
         }
 
         protected virtual LoadingView BuildLoadingView()
@@ -57,7 +89,14 @@ namespace GDFUnity.Editor
         {
             if (display != LoadingView.Display.Body) return;
 
+            _mainView.Clear();
+
             GUIReady();
+        }
+
+        private void OnDomainChange(PlayModeStateChange state)
+        {
+            rootVisualElement.SetEnabled(state == PlayModeStateChange.EnteredEditMode);
         }
     }
 }

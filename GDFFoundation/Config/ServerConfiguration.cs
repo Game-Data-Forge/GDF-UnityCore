@@ -94,7 +94,7 @@ namespace GDFFoundation
                     }
                 }
 
-                foreach (Country country in Enum.GetValues(typeof(Country)))
+                foreach (Country country in CountryTool.COUNTRIES.Keys)
                 {
                     if (country == Country.None) continue;
 
