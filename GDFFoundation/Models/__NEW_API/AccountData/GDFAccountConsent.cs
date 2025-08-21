@@ -20,6 +20,7 @@ namespace GDFFoundation
     {
         #region Instance fields and properties
 
+        [GDFDbLength(64)]
         public string Address { get; set; } = string.Empty;
 
         #region From interface ISignConsent
@@ -27,9 +28,11 @@ namespace GDFFoundation
         public short Channel { get; set; } = 0;
 
         public bool Consent { set; get; } = false;
+        [GDFDbLength(32)]
         public string ConsentVersion { set; get; } = "0.0.0";
         public Country Country { get; set; }
         public ConsentOptions GameConsentOptions { set; get; } = ConsentOptions.None;
+        [GDFDbLength(32)]
         public string GameConsentVersion { set; get; } = "0.0.0";
 
         #endregion

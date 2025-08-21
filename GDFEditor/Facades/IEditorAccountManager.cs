@@ -33,7 +33,12 @@ namespace GDFEditor
 
         public interface IEditorCredentials : IRuntimeCredentials
         {
+            public interface IEditorEmailPassword : IRuntimeEmailPassword
+            {
+                
+            }
             
+            public new IEditorEmailPassword EmailPassword { get; }
         }
 
         public MemoryJwtToken Token { get; }

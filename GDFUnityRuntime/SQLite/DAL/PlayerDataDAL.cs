@@ -7,21 +7,6 @@ namespace GDFUnity
 {
     public class PlayerDataDAL : SQLiteDAL<PlayerDataDAL, GDFPlayerDataStorage>
     {
-        protected struct DALData : IDALData
-        {
-            public byte gameSave;
-
-            public DALData(byte gameSave)
-            {
-                this.gameSave = gameSave;
-            }
-
-            public override int GetHashCode()
-            {
-                return gameSave;
-            }
-        }
-
         private PropertyInfo _reference;
 
         public PlayerDataDAL()
@@ -40,31 +25,24 @@ namespace GDFUnity
             };
         }
 
-        public void Validate(IJobHandler handler, IDBConnection connection, byte gameSave)
+        public void Validate(IJobHandler handler, IDBConnection connection)
         {
-            DALData dalData = new DALData(gameSave);
-            ValidateTable(handler, connection, dalData);
+            ValidateTable(handler, connection);
         }
 
-        public void Get(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data, byte gameSave)
+        public void Get(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
         {
-            DALData dalData = new DALData(gameSave);
-            Select(handler, connection, dalData, data);
+            Select(handler, connection, data);
         }
 
-        public void Record(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data, byte gameSave)
+        public void Record(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
         {
-            DALData dalData = new DALData(gameSave);
-            InsertOrUpdate(handler, connection, dalData, data);
+            InsertOrUpdate(handler, connection, data);
         }
 
-        protected override string GenerateTableName(IDALData dalData)
+        protected override string GenerateTableName()
         {
-            DALData dData = (DALData)dalData;
             StringBuilder tableName = new StringBuilder(_tableType.Name);
-
-            tableName.Append('_');
-            tableName.Append(dData.gameSave);
             return tableName.ToString();
         }
 
@@ -87,26 +65,23 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected override void ProcessUpdate(IDBConnection connection, IDALData dalData, GDFPlayerDataStorage data, string tableName)
+        protected override void ProcessUpdate(IDBConnection connection, GDFPlayerDataStorage data, string tableName)
         {
             int index = 1;
             using (SQLiteDbRequest request = connection.GetRequest<SQLiteDbRequest>())
             {
                 if (data.Trashed)
                 {
-                    request.Open(Delete(dalData, tableName, data));
+                    request.Open(Delete(tableName, data));
                     SQLiteType.Get(_reference.PropertyType).BindParamter(request, index++, _reference.GetValue(data));
                 }
                 else
                 {
-                    DALData dal = (DALData)dalData;
-                    request.Open(InsertOrUpdate(dalData, tableName, data));
+                    request.Open(InsertOrUpdate(tableName, data));
                     foreach (PropertyInfo property in _properties)
                     {
                         SQLiteType.Get(property.PropertyType).BindParamter(request, index++, property.GetValue(data));
                     }
-
-                    data.GameSave = dal.gameSave;
                 }
                 
                 try
@@ -120,7 +95,7 @@ namespace GDFUnity
             }
         }
 
-        protected override void ProcessDelete(IDBConnection connection, IDALData dalData, GDFPlayerDataStorage data, string tableName)
+        protected override void ProcessDelete(IDBConnection connection, GDFPlayerDataStorage data, string tableName)
         {
             
         }

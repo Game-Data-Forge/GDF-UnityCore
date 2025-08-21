@@ -267,7 +267,7 @@ namespace GDFUnity.Editor.ServiceProviders
 
             _needConsent = current is RegisterState;
 
-            _view.Update();
+            Update();
 
             _current?.OnActivate(_view.Window, _view);
         }

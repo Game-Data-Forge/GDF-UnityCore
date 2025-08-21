@@ -28,6 +28,7 @@ namespace GDFFoundation
         ///     Gets or sets the value of the property.
         /// </summary>
         /// <value>The value of the property.</value>
+        [GDFDbLength(1024)] 
         public string Value { set; get; } = string.Empty;
 
         #endregion

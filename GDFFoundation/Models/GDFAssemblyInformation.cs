@@ -11,13 +11,131 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 #endregion
 
 namespace GDFFoundation
 {
-    public interface IGDFAssemblyInfo
+    public interface IGDFAssemblyInformation
     {
+        public string GitCommit() => "error";
+        public string GitShortCommit() => "error";
+        public string GitBranch() => "error";
+        public string GitTag() => "error";
+        public string GitLastCommitAuthor() => "error";
+        public string GitLastCommitDate() => "error";
+        public string GitIsDirty() => "error";
+        public string Name() => "error";
+        public string Description() => "error";
+        public string Notes() => "error";
+        public string Company() => "error";
+        public string Copyright() => "error";
+        public string BuildDate() => "error";
+        public string DotNet() => "error";
+        public bool IsNuGet() => false;
+        public bool DebugStatus { set; get; }
+        public bool DebugTrace { set; get; }
+        public string Version() => "error";
+        public string FileVersion() => "error";
+    }
+
+    public class GDFAssemblyInformation<T> : GDFAssemblyInformation where T : GDFAssemblyInformation<T>, new()
+    {
+        private static T _singleton = null;
+
+        public static T Shared
+        {
+            get
+            {
+                if (_singleton == null)
+                {
+                    _singleton = new T();
+                    LibrariesWorkflow.AddAssemblyInfo(_singleton);
+                }
+
+                return _singleton;
+            }
+        }
+    }
+
+    public class GDFAssemblyInformation : IGDFAssemblyInformation
+    {
+        public virtual string GitCommit() => "unknown";
+        public virtual string GitShortCommit() => "unknown";
+        public virtual string GitBranch() => "unknown";
+        public virtual string GitTag() => "unknown";
+        public virtual string GitLastCommitAuthor() => "unknown";
+        public virtual string GitLastCommitDate() => "unknown";
+        public virtual string GitIsDirty() => "unknown";
+        public virtual string Name()
+        {
+            Assembly assembly = this.GetType().Assembly;
+            string result = assembly.GetName().Name ?? "unknown";
+            return result;
+        }
+        public virtual string Description() => "unknown";
+        public virtual string Notes() => "unknown";
+        public virtual string Company() => "unknown";
+        public virtual string Copyright() => "unknown";
+        public virtual string BuildDate() => "unknown";
+        public virtual string DotNet() => "unknown";
+        
+        public virtual bool IsNuGet() => true;
+
+        public virtual string Version()
+        {
+            Assembly assembly = this.GetType().Assembly;
+            string result = assembly.GetName().Version?.ToString() ?? "unknown";
+            return result;
+        }
+        public virtual string FileVersion()
+        {
+            Assembly assembly = this.GetType().Assembly;
+            var fileVersionAttribute = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>();
+            string result = fileVersionAttribute?.Version ?? "unknown";
+            return result;
+        }
+        public bool DebugStatus { set; get; }
+        public bool DebugTrace { set; get; }
+
+        public bool Printed { set; get; } = false;
+
+        public void ConsolePrint()
+        {
+            if (Printed == false)
+            {
+                Printed = true;
+                if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Logo))
+                {
+                    PrintLogo();
+                }
+
+                if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Version))
+                {
+                    PrintVersion();
+                }
+
+                if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Information))
+                {
+                    PrintInformation();
+                }
+            }
+        }
+        
+        public void Information(Assembly assembly)
+        {
+
+        }
+
+        public static GDFAssemblyInformation GetExecuting()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            return LibrariesWorkflow.GetForAssembly(assembly);
+        }
+
         #region Static fields and properties
 
         static readonly Dictionary<char, string[]> RectangleFont = new()
@@ -1342,61 +1460,43 @@ namespace GDFFoundation
 
         #region Instance fields and properties
 
-        public List<IGDFAssemblyInfo> Dependencies { set; get; }
-        public string Description { set; get; }
-        public string DotNet { set; get; }
-        public string GitCommit { set; get; }
-        public string GitCommitShort { set; get; }
-        public bool Localized { set; get; }
-        public bool NuGet { set; get; }
-        public string PipelineDate { set; get; }
-        public string PipelineJob { set; get; }
-        public bool Printed { set; get; }
-        public string Title { set; get; }
-        public string Version { set; get; }
-
         #endregion
 
         #region Instance methods
 
-        public bool DebugStatus();
-        public bool DebugTrace();
-
-        public void PrintInformation()
+        public void PrintInformation([CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.Write(Title);
             Console.ResetColor();
-            if (NuGet == true)
+            Console.WriteLine($"File {callerFile} method {callerMethod} line {callerLine}");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.Write(Name());
+            Console.ResetColor();
+            if (IsNuGet())
             {
-                Console.Write(@$"  v{Version}
-NuGet built by CICD ({GitCommit} {PipelineJob} {PipelineDate})");
+                Console.Write(@$" v{Version()} NuGet ");
             }
             else
             {
-                Console.Write(@$" CsProj integration");
+                Console.Write(@$" v{Version()} CsProj integration");
             }
 
             Console.WriteLine();
-            //             Console.ForegroundColor = ConsoleColor.Gray;
-            //             Console.WriteLine(@$"
-            // {Description}");
-            //             Console.ResetColor();
             Console.WriteLine(@$"____________________________________________________________________________________________________________");
         }
 
         public void PrintLogo()
         {
+            Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.WriteLine(GenerateAsciiArt(Title.Replace("GDF", "°GDF ") + "4"));
-            // Console.ForegroundColor = ConsoleColor.DarkRed;
-            // Console.WriteLine(Title);
-            // Console.ResetColor();
+            Console.WriteLine(GenerateAsciiArt(Name().Replace("GDF", "°GDF ") + "4"));
+            Console.ResetColor();
         }
 
         public void PrintVersion()
         {
-            Console.WriteLine(@$"{Title} version {Version} 2024-{DateTime.UtcNow.Year} ©");
+            Console.ResetColor();
+            Console.WriteLine(@$"{Name()} version {Version()} 2024-{DateTime.UtcNow.Year} ©");
+            Console.ResetColor();
         }
 
         #endregion

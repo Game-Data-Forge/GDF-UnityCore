@@ -64,7 +64,18 @@ namespace GDFUnity.Editor
         public void RegisterActionMenu(Action actionMenu)
         {
             _actionMenu = actionMenu;
-            if (actionMenu == null)
+            UpdateActionMenu();
+        }
+        
+        public void UnregisterActionMenu()
+        {
+            _actionMenu = null;
+            UpdateActionMenu();
+        }
+
+        private void UpdateActionMenu()
+        {
+            if (_actionMenu == null)
             {
                 _button.style.display = DisplayStyle.None;
                 _foldout.style.marginRight = 0;

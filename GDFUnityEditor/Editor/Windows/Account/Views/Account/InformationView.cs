@@ -11,6 +11,7 @@ namespace GDFUnity.Editor
         private LabelField _environment;
         private LabelField _country;
         private LabelField _channel;
+        private LabelField _identity;
         private LabelField _account;
         private LabelField _range;
         private LabelField _token;
@@ -27,14 +28,17 @@ namespace GDFUnity.Editor
 
             _channel = new LabelField();
             _channel.text = "Channel";
+            _country.style.marginBottom = 5;
+
+            _identity = new LabelField();
+            _identity.text = "Identity";
+
+            _account = new LabelField();
+            _account.text = "Account";
 
             _range = new LabelField();
             _range.text = "Range";
             _range.style.marginBottom = 5;
-
-            _account = new LabelField();
-            _account.text = "Account";
-            _account.style.marginBottom = 5;
 
             _token = new LabelField();
             _token.text = "Token";
@@ -52,6 +56,7 @@ namespace GDFUnity.Editor
             _country.value = $"({country.ToCodeString()}) {country.ToDisplayString()}";
             _channel.value = $"{token.Channel}";
             _account.value = $"{token.Account}";
+            _identity.value = $"{GDFEditor.Account.Identity}";
             _range.value = $"{token.Range}";
             _token.value = $"{token.Token}";
             _bearer.value = $"{GDFEditor.Account.Bearer}";
@@ -59,8 +64,9 @@ namespace GDFUnity.Editor
             view.Add(_environment);
             view.Add(_country);
             view.Add(_channel);
-            view.Add(_range);
+            view.Add(_identity);
             view.Add(_account);
+            view.Add(_range);
             view.Add(_token);
             view.Add(_bearer);
         }

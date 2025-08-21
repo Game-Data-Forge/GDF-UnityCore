@@ -30,6 +30,7 @@ namespace GDFFoundation
         public long RowUsed { get; set; }
 
         [GDFDbAccess(updateAccess = GDFDbColumnAccess.Deny)]
+        [GDFDbLength(128)]
         public string StatKey { get; set; }
 
         public long StudioDataSyncCounter { get; set; }

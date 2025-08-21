@@ -211,7 +211,7 @@ namespace GDFFoundation
         public void Init(IGDFVolatileAgent sVolatileManager)
         {
             Timestamp = GDFTimestamp.Timestamp();
-            EngineVersion = GDFFoundation.GDFAssemblyInfo.AssemblyInfo.Version;
+            EngineVersion = LibrariesWorkflow.GetForFoundation().Version();
             if (sVolatileManager != null)
             {
                 Session = sVolatileManager.GetSession();

@@ -569,6 +569,46 @@ namespace PlayerData
             Assert.IsTrue(triggeredDelay);
         }
 
+        [UnityTest]
+        public IEnumerator CanBeNotifiedOfSLoaded()
+        {
+            GDF.Player.Loaded.onBackgroundThread += OnLoaded;
+            GDF.Player.Loaded.onMainThread += OnLoaded;
+
+            Assert.IsFalse(triggeredImmediate);
+            Assert.IsFalse(triggeredDelay);
+
+            UnityJob task = GDF.Player.LoadCommonGameSave();
+            yield return WaitJob(task);
+            
+            Assert.IsTrue(triggeredImmediate);
+
+            yield return null;
+            yield return null;
+            
+            Assert.IsTrue(triggeredDelay);
+        }
+
+        [UnityTest]
+        public IEnumerator CanBeNotifiedOfLoading()
+        {
+            GDF.Player.Loading.onBackgroundThread += OnLoading;
+            GDF.Player.Loading.onMainThread += OnLoading;
+
+            Assert.IsFalse(triggeredImmediate);
+            Assert.IsFalse(triggeredDelay);
+
+            UnityJob task = GDF.Player.LoadCommonGameSave();
+            yield return WaitJobStarted(task);
+            
+            Assert.IsTrue(triggeredImmediate);
+            Assert.IsFalse(task.IsDone);
+
+            yield return null;
+            
+            Assert.IsTrue(triggeredDelay);
+        }
+
         private void OnSaved()
         {
             triggeredDelay = true;
@@ -585,6 +625,26 @@ namespace PlayerData
         }
 
         private void OnSaving(IJobHandler handler)
+        {
+            triggeredImmediate = true;
+        }
+
+        private void OnLoaded()
+        {
+            triggeredDelay = true;
+        }
+
+        private void OnLoaded(IJobHandler handler)
+        {
+            triggeredImmediate = true;
+        }
+
+        private void OnLoading()
+        {
+            triggeredDelay = true;
+        }
+
+        private void OnLoading(IJobHandler handler)
         {
             triggeredImmediate = true;
         }
@@ -611,6 +671,10 @@ namespace PlayerData
             GDF.Player.Saving.onMainThread -= OnSaving;
             GDF.Player.Saved.onBackgroundThread -= OnSaved;
             GDF.Player.Saved.onMainThread -= OnSaved;
+            GDF.Player.Loading.onBackgroundThread -= OnLoading;
+            GDF.Player.Loading.onMainThread -= OnLoading;
+            GDF.Player.Loaded.onBackgroundThread -= OnLoaded;
+            GDF.Player.Loaded.onMainThread -= OnLoaded;
 
             UnityJob task = GDF.Account.Authentication.SignOut();
             yield return WaitJob(task);

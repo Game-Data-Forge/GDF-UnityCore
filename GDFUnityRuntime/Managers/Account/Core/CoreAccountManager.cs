@@ -20,7 +20,15 @@ namespace GDFUnity
             public TokenStorage(Country country, string bearer)
             {
                 Country = country;
-                Bearer = $"Bearer {bearer}";
+                if (bearer.StartsWith("Bearer "))
+                {
+                    GDFLogger.Warning("Bad bearer !");
+                    Bearer = $"Bearer {bearer.Substring(7)}";
+                }
+                else
+                {
+                    Bearer = $"Bearer {bearer}";
+                }
 
                 if (bearer == null)
                 {
@@ -108,6 +116,10 @@ namespace GDFUnity
             return _engine.ServerManager.BuildAuthURL(country, urlParts);
         }
 
+        internal T Get<T>(IJobHandler handler, string url)
+        {
+            return Get<T>(handler, url, _headers);
+        }
         internal T Post<T>(IJobHandler handler, string url, object payload)
         {
             return Post<T>(handler, url, _headers, payload);
@@ -115,6 +127,10 @@ namespace GDFUnity
         internal T Put<T>(IJobHandler handler, string url)
         {
             return Put<T>(handler, url, _headers);
+        }
+        internal T Put<T>(IJobHandler handler, string url, object payload)
+        {
+            return Put<T>(handler, url, _headers, payload);
         }
         internal T Delete<T>(IJobHandler handler, string url)
         {

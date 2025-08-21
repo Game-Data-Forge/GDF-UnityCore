@@ -9,7 +9,7 @@
 
 namespace GDFFoundation
 {
-    public enum GDFDataArea
+    public enum DataRegion
     {
         Unknown = 0,
 

@@ -12,6 +12,8 @@ namespace GDFRuntime
 
         public Notification Syncing { get; }
         public Notification Synced { get; }
+        public Notification Loading { get; }
+        public Notification Loaded { get; }
         public Notification Saving { get; }
         public Notification Saved { get; }
 

@@ -29,6 +29,8 @@ namespace GDFFoundation
     /// </summary>
     public static class GDFLogger
     {
+        public static bool TraceAll = true;
+
         /// <summary>
         ///     The Writer class provides methods for logging messages using the chosen logger.
         /// </summary>
@@ -93,13 +95,13 @@ namespace GDFFoundation
         /// </summary>
         /// <param name="sObject">The object to be serialized and split.</param>
         /// <returns>An array of strings representing the serialized object split by lines.</returns>
-        public static string[] SplitObjectSerializable(object sObject)
+        public static string[] SplitObjectSerializable(object item)
         {
             #if !UNITY_EDITOR && ! UNITY_STANDALONE
-            return JsonSerializer.Serialize(sObject, new JsonSerializerOptions { WriteIndented = true }).Replace(",\\\"", ",\n\\\"").Replace("{\\\"", "{\n\\\"").Replace("\\\"}", "\\\"\n}").Split('\n');
+            return JsonSerializer.Serialize(item, new JsonSerializerOptions { WriteIndented = true }).Replace(",\\\"", ",\n\\\"").Replace("{\\\"", "{\n\\\"").Replace("\\\"}", "\\\"\n}").Split('\n');
             //return JsonConvert.SerializeObject(sObject, Formatting.Indented).Replace(",\\\"", ",\n\\\"").Replace("{\\\"", "{\n\\\"").Replace("\\\"}", "\\\"\n}").Split('\n');
             #else
-            return sObject.ToString().Split('\n');
+            return item.ToString().Split('\n');
             #endif
         }
 
@@ -154,8 +156,6 @@ namespace GDFFoundation
             TraceAttention("test of layout");
             TraceError("test of layout");
             TraceFailed("test of layout");
-            TraceSuccess("test of layout");
-            TraceTodo("test of layout");
             Exception(null);
             Exception(new Exception("Exception's message"));
             Trace("test of layout");
@@ -164,53 +164,12 @@ namespace GDFFoundation
             Warning("test of layout !warning! ");
             Error("test of layout ... Arghhh an error");
             Critical("test of layout ... critical ... I'am dead!");
-
             Trace("test of layout");
-            Trace("my title",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc luctus purus sed justo viverra cursus. Cras tincidunt risus a dui lacinia ",
-                "convallis. Etiam tempor velit vitae mi pharetra mollis a vel purus. Aenean sem lorem, pharetra eget mauris eget, porta ornare urna. ",
-                "Pellentesque feugiat, tellus sit amet tempus dictum, felis nisi porta enim, at tempus nibh lectus at mauris. Morbi tincidunt, lacus ac ",
-                "pellentesque porta, ligula nisl consectetur nunc, eget ultrices dui nunc ut orci. Proin ac quam vitae lacus sollicitudin dictum eget ut justo. ");
-
-
             Information("test of layout number 1");
-            Information("my title number 1",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc luctus purus sed justo viverra cursus. Cras tincidunt risus a dui lacinia ",
-                "convallis. Etiam tempor velit vitae mi pharetra mollis a vel purus. Aenean sem lorem, pharetra eget mauris eget, porta ornare urna. ",
-                "Pellentesque feugiat, tellus sit amet tempus dictum, felis nisi porta enim, at tempus nibh lectus at mauris. Morbi tincidunt, lacus ac ",
-                "pellentesque porta, ligula nisl consectetur nunc, eget ultrices dui nunc ut orci. Proin ac quam vitae lacus sollicitudin dictum eget ut justo. ");
-
-
             Debug("test of layout for debug");
-            Debug("my title for debug",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc luctus purus sed justo viverra cursus. Cras tincidunt risus a dui lacinia ",
-                "convallis. Etiam tempor velit vitae mi pharetra mollis a vel purus. Aenean sem lorem, pharetra eget mauris eget, porta ornare urna. ",
-                "Pellentesque feugiat, tellus sit amet tempus dictum, felis nisi porta enim, at tempus nibh lectus at mauris. Morbi tincidunt, lacus ac ",
-                "pellentesque porta, ligula nisl consectetur nunc, eget ultrices dui nunc ut orci. Proin ac quam vitae lacus sollicitudin dictum eget ut justo. ");
-
-
             Warning("test of layout !warning! ");
-            Warning("my title !warning! ",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc luctus purus sed justo viverra cursus. Cras tincidunt risus a dui lacinia ",
-                "convallis. Etiam tempor velit vitae mi pharetra mollis a vel purus. Aenean sem lorem, pharetra eget mauris eget, porta ornare urna. ",
-                "Pellentesque feugiat, tellus sit amet tempus dictum, felis nisi porta enim, at tempus nibh lectus at mauris. Morbi tincidunt, lacus ac ",
-                "pellentesque porta, ligula nisl consectetur nunc, eget ultrices dui nunc ut orci. Proin ac quam vitae lacus sollicitudin dictum eget ut justo. ");
-
-
             Error("test of layout ... Arghhh an error");
-            Error("my title ... Arghhh an error",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc luctus purus sed justo viverra cursus. Cras tincidunt risus a dui lacinia ",
-                "convallis. Etiam tempor velit vitae mi pharetra mollis a vel purus. Aenean sem lorem, pharetra eget mauris eget, porta ornare urna. ",
-                "Pellentesque feugiat, tellus sit amet tempus dictum, felis nisi porta enim, at tempus nibh lectus at mauris. Morbi tincidunt, lacus ac ",
-                "pellentesque porta, ligula nisl consectetur nunc, eget ultrices dui nunc ut orci. Proin ac quam vitae lacus sollicitudin dictum eget ut justo. ");
-
-
             Critical("test of layout ... critical ... I'am dead!");
-            Critical("my title ... critical ... I'am dead!",
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc luctus purus sed justo viverra cursus. Cras tincidunt risus a dui lacinia ",
-                "convallis. Etiam tempor velit vitae mi pharetra mollis a vel purus. Aenean sem lorem, pharetra eget mauris eget, porta ornare urna. ",
-                "Pellentesque feugiat, tellus sit amet tempus dictum, felis nisi porta enim, at tempus nibh lectus at mauris. Morbi tincidunt, lacus ac ",
-                "pellentesque porta, ligula nisl consectetur nunc, eget ultrices dui nunc ut orci. Proin ac quam vitae lacus sollicitudin dictum eget ut justo. ");
         }
 
         /// <summary>
@@ -223,11 +182,28 @@ namespace GDFFoundation
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        private static void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, string sString, object sObject)
+        private static void WriteLog(
+            GDFLogLevel logLevel,
+            GDFLogCategory logCategory,
+            string message,
+            object item,
+            string callerFile,
+            string callerMethod,
+            int callerLine
+        )
         {
-            if (CanWrite(sLogLevel))
+            if (CanWrite(logLevel))
             {
-                Writer.WriteLog(sLogLevel, sLogCategory, sString, sObject);
+                if (TraceAll == true)
+                {
+                    Console.WriteLine($@"File {callerFile} method {callerMethod} line {callerLine}");
+                }
+
+                Writer.WriteLog(logLevel, logCategory, message, item);
+                if (TraceAll == true)
+                {
+                    Console.WriteLine($@"");
+                }
             }
         }
 
@@ -242,11 +218,29 @@ namespace GDFFoundation
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        private static void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, string sTitle, object sObject, params string[] sMessages)
+        private static void WriteLog(
+            GDFLogLevel sLogLevel,
+            GDFLogCategory sLogCategory,
+            string sTitle,
+            object sObject,
+            string[] sMessages,
+            string callerFile,
+            string callerMethod,
+            int callerLine
+        )
         {
             if (CanWrite(sLogLevel))
             {
+                if (TraceAll == true)
+                {
+                    Console.WriteLine($@"File {callerFile} method {callerMethod} line {callerLine}");
+                }
+
                 Writer.WriteLog(sLogLevel, sLogCategory, sTitle, sObject, sMessages);
+                if (TraceAll == true)
+                {
+                    Console.WriteLine($@"");
+                }
             }
         }
 
@@ -260,11 +254,28 @@ namespace GDFFoundation
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        private static void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, Func<string> sString, object sObject)
+        private static void WriteLog(
+            GDFLogLevel sLogLevel,
+            GDFLogCategory sLogCategory,
+            Func<string> sString,
+            object sObject,
+            string callerFile,
+            string callerMethod,
+            int callerLine
+        )
         {
             if (CanWrite(sLogLevel))
             {
+                if (TraceAll == true)
+                {
+                    Console.WriteLine($@"File {callerFile} method {callerMethod} line {callerLine}");
+                }
+
                 Writer.WriteLog(sLogLevel, sLogCategory, sString.Invoke(), sObject);
+                if (TraceAll == true)
+                {
+                    Console.WriteLine($@"");
+                }
             }
         }
 
@@ -279,11 +290,29 @@ namespace GDFFoundation
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        private static void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, Func<string> sTitle, object sObject, params string[] sMessages)
+        private static void WriteLog(
+            GDFLogLevel sLogLevel,
+            GDFLogCategory sLogCategory,
+            Func<string> sTitle,
+            object sObject,
+            string[] sMessages,
+            [CallerFilePath] string callerFile = "",
+            [CallerMemberName] string callerMethod = "",
+            [CallerLineNumber] int callerLine = 0
+        )
         {
             if (CanWrite(sLogLevel))
             {
+                if (TraceAll == true)
+                {
+                    Console.WriteLine($@"File {callerFile} method {callerMethod} line {callerLine}");
+                }
+
                 Writer.WriteLog(sLogLevel, sLogCategory, sTitle.Invoke(), sObject, sMessages);
+                if (TraceAll == true)
+                {
+                    Console.WriteLine($@"");
+                }
             }
         }
 
@@ -295,9 +324,9 @@ namespace GDFFoundation
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Trace(string sMessage, object sObject = null)
+        public static void Trace(string sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
         /// <summary>
@@ -312,52 +341,16 @@ namespace GDFFoundation
         #endif
         public static void TracePrint(string message = "", [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Warning, GDFLogCategory.Attention, $"file {callerFile}, method {callerMethod}, line {callerLine}, message: {message}", "");
+            WriteLog(GDFLogLevel.Warning, GDFLogCategory.Attention, message, null, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Sends a <see cref="GDFLogLevel.Trace" /> log using the <see cref="Writer" />.
-        /// </summary>
-        /// <param name="sMessage">The message to be logged.</param>
-        /// <param name="sObject">The object associated with the log message (optional).</param>
-        #if UNITY_EDITOR
-        [HideInCallstack]
-        #endif
-        public static void Trace(Func<string> sMessage, object sObject = null)
-        {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sMessage, sObject);
-        }
-
-        /// <summary>
-        ///     Writes a trace log message for a todo item.
-        /// </summary>
-        /// <param name="sMessage">The message describing the todo item.</param>
-        #if UNITY_EDITOR
-        [HideInCallstack]
-        #endif
-        public static void TraceTodo(string sMessage)
-        {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Todo, sMessage, null);
-        }
-
-        /// <summary>
-        ///     Logs a trace success message.
-        /// </summary>
-        /// <param name="sMessage">The message to be logged.</param>
-        #if UNITY_EDITOR
-        [HideInCallstack]
-        #endif
-        public static void TraceSuccess(string sMessage)
-        {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Success, sMessage, null);
-        }
 
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Success(string sMessage)
+        public static void Success(string sMessage, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.None, GDFLogCategory.Success, sMessage, null);
+            WriteLog(GDFLogLevel.None, GDFLogCategory.Success, sMessage, null, callerFile, callerMethod, callerLine);
         }
 
         /// <summary>
@@ -367,177 +360,116 @@ namespace GDFFoundation
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void TraceFailed(string sMessage)
+        public static void TraceFailed(string sMessage, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Failed, sMessage, null);
+            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Failed, sMessage, null, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Logs an attention message to the GDFLogger with the specified message.
-        /// </summary>
-        /// <param name="sMessage">The message to log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void TraceAttention(string sMessage)
+        public static void TraceAttention(string sMessage, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Attention, sMessage, null);
+            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Attention, sMessage, null, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Writes an error log message with a given message to the log file.
-        /// </summary>
-        /// <param name="sMessage">The error message to write.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void TraceError(string sMessage)
+        public static void TraceSuccess(string sMessage, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Error, sMessage, null);
+            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Success, sMessage, null, callerFile, callerMethod, callerLine);
         }
-
-        /// <summary>
-        ///     Writes a log message with the given title and messages to the log file with the <see cref="GDFLogLevel.Trace" /> level.
-        ///     The log message will have the <see cref="GDFLogCategory.No" /> category by default.
-        /// </summary>
-        /// <param name="sTitle">The title of the log message.</param>
-        /// <param name="sMessages">The messages to be included in the log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Trace(string sTitle, params string[] sMessages)
+        public static void TraceError(string sMessage, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Trace, GDFLogCategory.Error, sMessage, null, callerFile, callerMethod, callerLine);
         }
-
-        /// <summary>
-        ///     Writes a log message with the given title and messages to the log file with the <see cref="GDFLogLevel.Trace" /> level.
-        ///     The log message will have the <see cref="GDFLogCategory.No" /> category by default.
-        /// </summary>
-        /// <param name="sTitle">The title of the log message.</param>
-        /// <param name="sMessages">The messages to be included in the log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Trace(Func<string> sTitle, params string[] sMessages)
+        public static void Trace(string sTitle, string[] sMessages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sTitle, null, sMessages, callerFile, callerMethod, callerLine);
         }
-
-        /// <summary>
-        ///     Sends a <see cref="GDFLogLevel.Debug" /> log using the <see cref="Writer" />.
-        /// </summary>
-        /// <param name="sMessage">The message to be logged.</param>
-        /// <param name="sObject">The optional object associated with the log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Debug(string sMessage, object sObject = null)
+        public static void Trace(Func<string> sTitle, string[] sMessages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Trace, GDFLogCategory.No, sTitle, null, sMessages, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Writes a debug log with the given title and messages.
-        /// </summary>
-        /// <param name="sTitle">The title of the debug log.</param>
-        /// <param name="sMessages">The messages to be included in the debug log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Debug(string sTitle, params string[] sMessages)
+        public static void Debug(string message, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, message, null, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Sends a <see cref="GDFLogLevel.Debug" /> log using the <see cref="Writer" />.
-        /// </summary>
-        /// <param name="sMessage">The message to be logged.</param>
-        /// <param name="sObject">The optional object associated with the log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Debug(Func<string> sMessage, object sObject = null)
+        public static void Debug(string sTitle, string[] sMessages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sTitle, null, sMessages, callerFile, callerMethod, callerLine);
         }
-
-        /// <summary>
-        ///     Writes a debug log with the given title and messages.
-        /// </summary>
-        /// <param name="sTitle">The title of the debug log.</param>
-        /// <param name="sMessages">The messages to be included in the debug log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Debug(Func<string> sTitle, params string[] sMessages)
+        public static void Debug(Func<string> sMessage, object item = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sMessage, item, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Sends a log with the level 'Information' using the Writer.
-        /// </summary>
-        /// <param name="sMessage">The log message.</param>
-        /// <param name="sObject">Optional object related to the log message.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Information(string sMessage, object sObject = null)
+        public static void Debug(Func<string> sTitle, string[] sMessages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Debug, GDFLogCategory.No, sTitle, null, sMessages, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Writes an information log.
-        /// </summary>
-        /// <param name="title">The title of the log.</param>
-        /// <param name="messages">Additional messages to include in the log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Information(string title, params string[] messages)
+        public static void Information(string sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Information, GDFLogCategory.No, title, null, messages);
+            WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Sends a log with the level 'Information' using the Writer.
-        /// </summary>
-        /// <param name="sMessage">The log message.</param>
-        /// <param name="sObject">Optional object related to the log message.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Information(Func<string> sMessage, object sObject = null)
+        public static void Information(string title, string[] messages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Information, GDFLogCategory.No, title, null, messages, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Writes an information log.
-        /// </summary>
-        /// <param name="sTitle">The title of the log.</param>
-        /// <param name="sMessages">Additional messages to include in the log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Information(Func<string> sTitle, params string[] sMessages)
+        public static void Information(Func<string> sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
-
-        /// <summary>
-        ///     Logs an exception with the given error code and message.
-        /// </summary>
-        /// <param name="sObject">The exception object to be logged.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Exception(Exception sObject)
+        public static void Information(Func<string> sTitle, string[] sMessages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Critical, GDFLogCategory.Exception, string.Empty, sObject);
+            WriteLog(GDFLogLevel.Information, GDFLogCategory.No, sTitle, null, sMessages, callerFile, callerMethod, callerLine);
+        }
+
+        #if UNITY_EDITOR
+        [HideInCallstack]
+        #endif
+        public static void Exception(Exception sObject, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
+        {
+            WriteLog(GDFLogLevel.Critical, GDFLogCategory.Exception, string.Empty, sObject, callerFile, callerMethod, callerLine);
         }
 
         /// <summary>
@@ -548,9 +480,9 @@ namespace GDFFoundation
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Exception(string sMessage, Exception sObject)
+        public static void Exception(string sMessage, Exception sObject, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Critical, GDFLogCategory.Exception, sMessage, sObject);
+            WriteLog(GDFLogLevel.Critical, GDFLogCategory.Exception, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
         /// <summary>
@@ -561,165 +493,81 @@ namespace GDFFoundation
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Warning(string sMessage, object sObject = null)
+        public static void Warning(string sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Writes a warning log with the specified title and messages.
-        /// </summary>
-        /// <param name="sTitle">The title of the warning log.</param>
-        /// <param name="sMessages">An optional list of messages to include in the log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Warning(string sTitle, params string[] sMessages)
+        public static void Warning(string sTitle, string[] sMessages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sTitle, null, sMessages, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Sends a <see cref="GDFLogLevel.Warning" /> log using the WriteLog method.
-        /// </summary>
-        /// <param name="sMessage">The message to be logged.</param>
-        /// <param name="sObject">Optional object to be logged alongside the message.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Warning(Func<string> sMessage, object sObject = null)
+        public static void Warning(Func<string> sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Writes a warning log with the specified title and messages.
-        /// </summary>
-        /// <param name="sTitle">The title of the warning log.</param>
-        /// <param name="sMessages">An optional list of messages to include in the log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Warning(Func<string> sTitle, params string[] sMessages)
+        public static void Warning(Func<string> sTitle, string[] sMessages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Warning, GDFLogCategory.No, sTitle, null, sMessages, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Sends an error log using the GDFLogger.
-        /// </summary>
-        /// <param name="sException"></param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Error(object sException)
+        public static void Error(object sException, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Error, GDFLogCategory.Exception, string.Empty, sException);
+            WriteLog(GDFLogLevel.Error, GDFLogCategory.Exception, string.Empty, sException, callerFile, callerMethod, callerLine);
         }
 
-
-        /// <summary>
-        ///     Sends an error log using the GDFLogger.
-        /// </summary>
-        /// <param name="sMessage">The error message to be logged.</param>
-        /// <param name="sObject">An optional object associated with the error log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Error(string sMessage, object sObject = null)
+        public static void Error(string sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Logs an error with the specified title and messages.
-        /// </summary>
-        /// <param name="sTitle">The title of the error log.</param>
-        /// <param name="sMessages">The messages to be included in the error log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Error(string sTitle, params string[] sMessages)
+        public static void Error(string sTitle, string[] sMessages, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sTitle, null, sMessages, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Sends an error log using the GDFLogger.
-        /// </summary>
-        /// <param name="sMessage">The error message to be logged.</param>
-        /// <param name="sObject">An optional object associated with the error log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Error(Func<string> sMessage, object sObject = null)
+        public static void Error(Func<string> sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sMessage, sObject);
+            WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Logs an error with the specified title and messages.
-        /// </summary>
-        /// <param name="sTitle">The title of the error log.</param>
-        /// <param name="sMessages">The messages to be included in the error log.</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Error(Func<string> sTitle, params string[] sMessages)
+        public static void Critical(string sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Error, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
-        /// <summary>
-        ///     Sends a <see cref="GDFLogLevel.Critical" /> log using the <see cref="Writer" />.
-        /// </summary>
-        /// <param name="sMessage">The message to log.</param>
-        /// <param name="sObject">The object associated with the log message (optional).</param>
         #if UNITY_EDITOR
         [HideInCallstack]
         #endif
-        public static void Critical(string sMessage, object sObject = null)
+        public static void Critical(Func<string> sMessage, object sObject = null, [CallerFilePath] string callerFile = "", [CallerMemberName] string callerMethod = "", [CallerLineNumber] int callerLine = 0)
         {
-            WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sMessage, sObject);
-        }
-
-        /// <summary>
-        ///     Writes a log message with the given <paramref name="sTitle" /> and <paramref name="sMessages" /> as critical level.
-        /// </summary>
-        /// <param name="sTitle">The title of the log message.</param>
-        /// <param name="sMessages">The messages to be included in the log.</param>
-        #if UNITY_EDITOR
-        [HideInCallstack]
-        #endif
-        public static void Critical(string sTitle, params string[] sMessages)
-        {
-            WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sTitle, null, sMessages);
-        }
-
-        /// <summary>
-        ///     Sends a <see cref="GDFLogLevel.Critical" /> log using the <see cref="Writer" />.
-        /// </summary>
-        /// <param name="sMessage">The message to log.</param>
-        /// <param name="sObject">The object associated with the log message (optional).</param>
-        #if UNITY_EDITOR
-        [HideInCallstack]
-        #endif
-        public static void Critical(Func<string> sMessage, object sObject = null)
-        {
-            WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sMessage, sObject);
-        }
-
-        /// <summary>
-        ///     Writes a log message with the given <paramref name="sTitle" /> and <paramref name="sMessages" /> as critical level.
-        /// </summary>
-        /// <param name="sTitle">The title of the log message.</param>
-        /// <param name="sMessages">The messages to be included in the log.</param>
-        #if UNITY_EDITOR
-        [HideInCallstack]
-        #endif
-        public static void Critical(Func<string> sTitle, params string[] sMessages)
-        {
-            WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sTitle, null, sMessages);
+            WriteLog(GDFLogLevel.Critical, GDFLogCategory.No, sMessage, sObject, callerFile, callerMethod, callerLine);
         }
 
         /// <summary>

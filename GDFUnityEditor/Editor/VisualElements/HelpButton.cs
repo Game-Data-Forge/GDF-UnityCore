@@ -5,7 +5,7 @@ namespace GDFUnity.Editor
 {
     public class HelpButton : VisualElement
     {
-        public const string DOC_SERVER = "https://doc.game-data-forge.com";
+        public const string DOC_SERVER = "https://documentation.game-data-forge.com";
         private string _url;
 
         public string url

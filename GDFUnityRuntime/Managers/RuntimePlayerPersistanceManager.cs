@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using GDFFoundation;
 using GDFRuntime;
@@ -9,7 +10,8 @@ namespace GDFUnity
     public class RuntimePlayerPersistanceManager : IRuntimePlayerPersistanceManager
     {
         private string _root;
-        private SQLiteDbConnection _connection = null;
+        private SQLiteDbConnection _mainConnection = null;
+        private Dictionary<byte, SQLiteDbConnection> _connectionCache = new Dictionary<byte, SQLiteDbConnection>();
         private IRuntimeEngine _engine;
 
         public RuntimePlayerPersistanceManager(IRuntimeEngine engine)
@@ -31,7 +33,7 @@ namespace GDFUnity
             }
 
             handler.StepAmount = 2;
-            using (IDBConnection connection = _connection.Open())
+            using (IDBConnection connection = _mainConnection.Open())
             {
                 PlayerReferenceDAL.Instance.Validate(handler.Split(), connection);
                 PlayerReferenceDAL.Instance.Get(handler.Split(), connection, references);
@@ -46,10 +48,10 @@ namespace GDFUnity
             }
 
             handler.StepAmount = 2;
-            using (IDBConnection connection = _connection.Open())
+            using (IDBConnection connection = _mainConnection.Open())
             {
-                PlayerReferenceDAL.Instance.Validate(handler.Split(), _connection);
-                PlayerReferenceDAL.Instance.Record(handler.Split(), _connection, references);
+                PlayerReferenceDAL.Instance.Validate(handler.Split(), connection);
+                PlayerReferenceDAL.Instance.Record(handler.Split(), connection, references);
             }
         }
 
@@ -61,21 +63,21 @@ namespace GDFUnity
             }
 
             handler.StepAmount = 4;
-            using (IDBConnection connection = _connection.Open())
+            using (IDBConnection connection = GetConnection(gameSave).Open())
             {
-                PlayerDataDAL.Instance.Validate(handler.Split(), _connection, gameSave);
-                PlayerDataToSyncDAL.Instance.Validate(handler.Split(), _connection);
+                PlayerDataDAL.Instance.Validate(handler.Split(), connection);
+                PlayerDataDAL.Instance.Get(handler.Split(), connection, data);
+            }
 
-                if (dataToSync != null)
-                {
-                    PlayerDataToSyncDAL.Instance.Get(handler.Split(), _connection, dataToSync);
-                }
-                else
-                {
-                    handler.Step();
-                }
+            if (dataToSync == null)
+            {
+                return;
+            }
 
-                PlayerDataDAL.Instance.Get(handler.Split(), _connection, data, gameSave);
+            using (IDBConnection connection = _mainConnection.Open())
+            {
+                PlayerDataToSyncDAL.Instance.Validate(handler.Split(), connection);
+                PlayerDataToSyncDAL.Instance.Get(handler.Split(), connection, dataToSync);
             }
         }
 
@@ -89,12 +91,12 @@ namespace GDFUnity
             Dictionary<byte, List<GDFPlayerDataStorage>> cache = SplitStoragesByGameSave(storages);
 
             handler.StepAmount = cache.Count * 2 + 2;
-            using (IDBConnection connection = _connection.Open())
+            foreach (KeyValuePair<byte, List<GDFPlayerDataStorage>> pair in cache)
             {
-                foreach (KeyValuePair<byte, List<GDFPlayerDataStorage>> pair in cache)
+                using (IDBConnection connection = GetConnection(pair.Key).Open())
                 {
-                    PlayerDataDAL.Instance.Validate(handler.Split(), _connection, pair.Key);
-                    PlayerDataDAL.Instance.Record(handler.Split(), _connection, pair.Value, pair.Key);
+                    PlayerDataDAL.Instance.Validate(handler.Split(), connection);
+                    PlayerDataDAL.Instance.Record(handler.Split(), connection, pair.Value);
                 }
             }
         }
@@ -102,10 +104,10 @@ namespace GDFUnity
         public void SaveDataToSync(IJobHandler handler, List<GDFPlayerDataStorage> storages)
         {
             handler.StepAmount = 2;
-            using (IDBConnection connection = _connection.Open())
+            using (IDBConnection connection = _mainConnection.Open())
             {
-                PlayerDataToSyncDAL.Instance.Validate(handler.Split(), _connection);
-                PlayerDataToSyncDAL.Instance.Record(handler.Split(), _connection, storages);
+                PlayerDataToSyncDAL.Instance.Validate(handler.Split(), connection);
+                PlayerDataToSyncDAL.Instance.Record(handler.Split(), connection, storages);
             }
         }
         
@@ -116,33 +118,43 @@ namespace GDFUnity
                 return;
             }
 
-            using (IDBConnection connection = _connection.Open())
+            using (IDBConnection connection = _mainConnection.Open())
             {
-                PlayerDataToSyncDAL.Instance.Validate(handler.Split(), _connection);
-                PlayerDataToSyncDAL.Instance.Delete(handler.Split(), connection, storages);
+                PlayerDataToSyncDAL.Instance.Validate(handler.Split(), connection);
+                PlayerDataToSyncDAL.Instance.DeleteData(handler.Split(), connection, storages);
             }
         }
 
-        public DateTime LoadSyncDate(IJobHandler handler)
+        public PlayerStorageInformation LoadInformation(IJobHandler handler)
         {
-            using (IDBConnection connection = _connection.Open())
-            {
-                PlayerSyncDateDAL.Instance.Validate(handler.Split(), _connection);
-                return PlayerSyncDateDAL.Instance.Get(handler.Split(), connection);
-            }
+            return LoadInformation(handler, _mainConnection);
         }
 
-        public void SaveSyncDate(IJobHandler handler, DateTime syncDate)
+        public void SaveInformation(IJobHandler handler, PlayerStorageInformation information)
         {
-            using IDBConnection connection = _connection.Open();
+            handler.StepAmount = 2;
             
-            PlayerSyncDateDAL.Instance.Validate(handler.Split(), _connection);
-            PlayerSyncDateDAL.Instance.Record(handler.Split(), connection, syncDate);
+            using IDBConnection connection = _mainConnection.Open();
+            
+            PlayerSyncDateDAL.Instance.Validate(handler.Split(), connection);
+            PlayerSyncDateDAL.Instance.Record(handler.Split(), connection, information);
         }
 
         public void Purge(IJobHandler handler)
         {
-            string path = GetFilePath(GDF.Account.Identity);
+            string path;
+            PlayerStorageInformation information = LoadInformation(handler);
+
+            foreach (byte gameSave in information.GameSaves)
+            {
+                path = GetFilePath(GDF.Account.Identity, gameSave);
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+
+            path = GetFilePath(GDF.Account.Identity);
             if (File.Exists(path))
             {
                 File.Delete(path);
@@ -151,16 +163,44 @@ namespace GDFUnity
 
         public void Migrate(IJobHandler handler)
         {
-            string localPath = GetFilePath(GDF.Account.LocalIdentity);
-            string onlinePath = GetFilePath(GDF.Account.Identity);
+            string localPath;
+            string onlinePath;
+
+            Purge(handler);
+
+            string path = GetFilePath(GDF.Account.LocalIdentity);
+            SQLiteDbConnection connection = new SQLiteDbConnection(path);
+
+            PlayerStorageInformation information = LoadInformation(handler, connection);
+
+            foreach (byte gameSave in information.GameSaves)
+            {
+                localPath = GetFilePath(GDF.Account.LocalIdentity, gameSave);
+                onlinePath = GetFilePath(GDF.Account.Identity, gameSave);
+
+                if (File.Exists(localPath))
+                {
+                    File.Copy(localPath, onlinePath, true);
+                }
+            }
+
+            localPath = GetFilePath(GDF.Account.LocalIdentity);
+            onlinePath = GetFilePath(GDF.Account.Identity);
 
             if (File.Exists(localPath))
             {
                 File.Copy(localPath, onlinePath, true);
             }
-            else if (File.Exists(onlinePath))
+        }
+        
+        private PlayerStorageInformation LoadInformation(IJobHandler handler, SQLiteDbConnection mainConnection)
+        {
+            handler.StepAmount = 2;
+
+            using (IDBConnection connection = mainConnection.Open())
             {
-                File.Delete(onlinePath);
+                PlayerSyncDateDAL.Instance.Validate(handler.Split(), connection);
+                return PlayerSyncDateDAL.Instance.Get(handler.Split(), connection);
             }
         }
 
@@ -195,7 +235,20 @@ namespace GDFUnity
 
             handler.Step();
 
-            _connection = new SQLiteDbConnection(path);
+            _connectionCache.Clear();
+            _mainConnection = new SQLiteDbConnection(path);
+        }
+
+        private IDBConnection GetConnection(byte gameSave)
+        {
+            if (_connectionCache.TryGetValue(gameSave, out SQLiteDbConnection connection))
+            {
+                return connection;
+            }
+            string path = GetFilePath(GDF.Account.Identity, gameSave);
+            connection = new SQLiteDbConnection(path);
+            _connectionCache.Add(gameSave, connection);
+            return connection;
         }
 
         private string GetFilePath(string identity)
@@ -206,7 +259,18 @@ namespace GDFUnity
                 Directory.CreateDirectory(_root);
             }
 
-            return Path.Combine(_root, $"PlayerData.save");
+            return Path.Combine(_root, "global.data");
+        }
+
+        private string GetFilePath(string identity, byte gameSave)
+        {
+            _root = Path.Combine(GDFUserSettings.Instance.GenerateContainerName(GDFUserSettings.EnvironmentContainer(_engine)), identity);
+            if (!Directory.Exists(_root))
+            {
+                Directory.CreateDirectory(_root);
+            }
+
+            return Path.Combine(_root, gameSave + ".save");
         }
     }
 }

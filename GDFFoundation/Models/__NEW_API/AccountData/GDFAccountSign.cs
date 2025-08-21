@@ -27,6 +27,7 @@ namespace GDFFoundation
 
         #region From interface IApiResult
 
+        [GDFDbLength(256)]
         public string Status { get; set; }
         public bool Success { get; set; }
 
@@ -39,7 +40,7 @@ namespace GDFFoundation
     ///     Represents an account sign information.
     /// </summary>
     [Serializable]
-    public class GDFAccountSign : GDFAccountData
+    public class GDFAccountSign : GDFAccountData // TODO: Check method SHOULD NOT return a bool if they throw on error !
     {
         #region Static methods
 

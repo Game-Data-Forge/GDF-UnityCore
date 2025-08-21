@@ -65,7 +65,7 @@ namespace GDFUnity.Editor
 
         internal void Update()
         {
-            _title.text = _current.Title;
+            Text = _current.Title;
             _window.helpUrl = _current.Help;
         }
     }

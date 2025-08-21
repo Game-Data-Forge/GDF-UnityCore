@@ -1,89 +1,120 @@
-#region Copyright
-
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// GDFFoundation.csproj GDFAssemblyInfo.cs create at 2025/03/26 17:03:12
-// ©2024-2025 idéMobi SARL FRANCE
-
-#endregion
-
-#region
+﻿//AutoGenerate
 
 using System;
-using System.Collections.Generic;
-
-#endregion
+using GDFFoundation;
 
 namespace GDFFoundation
 {
-    [Obsolete("Rename ... but by what?")]
-    public class GDFAssemblyInfo : IGDFAssemblyInfo
-    {
-        #region Static fields and properties
-
-        public static readonly GDFAssemblyInfo AssemblyInfo = new GDFAssemblyInfo();
-
-        #endregion
-
-        #region Instance fields and properties
-
-        #region From interface IGDFAssemblyInfo
-
-        public List<IGDFAssemblyInfo> Dependencies { set; get; } = new List<IGDFAssemblyInfo>() { GDFFoundation.GDFAssemblyInfo.AssemblyInfo };
-
-        public string Description { set; get; } = @"The core module of Game-Data-Forge.
-Provides the fundamental building blocks, shared abstractions, and common utility functions used across all other GDF modules. It defines the essential concepts such as StudioData, PlayerData, AccountData, role-based access, environment segmentation, and sync strategies.
-This module ensures consistency and reusability across the system, and introduces foundational types, interfaces, and services required by higher-level components like the SyncAgent, AuthAgent, and Companion integrations.";
-
-        public string DotNet { set; get; } = "9";
-        public string GitCommit { set; get; } = string.Empty;
-        public string GitCommitShort { set; get; } = string.Empty;
-        public bool Localized { set; get; } = false;
-        public bool NuGet { set; get; } = false;
-        public string PipelineDate { set; get; } = string.Empty;
-        public string PipelineJob { set; get; } = string.Empty;
-
-        public bool Printed { set; get; } = false;
-        public string Title { set; get; } = typeof(GDFAssemblyInfo).Assembly.GetName().Name ?? string.Empty;
-        public string Version { set; get; } = "1.0.0";
-
-        #endregion
-
-        #endregion
-
-        #region Instance constructors and destructors
-
-        public GDFAssemblyInfo()
+    /// <summary>
+    /// Represents information about the assembly for the <see cref="GDFFoundation"/> namespace.
+    /// Provides metadata such as Git information, version details, and build data.
+    /// Inherits from <see cref="GDFAssemblyInformation{T}"/> and implements specific overrides for the assembly.
+    /// </summary>
+    public class GDFAssemblyInfo : GDFAssemblyInformation<GDFAssemblyInfo>
         {
-            LibrariesWorkflow.AddAssemblyInfo(this);
+            /// <summary>
+            /// Retrieves the full Git commit hash.
+            /// </summary>
+            /// <returns>The full commit hash as a <see cref="string"/>.</returns>
+            public override string GitCommit() => "a237ca3cda23a4c832c8a46c466daa06822c553f";
+            
+            /// <summary>
+            /// Retrieves the short Git commit hash.
+            /// </summary>
+            /// <returns>The short commit hash as a <see cref="string"/>.</returns>
+            public override string GitShortCommit() => "a237ca3cd";
+
+            /// <summary>
+            /// Retrieves the name of the Git branch for this assembly.
+            /// </summary>
+            /// <returns>The Git branch name as a <see cref="string"/>.</returns>
+            public override string GitBranch() => "main";
+
+            /// <summary>
+            /// Retrieves the Git tag associated with the current project version.
+            /// </summary>
+            /// <returns>
+            /// The Git tag as a <see cref="string"/>. If no tag is found, an error message is returned.
+            /// </returns>
+            public override string GitTag() => "fatal: No names found, cannot describe anything.";
+
+            /// <summary>
+            /// Retrieves the author of the last Git commit.
+            /// </summary>
+            /// <returns>The name of the last commit author as a <see cref="string"/>.</returns>
+            public override string GitLastCommitAuthor() => "Boulogne Quentin";
+
+            /// <summary>
+            /// Retrieves the date of the last Git commit.
+            /// </summary>
+            /// <returns>The date of the last Git commit as a <see cref="string"/>.</returns>
+            public override string GitLastCommitDate() => "2025-08-21T14:09:11+02:00";
+
+            /// <summary>
+            /// Indicates whether the current state of the Git repository has uncommitted changes.
+            /// </summary>
+            /// <returns>A <see cref="string"/> representation of whether the repository is dirty ("true" for dirty, "false" otherwise).</returns>
+            public override string GitIsDirty() => "true";
+
+            /// <summary>
+            /// Retrieves the name of the current assembly information.
+            /// </summary>
+            /// <returns>The name of the assembly as a <see cref="string"/>.</returns>
+            public override string Name() => "GDFFoundation";
+            
+            /// <summary>
+            /// Provides a description of the project.
+            /// </summary>
+            /// <returns>A string containing the description of the project as defined in <see cref="GDFAssemblyInfo"/>.</returns>
+            public override string Description() => "Foundation";
+
+            /// <summary>
+            /// Retrieves the notes associated with this assembly information.
+            /// </summary>
+            /// <returns>The notes as a <see cref="string"/>.</returns>
+            public override string Notes() => "note";
+
+            /// <summary>
+            /// Retrieves the company name associated with the assembly.
+            /// </summary>
+            /// <returns>The company name as a <see cref="string"/>.</returns>
+            public override string Company() => "idéMobi";
+
+            /// <summary>
+            /// Retrieves the copyright information for the assembly.
+            /// </summary>
+            /// <returns>The copyright information as a <see cref="string"/>.</returns>
+            public override string Copyright() => "Copyright © idéMobi 2025";
+
+            /// <summary>
+            /// Retrieves the build date of the assembly.
+            /// </summary>
+            /// <returns>The build date as a <see cref="string"/>.</returns>
+            public override string BuildDate() => "2025-08-21 12:29:59-dirty";
+
+            /// <summary>
+            /// Determines whether the NuGet SDK is used for the current assembly information setup.
+            /// </summary>
+            /// <returns>A <see cref="bool"/> indicating whether the NuGet SDK is in use.</returns>
+            public override bool IsNuGet() => false;
+
+            // /// <summary>
+            // /// Retrieves the version information of the assembly.
+            // /// </summary>
+            // /// <returns>The version string of the assembly as a <see cref="string"/>.</returns>
+            //public override string Version() => "2025.821.1229-dirty";
+
+            // /// <summary>
+            // /// Retrieves the file version information of the assembly.
+            // /// </summary>
+            // /// <returns>The file version of the assembly as a <see cref="string"/>.</returns>
+            //public override string FileVersion() => "2025.821.1229-dirty";
+
+            /// <summary>
+            /// Gets the target .NET version of the project.
+            /// </summary>
+            /// <returns>The target .NET version as a <see cref="string"/>.</returns>
+            public override string DotNet() => "net9.0";
+       
         }
-
-        #endregion
-
-        #region Instance methods
-
-        #region From interface IGDFAssemblyInfo
-
-        public bool DebugStatus()
-        {
-            #if DEBUG
-            return true;
-            #else
-            return false;
-            #endif
-        }
-
-        public bool DebugTrace()
-        {
-            #if TRACE
-            return true;
-            #else
-            return false;
-            #endif
-        }
-
-        #endregion
-
-        #endregion
-    }
 }

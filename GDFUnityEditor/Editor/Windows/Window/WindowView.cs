@@ -9,7 +9,7 @@ namespace GDFUnity.Editor
         protected T _window;
         protected IWindowView<T> _current;
 
-        protected TitleLabel _title;
+        private TitleLabel _title;
         private VisualElement _body;
 
         public IWindowView<T> Current
@@ -20,7 +20,11 @@ namespace GDFUnity.Editor
         public string Text
         {
             get => _title.text;
-            set => _title.text = value;
+            set
+            {
+                _title.text = value;
+                _title.style.display = string.IsNullOrEmpty(_title.text) ? DisplayStyle.None : DisplayStyle.Flex;
+            }
         }
 
         public WindowView(T window)
@@ -63,7 +67,7 @@ namespace GDFUnity.Editor
             _current?.OnDeactivate(_window, this);
             _body.Clear();
             _current = view;
-            _title.text = _current?.Title;
+            Text = _current?.Title;
             _current?.OnActivate(_window, this);
 
             Window window = _window as Window;

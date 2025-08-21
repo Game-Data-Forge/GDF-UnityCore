@@ -165,7 +165,7 @@ namespace GDFFoundation
         public static string RandomCaptchaNoMistake(uint sLength)
         {
             StringBuilder rReturn = new StringBuilder();
-            const string cChars = "cdefhjkmnpqrtwxyCDEFHJKMNPRTWXY379";
+            const string cChars = "cdefhjkmnpqrtwxyCEFHKMNPRTWXY379";
             int tCharLenght = cChars.Length;
             while (rReturn.Length < sLength)
             {

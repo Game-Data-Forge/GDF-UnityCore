@@ -15,8 +15,8 @@ namespace GDFRuntime
         public void SaveDataToSync(IJobHandler handler, List<GDFPlayerDataStorage> data);
         public void RemoveDataToSync(IJobHandler handler, List<GDFPlayerDataStorage> data);
 
-        public DateTime LoadSyncDate(IJobHandler handler);
-        public void SaveSyncDate(IJobHandler handler, DateTime syncDate);
+        public PlayerStorageInformation LoadInformation(IJobHandler handler);
+        public void SaveInformation(IJobHandler handler, PlayerStorageInformation information);
 
         public void Purge(IJobHandler handler);
 

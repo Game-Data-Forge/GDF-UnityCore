@@ -27,6 +27,7 @@ namespace GDFFoundation
         /// <summary>
         ///     Represents a token used in the application.
         /// </summary>
+        [GDFDbLength(1024)]
         public string Value { set; get; } = string.Empty;
 
         #endregion

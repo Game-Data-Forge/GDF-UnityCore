@@ -33,6 +33,7 @@ namespace GDFFoundation
         /// <summary>
         ///     Represents the message property of an GDFAccount.
         /// </summary>
+        [GDFDbLength(1024)]
         public string Message { set; get; } = string.Empty;
 
         /// <summary>
@@ -46,6 +47,8 @@ namespace GDFFoundation
         /// <summary>
         ///     Represents the payload property of an account in the GDFAccount class.
         /// </summary>
+        
+        [GDFDbLength(1024)]
         public string Payload { set; get; } = string.Empty;
 
         /// <summary>

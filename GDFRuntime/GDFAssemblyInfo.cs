@@ -1,47 +1,120 @@
+﻿//AutoGenerate
+
 using System;
-using System.Collections.Generic;
 using GDFFoundation;
 
 namespace GDFRuntime
 {
-    public class GDFAssemblyInfo : IGDFAssemblyInfo
-    {
-        public static readonly GDFAssemblyInfo AssemblyInfo = new GDFAssemblyInfo();
-
-        public GDFAssemblyInfo()
+    /// <summary>
+    /// Represents information about the assembly for the <see cref="GDFRuntime"/> namespace.
+    /// Provides metadata such as Git information, version details, and build data.
+    /// Inherits from <see cref="GDFAssemblyInformation{T}"/> and implements specific overrides for the assembly.
+    /// </summary>
+    public class GDFAssemblyInfo : GDFAssemblyInformation<GDFAssemblyInfo>
         {
-            LibrariesWorkflow.AddAssemblyInfo(this);
-        }
+            /// <summary>
+            /// Retrieves the full Git commit hash.
+            /// </summary>
+            /// <returns>The full commit hash as a <see cref="string"/>.</returns>
+            public override string GitCommit() => "f5d9fa10b881f25481ab84fc53fb5631f136e2be";
+            
+            /// <summary>
+            /// Retrieves the short Git commit hash.
+            /// </summary>
+            /// <returns>The short commit hash as a <see cref="string"/>.</returns>
+            public override string GitShortCommit() => "f5d9fa10b";
 
-        public bool Printed { set; get; } = false;
-        public string DotNet { set; get; } = "9";
-        public string GitCommit { set; get; } = string.Empty;
-        public string GitCommitShort { set; get; } = string.Empty;
-        public string PipelineDate { set; get; } = string.Empty;
-        public string PipelineJob { set; get; } = string.Empty;
-        public string Version { set; get; } = "1.0.0";
-        public bool NuGet { set; get; } = false;
-        public string Title { set; get; } = typeof(GDFAssemblyInfo).Assembly.GetName().Name ?? string.Empty;
-        public string Description { set; get; } = "Game-Data-Forge module.";
-        public bool Localized { set; get; } = false;
-        public List<IGDFAssemblyInfo> Dependencies { set; get; } = new List<IGDFAssemblyInfo>() {GDFFoundation.GDFAssemblyInfo.AssemblyInfo};
+            /// <summary>
+            /// Retrieves the name of the Git branch for this assembly.
+            /// </summary>
+            /// <returns>The Git branch name as a <see cref="string"/>.</returns>
+            public override string GitBranch() => "main";
 
-        public bool DebugStatus()
-        {
-#if DEBUG
-            return true;
-#else
-            return false;
-#endif
-        }
+            /// <summary>
+            /// Retrieves the Git tag associated with the current project version.
+            /// </summary>
+            /// <returns>
+            /// The Git tag as a <see cref="string"/>. If no tag is found, an error message is returned.
+            /// </returns>
+            public override string GitTag() => "fatal: No names found, cannot describe anything.";
 
-        public bool DebugTrace()
-        {
-#if TRACE
-            return true;
-#else
-            return false;
-#endif
+            /// <summary>
+            /// Retrieves the author of the last Git commit.
+            /// </summary>
+            /// <returns>The name of the last commit author as a <see cref="string"/>.</returns>
+            public override string GitLastCommitAuthor() => "Boulogne Quentin";
+
+            /// <summary>
+            /// Retrieves the date of the last Git commit.
+            /// </summary>
+            /// <returns>The date of the last Git commit as a <see cref="string"/>.</returns>
+            public override string GitLastCommitDate() => "2025-08-21T14:39:18+02:00";
+
+            /// <summary>
+            /// Indicates whether the current state of the Git repository has uncommitted changes.
+            /// </summary>
+            /// <returns>A <see cref="string"/> representation of whether the repository is dirty ("true" for dirty, "false" otherwise).</returns>
+            public override string GitIsDirty() => "true";
+
+            /// <summary>
+            /// Retrieves the name of the current assembly information.
+            /// </summary>
+            /// <returns>The name of the assembly as a <see cref="string"/>.</returns>
+            public override string Name() => "GDFRuntime";
+            
+            /// <summary>
+            /// Provides a description of the project.
+            /// </summary>
+            /// <returns>A string containing the description of the project as defined in <see cref="GDFAssemblyInfo"/>.</returns>
+            public override string Description() => "Runtime";
+
+            /// <summary>
+            /// Retrieves the notes associated with this assembly information.
+            /// </summary>
+            /// <returns>The notes as a <see cref="string"/>.</returns>
+            public override string Notes() => "note";
+
+            /// <summary>
+            /// Retrieves the company name associated with the assembly.
+            /// </summary>
+            /// <returns>The company name as a <see cref="string"/>.</returns>
+            public override string Company() => "idéMobi";
+
+            /// <summary>
+            /// Retrieves the copyright information for the assembly.
+            /// </summary>
+            /// <returns>The copyright information as a <see cref="string"/>.</returns>
+            public override string Copyright() => "Copyright © idéMobi 2025";
+
+            /// <summary>
+            /// Retrieves the build date of the assembly.
+            /// </summary>
+            /// <returns>The build date as a <see cref="string"/>.</returns>
+            public override string BuildDate() => "2025-08-21 12:51:48-dirty";
+
+            /// <summary>
+            /// Determines whether the NuGet SDK is used for the current assembly information setup.
+            /// </summary>
+            /// <returns>A <see cref="bool"/> indicating whether the NuGet SDK is in use.</returns>
+            public override bool IsNuGet() => false;
+
+            // /// <summary>
+            // /// Retrieves the version information of the assembly.
+            // /// </summary>
+            // /// <returns>The version string of the assembly as a <see cref="string"/>.</returns>
+            //public override string Version() => "2025.821.1251-dirty";
+
+            // /// <summary>
+            // /// Retrieves the file version information of the assembly.
+            // /// </summary>
+            // /// <returns>The file version of the assembly as a <see cref="string"/>.</returns>
+            //public override string FileVersion() => "2025.821.1251-dirty";
+
+            /// <summary>
+            /// Gets the target .NET version of the project.
+            /// </summary>
+            /// <returns>The target .NET version as a <see cref="string"/>.</returns>
+            public override string DotNet() => "net9.0";
+       
         }
-    }
 }

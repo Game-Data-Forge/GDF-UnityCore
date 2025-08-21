@@ -7,11 +7,8 @@ namespace GDFUnity
 {
     public class PlayerDataToSyncDAL : SQLiteDAL<PlayerDataToSyncDAL, GDFPlayerDataStorage>
     {
-        protected struct DALData : IDALData {}
-
         private PropertyInfo _reference;
         private PropertyInfo _gameSave;
-        private DALData _dummy = new DALData();
 
         public PlayerDataToSyncDAL()
         {
@@ -37,29 +34,27 @@ namespace GDFUnity
 
         public void Validate(IJobHandler handler, IDBConnection connection)
         {
-            ValidateTable(handler, connection, _dummy);
+            ValidateTable(handler, connection);
         }
 
         public void Get(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
         {
-            Select(handler, connection, _dummy, data);
+            Select(handler, connection, data);
         }
 
         public void Record(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
         {
-            InsertOrUpdate(handler, connection, _dummy, data);
+            InsertOrUpdate(handler, connection, data);
         }
 
-        public void Delete(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
+        public void DeleteData(IJobHandler handler, IDBConnection connection, List<GDFPlayerDataStorage> data)
         {
-            Delete(handler, connection, _dummy, data);
+            Delete(handler, connection, data);
         }
 
-        protected override string GenerateTableName(IDALData dalData)
+        protected override string GenerateTableName()
         {
-            StringBuilder tableName = new StringBuilder(_tableType.Name);
-            tableName.Append("_TO_SYNC");
-            return tableName.ToString();
+            return "PlayerDataToSync";
         }
 
         protected override string GenerateCreateTable(string tableName)
@@ -89,17 +84,17 @@ namespace GDFUnity
             query.Append(tableName);
             query.Append("` WHERE `");
             query.Append(nameof(GDFPlayerDataStorage.Reference));
-            query.Append("`=? AND ;");
+            query.Append("`=? AND `");
             query.Append(nameof(GDFPlayerDataStorage.GameSave));
             query.Append("`=?;");
 
             return query.ToString();
         }
 
-        protected override void ProcessUpdate(IDBConnection connection, IDALData dalData, GDFPlayerDataStorage data, string tableName)
+        protected override void ProcessUpdate(IDBConnection connection, GDFPlayerDataStorage data, string tableName)
         {
             int index = 1;
-            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(InsertOrUpdate(dalData, tableName, data)))
+            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(InsertOrUpdate(tableName, data)))
             {
                 foreach (PropertyInfo property in _properties)
                 {
@@ -117,10 +112,10 @@ namespace GDFUnity
             }
         }
         
-        protected override void ProcessDelete(IDBConnection connection, IDALData dalData, GDFPlayerDataStorage data, string tableName)
+        protected override void ProcessDelete(IDBConnection connection, GDFPlayerDataStorage data, string tableName)
         {
             int index = 1;
-            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(Delete(dalData, tableName, data)))
+            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(Delete(tableName, data)))
             {
                 SQLiteType.Get(_reference.PropertyType).BindParamter(request, index++, _reference.GetValue(data));
                 SQLiteType.Get(_gameSave.PropertyType).BindParamter(request, index++, _gameSave.GetValue(data));

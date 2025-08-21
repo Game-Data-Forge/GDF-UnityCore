@@ -30,6 +30,7 @@ namespace GDFFoundation
         /// <summary>
         ///     The name of the account order.
         /// </summary>
+        [GDFDbLength(1024)] 
         public string Name { set; get; } = string.Empty;
 
         /// <summary>
@@ -39,11 +40,13 @@ namespace GDFFoundation
         ///     The payload is a string property that stores additional data related to the GDFAccountOrder.
         ///     It can be used to store any kind of additional information that is not directly represented by other properties.
         /// </remarks>
+        [GDFDbLength(1024)]
         public string Payload { set; get; } = string.Empty;
 
         /// <summary>
         ///     The URL associated with an account order.
         /// </summary>
+        [GDFDbLength(1024)]
         public string Url { set; get; } = string.Empty;
 
         #endregion

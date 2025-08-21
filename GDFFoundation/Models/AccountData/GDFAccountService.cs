@@ -57,6 +57,7 @@ namespace GDFFoundation
         /// <remarks>
         ///     This property stores the value of the cookie associated with the account service.
         /// </remarks>
+        [GDFDbLength(1024)]
         public string Cookie { set; get; } = string.Empty;
 
         /// <summary>
@@ -82,6 +83,7 @@ namespace GDFFoundation
         /// <summary>
         ///     Represents an account service that can be associated with other account services.
         /// </summary>
+        [GDFDbIgnore]
         public GDFLongReference<GDFAccountService> FromAccountService { set; get; } = new GDFLongReference<GDFAccountService>();
 
         /// <summary>
@@ -100,7 +102,9 @@ namespace GDFFoundation
         /// <summary>
         ///     Represents an account service message.
         /// </summary>
-        public string Message { set; get; } = string.Empty; // use to show special message for this services
+        
+        [GDFDbLength(1024)]
+        public string Message { set; get; } = string.Empty; // use to show a special message for this service
 
         /// <summary>
         ///     Represents the style of the message for
@@ -114,11 +118,13 @@ namespace GDFFoundation
         /// <value>
         ///     The name of the account service.
         /// </value>
+        [GDFDbLength(256)] 
         public string Name { set; get; } = string.Empty;
 
         /// <summary>
         ///     Represents an offer made by an account for a particular service.
         /// </summary>
+        [GDFDbIgnore]
         public GDFLongReference<GDFAccount> OfferByAccount { set; get; } = new GDFLongReference<GDFAccount>();
 
         /// <summary>

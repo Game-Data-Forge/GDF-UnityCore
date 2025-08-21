@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -9,18 +8,9 @@ namespace GDFUnity
 {
     public class PlayerReferenceDAL : SQLiteDAL<PlayerReferenceDAL, PlayerReferenceStorage>
     {
-        private class DALData : IDALData
-        {
-        }
-
         private object _lock = new object();
-        private byte[] _flags = new byte[8] {
-            0b00000001,0b00000010,0b00000100,0b00001000,0b00010000,0b00100000,0b01000000,0b10000000
-        };
-        private byte[] _buffer = new byte[32];
+        private const string _GameSaves = "GamesSaves";
         private PropertyInfo _reference;
-        private string _GameSaves = "GamesSaves";
-        private DALData _dummy = new DALData();
 
         public PlayerReferenceDAL() : base()
         {
@@ -29,17 +19,17 @@ namespace GDFUnity
 
         public void Validate(IJobHandler handler, IDBConnection connection)
         {
-            ValidateTable(handler, connection, _dummy);
+            ValidateTable(handler, connection);
         }
 
         public void Get(IJobHandler handler, IDBConnection connection, List<PlayerReferenceStorage> data)
         {
-            Select(handler, connection, _dummy, data);
+            Select(handler, connection, data);
         }
 
         public void Record(IJobHandler handler, IDBConnection connection, List<PlayerReferenceStorage> data)
         {
-            InsertOrUpdate(handler, connection, _dummy, data);
+            InsertOrUpdate(handler, connection, data);
         }
 
         protected override string GenerateCreateTable(string tableName)
@@ -116,30 +106,15 @@ namespace GDFUnity
         protected override void FillData(SQLiteDbRequest request, PlayerReferenceStorage data)
         {
             base.FillData(request, data);
-            lock(_lock)
+            lock (_lock)
             {
-                Array.Fill(_buffer, (byte)0);
-                SQLite3.ColumnBlob(request, _properties.Count, _buffer);
-                for (int i = 0; i < 32; i ++)
-                {
-                    if (_buffer[i] == 0)
-                    {
-                        continue;
-                    }
-
-                    for (int j = 0; j < 8; j++)
-                    {
-                        if ((_buffer[i] & _flags[j]) != _flags[j])
-                        {
-                            continue;
-                        }
-                        data.Add((byte)((31-i) * 8 + j));
-                    }
-                }
+                GameSaves.EmptyBuffer();
+                SQLite3.ColumnBlob(request, _properties.Count, GameSaves.buffer);
+                data.GameSaves.ReadBuffer();
             }
         }
 
-        protected override void ProcessUpdate(IDBConnection connection, IDALData dalData, PlayerReferenceStorage data, string tableName)
+        protected override void ProcessUpdate(IDBConnection connection, PlayerReferenceStorage data, string tableName)
         {
             int index = 1;
             lock(_lock)
@@ -148,28 +123,20 @@ namespace GDFUnity
                 {
                     if (data.Count == 0)
                     {
-                        request.Open(Delete(dalData, tableName, data));
+                        request.Open(Delete(tableName, data));
                         SQLiteType.Get(_reference.PropertyType).BindParamter(request, index++, _reference.GetValue(data));
                     }
                     else
                     {
-                        string query = InsertOrUpdate(dalData, tableName, data);
+                        string query = InsertOrUpdate(tableName, data);
                         request.Open(query);
                         foreach (PropertyInfo property in _properties)
                         {
                             SQLiteType.Get(property.PropertyType).BindParamter(request, index++, property.GetValue(data));
                         }
 
-                        Array.Fill(_buffer, (byte)0);
-
-                        foreach (byte gameSave in data)
-                        {
-                            int index1 = 31 - gameSave / 8;
-                            int index2 = gameSave % 8;
-                            _buffer[index1] |= _flags[index2];
-                        }
-
-                        SQLite3.BindBlob(request, index, _buffer);
+                        data.GameSaves.WriteBuffer();
+                        SQLite3.BindBlob(request, index, GameSaves.buffer);
                     }
 
                     try
@@ -184,10 +151,10 @@ namespace GDFUnity
             }
         }
 
-        protected override void ProcessDelete(IDBConnection connection, IDALData dalData, PlayerReferenceStorage data, string tableName)
+        protected override void ProcessDelete(IDBConnection connection, PlayerReferenceStorage data, string tableName)
         {
             int index = 1;
-            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(Delete(dalData, tableName, data)))
+            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(Delete(tableName, data)))
             {
                 SQLiteType.Get(_reference.PropertyType).BindParamter(request, index++, _reference.GetValue(data));
 

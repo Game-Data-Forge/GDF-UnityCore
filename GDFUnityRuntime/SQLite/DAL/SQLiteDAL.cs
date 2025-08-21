@@ -8,11 +8,6 @@ namespace GDFUnity
 {
     public abstract class SQLiteDAL
     {
-        protected interface IDALData
-        {
-            
-        }
-
         protected class Cache
         {
             public string tableName;
@@ -45,7 +40,7 @@ namespace GDFUnity
         
         protected Type _tableType = typeof(U);
         protected List<PropertyInfo> _properties = new List<PropertyInfo>();
-        private Dictionary<IDALData, Cache> _cache = new Dictionary<IDALData, Cache>();
+        private Cache _cache = new Cache();
 
         public SQLiteDAL()
         {
@@ -58,35 +53,28 @@ namespace GDFUnity
             }
         }
 
-        protected string TableName(IDALData dalData)
+        protected string TableName()
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.tableName == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.tableName = GenerateTableName();
             }
 
-            if (cache.tableName == null)
-            {
-                cache.tableName = GenerateTableName(dalData);
-            }
-
-            return cache.tableName;
+            return _cache.tableName;
         }
-        protected virtual string GenerateTableName(IDALData dalData)
+        protected virtual string GenerateTableName()
         {
             return _tableType.Name;
         }
 
-        protected void ValidateTable (IJobHandler handler, IDBConnection connection, IDALData dalData)
+        protected void ValidateTable (IJobHandler handler, IDBConnection connection)
         {
             handler.StepAmount = 3;
 
-            string tableName = GenerateTableName(dalData);
-            string creationQuery = CreateTable(dalData, tableName);
+            string tableName = GenerateTableName();
+            string creationQuery = CreateTable(tableName);
 
-            string result = connection.ExecScalar<string>(TableExist(dalData, tableName));
+            string result = connection.ExecScalar<string>(TableExist(tableName));
             handler.Step();
 
             if (creationQuery == result)
@@ -96,28 +84,21 @@ namespace GDFUnity
 
             if (result != null)
             {
-                connection.Exec(DropTable(dalData, tableName));
+                connection.Exec(DropTable(tableName));
             }
             handler.Step();
             
             connection.Exec(creationQuery.Replace("CREATE TABLE", "CREATE TABLE IF NOT EXISTS"));
         }
 
-        protected string TableExist(IDALData dalData, string tableName)
+        protected string TableExist(string tableName)
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.tableExists == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.tableExists = GenerateTableExist(tableName);
             }
 
-            if (cache.tableExists == null)
-            {
-                cache.tableExists = GenerateTableExist(tableName);
-            }
-
-            return cache.tableExists;
+            return _cache.tableExists;
         }
         protected virtual string GenerateTableExist(string tableName)
         {
@@ -128,21 +109,14 @@ namespace GDFUnity
             return query.ToString();
         }
         
-        protected string DropTable(IDALData dalData, string tableName)
+        protected string DropTable(string tableName)
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.drop == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.drop = GenerateDropTable(tableName);
             }
 
-            if (cache.drop == null)
-            {
-                cache.drop = GenerateDropTable(tableName);
-            }
-
-            return cache.drop;
+            return _cache.drop;
         }
         protected virtual string GenerateDropTable(string tableName)
         {
@@ -153,43 +127,29 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected string CreateTable(IDALData dalData, string tableName)
+        protected string CreateTable(string tableName)
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.createTable == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.createTable = GenerateCreateTable(tableName);
             }
 
-            if (cache.createTable == null)
-            {
-                cache.createTable = GenerateCreateTable(tableName);
-            }
-
-            return cache.createTable;
+            return _cache.createTable;
         }
         protected abstract string GenerateCreateTable(string tableName);
 
-        protected virtual void TruncateTable(IDBConnection connection, IDALData dalData)
+        protected virtual void TruncateTable(IDBConnection connection)
         {
-            connection.Exec(TruncateTable(dalData, TableName(dalData)));
+            connection.Exec(TruncateTable(TableName()));
         }
-        protected string TruncateTable(IDALData dalData, string tableName)
+        protected string TruncateTable(string tableName)
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.truncateTable == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.truncateTable = GenerateTruncateTable(tableName);
             }
 
-            if (cache.truncateTable == null)
-            {
-                cache.truncateTable = GenerateTruncateTable(tableName);
-            }
-
-            return cache.truncateTable;
+            return _cache.truncateTable;
         }
         protected virtual string GenerateTruncateTable(string tableName)
         {
@@ -200,10 +160,10 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected void Select(IJobHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
+        protected void Select(IJobHandler handler, IDBConnection connection, List<U> data)
         {
-            string tableName = GenerateTableName(dalData);
-            int count = connection.ExecScalar<int>(Count(dalData, tableName));
+            string tableName = GenerateTableName();
+            int count = connection.ExecScalar<int>(Count(tableName));
             if (count <= 0)
             {
                 return;
@@ -211,7 +171,7 @@ namespace GDFUnity
 
             handler.StepAmount = count;
 
-            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(Select(dalData, tableName)))
+            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(Select(tableName)))
             {
                 while (request.Step())
                 {
@@ -225,21 +185,14 @@ namespace GDFUnity
             }
         }
 
-        protected string Count(IDALData dalData, string tableName)
+        protected string Count(string tableName)
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.count == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.count = GenerateCount(tableName);
             }
 
-            if (cache.count == null)
-            {
-                cache.count = GenerateCount(tableName);
-            }
-
-            return cache.count;
+            return _cache.count;
         }
         protected virtual string GenerateCount(string tableName)
         {
@@ -250,21 +203,14 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected string Select(IDALData dalData, string tableName)
+        protected string Select(string tableName)
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.select == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.select = GenerateSelect(tableName);
             }
 
-            if (cache.select == null)
-            {
-                cache.select = GenerateSelect(tableName);
-            }
-
-            return cache.select;
+            return _cache.select;
         }
         protected virtual string GenerateSelect(string tableName)
         {
@@ -293,9 +239,9 @@ namespace GDFUnity
             }
         }
 
-        protected void InsertOrUpdate(IJobHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
+        protected void InsertOrUpdate(IJobHandler handler, IDBConnection connection, List<U> data)
         {
-            string tableName = GenerateTableName(dalData);
+            string tableName = GenerateTableName();
 
             handler.StepAmount = data.Count;
             using (IDBTransaction transaction = connection.OpenTransaction())
@@ -304,32 +250,26 @@ namespace GDFUnity
                 {
                     foreach (U item in data)
                     {
-                        ProcessUpdate(connection, dalData, item, tableName);
+                        ProcessUpdate(connection, item, tableName);
                         handler.Step();
                     }
                 }
-                catch
+                catch (Exception e)
                 {
                     transaction.Rollback();
+                    GDFLogger.Error(e);
                 }
             }
         }
         
-        protected string InsertOrUpdate(IDALData dalData, string tableName, U item)
+        protected string InsertOrUpdate(string tableName, U item)
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.insertOrUpdate == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.insertOrUpdate = GenerateInsertOrUpdate(tableName, item);
             }
 
-            if (cache.insertOrUpdate == null)
-            {
-                cache.insertOrUpdate = GenerateInsertOrUpdate(tableName, item);
-            }
-
-            return cache.insertOrUpdate;
+            return _cache.insertOrUpdate;
         }
         protected virtual string GenerateInsertOrUpdate(string tableName, U item)
         {
@@ -359,9 +299,9 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected void Delete(IJobHandler handler, IDBConnection connection, IDALData dalData, List<U> data)
+        protected void Delete(IJobHandler handler, IDBConnection connection, List<U> data)
         {
-            string tableName = GenerateTableName(dalData);
+            string tableName = GenerateTableName();
 
             handler.StepAmount = data.Count;
             using (IDBTransaction transaction = connection.OpenTransaction())
@@ -370,32 +310,26 @@ namespace GDFUnity
                 {
                     foreach (U item in data)
                     {
-                        ProcessDelete(connection, dalData, item, tableName);
+                        ProcessDelete(connection, item, tableName);
                         handler.Step();
                     }
                 }
-                catch
+                catch (Exception e)
                 {
                     transaction.Rollback();
+                    GDFLogger.Error(e);
                 }
             }
         }
 
-        protected string Delete(IDALData dalData, string tableName, U item)
+        protected string Delete(string tableName, U item)
         {
-            Cache cache;
-            if (!_cache.TryGetValue(dalData, out cache))
+            if (_cache.delete == null)
             {
-                cache = new Cache();
-                _cache.Add(dalData, cache);
+                _cache.delete = GenerateDelete(tableName, item);
             }
 
-            if (cache.delete == null)
-            {
-                cache.delete = GenerateDelete(tableName, item);
-            }
-
-            return cache.delete;
+            return _cache.delete;
         }
         protected virtual string GenerateDelete(string tableName, U item)
         {
@@ -408,7 +342,7 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected abstract void ProcessUpdate(IDBConnection connection, IDALData dalData, U data, string tableName);
-        protected abstract void ProcessDelete(IDBConnection connection, IDALData dalData, U data, string tableName);
+        protected abstract void ProcessUpdate(IDBConnection connection, U data, string tableName);
+        protected abstract void ProcessDelete(IDBConnection connection, U data, string tableName);
     }
 }

@@ -53,7 +53,7 @@ namespace GDFFoundation
             ServerStatus = GDFServerStatus.Inactive;
             AnswerText = ServerStatus.ToString();
             Timestamp = GDFTimestamp.Timestamp();
-            Version = GDFFoundation.GDFAssemblyInfo.AssemblyInfo.Version;
+            Version =LibrariesWorkflow.GetForFoundation().Version();
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace GDFFoundation
             ServerStatus = sServerStatus;
             AnswerText = ServerStatus.ToString();
             Timestamp = GDFTimestamp.Timestamp();
-            Version = GDFFoundation.GDFAssemblyInfo.AssemblyInfo.Version;
+            Version = LibrariesWorkflow.GetForFoundation().Version();
         }
 
         #endregion

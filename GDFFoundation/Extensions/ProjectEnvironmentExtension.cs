@@ -12,7 +12,7 @@ namespace GDFFoundation
     /// <summary>
     ///     Gets or sets a value indicating whether the setup page needs to be executed.
     /// </summary>
-    static public class GDFEnvironmentKindExtension
+    static public class ProjectEnvironmentExtension
     {
         #region Static fields and properties
 

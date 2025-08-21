@@ -19,10 +19,10 @@ namespace GDFFoundation
         /// <summary>
         ///     Retrieves the project key for a given project ID and environment kind.
         /// </summary>
-        /// <param name="sProjectReference">The project ID.</param>
-        /// <param name="sEnvironmentKind">The environment kind.</param>
+        /// <param name="projectReference">The project ID.</param>
+        /// <param name="environmentKind">The environment kind.</param>
         /// <returns>The project key as a string.</returns>
-        public string GetProjectKey(long sProjectReference, ProjectEnvironment sEnvironmentKind);
+        public string GetProjectKey(long projectReference, ProjectEnvironment environmentKind);
 
         /// <summary>
         ///     Retrieves the name of the project key instance.

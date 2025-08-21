@@ -10,7 +10,9 @@ namespace GDFUnity
     {
         protected List<GDFAccountSign> _credentials = null;
         public List<GDFAccountSign> Credentials => _credentials;
-        
+
+        public abstract IRuntimeAccountManager.IRuntimeCredentials.IRuntimeEmailPassword EmailPassword { get; }
+
         public abstract Job Refresh();
 
         public IEnumerator<GDFAccountSign> GetEnumerator()
@@ -24,14 +26,20 @@ namespace GDFUnity
         }
     }
 
-    public class CoreAccountCredentials<T> : CoreAccountCredentials where T : CoreAccountManager
+    public class CoreAccountCredentials<T, U> : CoreAccountCredentials
+        where T : CoreAccountManager
+        where U : CoreCredentialsEmailPassword
     {
         private T _manager;
+
+        protected U _emailPassword;
 
         public CoreAccountCredentials(T manager)
         {
             _manager = manager;
         }
+
+        public override IRuntimeAccountManager.IRuntimeCredentials.IRuntimeEmailPassword EmailPassword => _emailPassword;
 
         public override Job Refresh()
         {
@@ -53,7 +61,7 @@ namespace GDFUnity
 
                     string url = _manager.GenerateURL(_manager.Country, "/api/v1/accounts/" + _manager.Reference + "/signs");
 
-                    IEnumerable<GDFAccountSign> response = _manager.Delete<IEnumerable<GDFAccountSign>>(handler, url);
+                    IEnumerable<GDFAccountSign> response = _manager.Get<IEnumerable<GDFAccountSign>>(handler, url);
                     if (_credentials == null)
                     {
                         _credentials = new List<GDFAccountSign>();

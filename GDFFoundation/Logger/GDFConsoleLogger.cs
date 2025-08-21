@@ -305,8 +305,8 @@ namespace GDFFoundation
         /// <param name="sLogCategory">The category of the log message.</param>
         /// <param name="sTitle">The title of the log message.</param>
         /// <param name="sObject">The object related to the log message (optional).</param>
-        /// <param name="sMessages">The log messages to be written.</param>
-        public void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, string sTitle, object sObject, string[] sMessages)
+        /// <param name="messages">The log messages to be written.</param>
+        public void WriteLog(GDFLogLevel sLogLevel, GDFLogCategory sLogCategory, string sTitle, object sObject, string[] messages)
         {
             lock (_locker)
             {
@@ -336,14 +336,17 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.Write(string.Empty);
-                        foreach (string tStr in sMessages)
+                        if (messages != null)
                         {
-                            Console.Write(_PADDING);
-                            Console.BackgroundColor = tBack;
-                            Console.ForegroundColor = tFore;
-                            Console.Write(_BORDER_LEFT);
-                            Console.ResetColor();
-                            Console.WriteLine(_INDENT + tStr);
+                            foreach (string tStr in messages)
+                            {
+                                Console.Write(_PADDING);
+                                Console.BackgroundColor = tBack;
+                                Console.ForegroundColor = tFore;
+                                Console.Write(_BORDER_LEFT);
+                                Console.ResetColor();
+                                Console.WriteLine(_INDENT + tStr);
+                            }
                         }
 
                         WriteObject(sObject);
@@ -367,14 +370,17 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.Write(string.Empty);
-                        foreach (string tStr in sMessages)
+                        if (messages != null)
                         {
-                            Console.Write(_PADDING);
-                            Console.BackgroundColor = tBack;
-                            Console.ForegroundColor = tFore;
-                            Console.Write(_BORDER_LEFT);
-                            Console.ResetColor();
-                            Console.WriteLine(_INDENT + tStr);
+                            foreach (string tStr in messages)
+                            {
+                                Console.Write(_PADDING);
+                                Console.BackgroundColor = tBack;
+                                Console.ForegroundColor = tFore;
+                                Console.Write(_BORDER_LEFT);
+                                Console.ResetColor();
+                                Console.WriteLine(_INDENT + tStr);
+                            }
                         }
 
                         WriteObject(sObject);
@@ -397,14 +403,17 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.Write(string.Empty);
-                        foreach (string tStr in sMessages)
+                        if (messages != null)
                         {
-                            Console.Write(_PADDING);
-                            Console.BackgroundColor = tBack;
-                            Console.ForegroundColor = tFore;
-                            Console.Write(_BORDER_LEFT);
-                            Console.ResetColor();
-                            Console.WriteLine(_INDENT + tStr);
+                            foreach (string tStr in messages)
+                            {
+                                Console.Write(_PADDING);
+                                Console.BackgroundColor = tBack;
+                                Console.ForegroundColor = tFore;
+                                Console.Write(_BORDER_LEFT);
+                                Console.ResetColor();
+                                Console.WriteLine(_INDENT + tStr);
+                            }
                         }
 
                         WriteObject(sObject);
@@ -427,14 +436,17 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.Write(string.Empty);
-                        foreach (string tStr in sMessages)
+                        if (messages != null)
                         {
-                            Console.Write(_PADDING);
-                            Console.BackgroundColor = tBack;
-                            Console.ForegroundColor = tFore;
-                            Console.Write(_BORDER_LEFT);
-                            Console.ResetColor();
-                            Console.WriteLine(_INDENT + tStr);
+                            foreach (string tStr in messages)
+                            {
+                                Console.Write(_PADDING);
+                                Console.BackgroundColor = tBack;
+                                Console.ForegroundColor = tFore;
+                                Console.Write(_BORDER_LEFT);
+                                Console.ResetColor();
+                                Console.WriteLine(_INDENT + tStr);
+                            }
                         }
 
                         WriteObject(sObject);
@@ -457,14 +469,17 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.Write(string.Empty);
-                        foreach (string tStr in sMessages)
+                        if (messages != null)
                         {
-                            Console.Write(_PADDING);
-                            Console.BackgroundColor = tBack;
-                            Console.ForegroundColor = tFore;
-                            Console.Write(_BORDER_LEFT);
-                            Console.ResetColor();
-                            Console.WriteLine(_INDENT + tStr);
+                            foreach (string tStr in messages)
+                            {
+                                Console.Write(_PADDING);
+                                Console.BackgroundColor = tBack;
+                                Console.ForegroundColor = tFore;
+                                Console.Write(_BORDER_LEFT);
+                                Console.ResetColor();
+                                Console.WriteLine(_INDENT + tStr);
+                            }
                         }
 
                         WriteObject(sObject);
@@ -487,14 +502,17 @@ namespace GDFFoundation
                         Console.ResetColor();
                         Console.WriteLine(" ");
                         Console.Write(string.Empty);
-                        foreach (string tStr in sMessages)
+                        if (messages != null)
                         {
-                            Console.Write(_PADDING);
-                            Console.BackgroundColor = tBack;
-                            Console.ForegroundColor = tFore;
-                            Console.Write(_BORDER_LEFT);
-                            Console.ResetColor();
-                            Console.WriteLine(_INDENT + tStr);
+                            foreach (string tStr in messages)
+                            {
+                                Console.Write(_PADDING);
+                                Console.BackgroundColor = tBack;
+                                Console.ForegroundColor = tFore;
+                                Console.Write(_BORDER_LEFT);
+                                Console.ResetColor();
+                                Console.WriteLine(_INDENT + tStr);
+                            }
                         }
 
                         WriteObject(sObject);

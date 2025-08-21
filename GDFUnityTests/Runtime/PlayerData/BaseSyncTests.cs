@@ -117,6 +117,53 @@ namespace PlayerData
         }
 
         [UnityTest]
+        public IEnumerator SyncDoesNotKeepDataToSync()
+        {
+            int count = 39;
+            
+            GDFTestPlayerData data;
+
+            for (int i = 0; i < count; i++)
+            {
+                data = new GDFTestPlayerData();
+                data.TestInt = i;
+                GDF.Player.Add(data);
+            }
+            
+            Assert.IsTrue(GDF.Player.HasDataToSave);
+            Assert.IsFalse(GDF.Player.HasDataToSync);
+
+            UnityJob task = GDF.Player.Save();
+            yield return WaitJob(task);
+            
+            Assert.IsTrue(GDF.Player.HasDataToSync);
+
+            task = GDF.Player.Sync();
+            yield return WaitJob(task);
+
+            if (GDF.Account.IsLocal)
+            {
+                Assert.IsTrue(GDF.Player.HasDataToSync);
+            }
+            else
+            {
+                Assert.IsFalse(GDF.Player.HasDataToSync);
+            }
+            
+            task = GDF.Player.LoadCommonGameSave();
+            yield return WaitJob(task);
+
+            if (GDF.Account.IsLocal)
+            {
+                Assert.IsTrue(GDF.Player.HasDataToSync);
+            }
+            else
+            {
+                Assert.IsFalse(GDF.Player.HasDataToSync);
+            }
+        }
+
+        [UnityTest]
         public IEnumerator CanSyncDataAutoSaves()
         {
             int count = 39;

@@ -72,7 +72,7 @@ namespace GDFUnity.Editor
             _accountViews = new List<IWindowView<AccountWindow>>
             {
                 new InformationView(),
-                // new CredentialsView(window),
+                new CredentialsView(window),
                 new ManagementView(window)
             };
 

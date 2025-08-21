@@ -43,6 +43,7 @@ namespace GDFFoundation
 
         public int Channels { get; set; }
 
+        [GDFDbLength(256)]
         public string ClassName { get; set; } = string.Empty;
 
         [GDFDbAccess(updateAccess: GDFDbColumnAccess.Deny)]

@@ -27,7 +27,7 @@ namespace GDFFoundation
         /// <summary>
         ///     Represents a basic exchange object.
         /// </summary>
-        public string Dll { set; get; } = GDFFoundation.GDFAssemblyInfo.AssemblyInfo.Version;
+        public string Dll { set; get; } = LibrariesWorkflow.GetForFoundation().Version();
 
         /// <summary>
         ///     Represents the environment in which the software is running.

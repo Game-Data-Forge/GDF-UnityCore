@@ -1,60 +1,46 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using GDFFoundation;
+using GDFRuntime;
 
 namespace GDFUnity
 {
-    public class SyncDateStorage
+    public class PlayerSyncDateDAL : SQLiteDAL<PlayerSyncDateDAL, PlayerStorageInformation>
     {
-        public byte Reference { get; set; }
-        public DateTime SyncDate { get; set; }
-    }
-
-    public class PlayerSyncDateDAL : SQLiteDAL<PlayerSyncDateDAL, SyncDateStorage>
-    {
-        private class DALData : IDALData
-        {
-        }
-
+        private object _lock = new object();
+        private const string _GameSaves = "GamesSaves";
         private PropertyInfo _reference;
-        private DALData _dummy = new DALData();
 
         public PlayerSyncDateDAL() : base()
         {
-            _reference = _tableType.GetProperty(nameof(SyncDateStorage.Reference));
+            _reference = _tableType.GetProperty(nameof(PlayerStorageInformation.Reference));
         }
 
         public void Validate(IJobHandler handler, IDBConnection connection)
         {
-            ValidateTable(handler, connection, _dummy);
+            ValidateTable(handler, connection);
         }
 
-        public DateTime Get(IJobHandler handler, IDBConnection connection)
+        public PlayerStorageInformation Get(IJobHandler handler, IDBConnection connection)
         {
-            List<SyncDateStorage> data = new List<SyncDateStorage>();
-            Select(handler, connection, _dummy, data);
+            List<PlayerStorageInformation> data = new List<PlayerStorageInformation>();
+            Select(handler, connection, data);
 
             if (data.Count == 0)
             {
-                return DateTime.MinValue;
+                return new PlayerStorageInformation();
             }
 
-            return data[0].SyncDate;
+            return data[0];
         }
 
-        public void Record(IJobHandler handler, IDBConnection connection, DateTime syncTime)
+        public void Record(IJobHandler handler, IDBConnection connection, PlayerStorageInformation information)
         {
-            List<SyncDateStorage> data = new List<SyncDateStorage>()
-            {
-                new SyncDateStorage
-                {
-                    Reference = 0,
-                    SyncDate = syncTime
-                }
-            };
-            InsertOrUpdate(handler, connection, _dummy, data);
+            List<PlayerStorageInformation> data = new List<PlayerStorageInformation>() { information };
+            InsertOrUpdate(handler, connection, data);
         }
 
         protected override string GenerateCreateTable(string tableName)
@@ -63,14 +49,16 @@ namespace GDFUnity
             query.Append("CREATE TABLE `");
             query.Append(tableName);
             query.Append("` (");
-            
+
             query.Append(SQLiteType.Get(_properties[0].PropertyType).CreateColumn(_properties[0].Name));
             query.Append(',');
             query.Append(SQLiteType.Get(_properties[1].PropertyType).CreateColumn(_properties[1].Name));
             query.Append(',');
-            
+
+            query.Append(_GameSaves);
+            query.Append(" BLOB NOT NULL DEFAULT 0,");
             query.Append("PRIMARY KEY(`");
-            query.Append(nameof(SyncDateStorage.Reference));
+            query.Append(nameof(PlayerStorageInformation.Reference));
             query.Append("`))");
 
             return query.ToString();
@@ -83,7 +71,8 @@ namespace GDFUnity
             query.Append(SQLiteType.Get(_properties[0].PropertyType).SelectColumn(_properties[0].Name));
             query.Append(',');
             query.Append(SQLiteType.Get(_properties[1].PropertyType).SelectColumn(_properties[1].Name));
-
+            query.Append(',');
+            query.Append(_GameSaves);
             query.Append(" FROM `");
             query.Append(tableName);
             query.Append("`;");
@@ -91,7 +80,7 @@ namespace GDFUnity
             return query.ToString();
         }
 
-        protected override string GenerateInsertOrUpdate(string tableName, SyncDateStorage item)
+        protected override string GenerateInsertOrUpdate(string tableName, PlayerStorageInformation item)
         {
             StringBuilder query = new StringBuilder("INSERT OR REPLACE INTO `");
             query.Append(tableName);
@@ -100,37 +89,55 @@ namespace GDFUnity
             query.Append(SQLiteType.Get(_properties[0].PropertyType).SelectColumn(_properties[0].Name));
             query.Append(',');
             query.Append(SQLiteType.Get(_properties[1].PropertyType).SelectColumn(_properties[1].Name));
-
-            query.Append(") VALUES (?,?);");
+            query.Append(',');
+            query.Append(_GameSaves);
+            query.Append(") VALUES (?,?,?);");
 
             return query.ToString();
         }
 
-        protected override void ProcessUpdate(IDBConnection connection, IDALData dalData, SyncDateStorage data, string tableName)
+        protected override void FillData(SQLiteDbRequest request, PlayerStorageInformation data)
+        {
+            base.FillData(request, data);
+            lock (_lock)
+            {
+                GameSaves.EmptyBuffer();
+                SQLite3.ColumnBlob(request, _properties.Count, GameSaves.buffer);
+                data.GameSaves.ReadBuffer();
+            }
+        }
+
+        protected override void ProcessUpdate(IDBConnection connection, PlayerStorageInformation data, string tableName)
         {
             int index = 1;
-            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(InsertOrUpdate(dalData, tableName, data)))
+            lock (_lock)
             {
-                foreach (PropertyInfo property in _properties)
+                using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(InsertOrUpdate(tableName, data)))
                 {
-                    SQLiteType.Get(property.PropertyType).BindParamter(request, index++, property.GetValue(data));
-                }
+                    foreach (PropertyInfo property in _properties)
+                    {
+                        SQLiteType.Get(property.PropertyType).BindParamter(request, index++, property.GetValue(data));
+                    }
+                    
+                    data.GameSaves.WriteBuffer();
+                    SQLite3.BindBlob(request, index, GameSaves.buffer);
 
-                try
-                {
-                    request.Exec();
-                }
-                catch
-                {
-                    throw SQLiteException.WriteError(request.connection, request.GetResult());
+                    try
+                    {
+                        request.Exec();
+                    }
+                    catch
+                    {
+                        throw SQLiteException.WriteError(request.connection, request.GetResult());
+                    }
                 }
             }
         }
 
-        protected override void ProcessDelete(IDBConnection connection, IDALData dalData, SyncDateStorage data, string tableName)
+        protected override void ProcessDelete(IDBConnection connection, PlayerStorageInformation data, string tableName)
         {
             int index = 1;
-            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(Delete(dalData, tableName, data)))
+            using (SQLiteDbRequest request = connection.OpenRequest<SQLiteDbRequest>(Delete(tableName, data)))
             {
                 SQLiteType.Get(_reference.PropertyType).BindParamter(request, index++, _reference.GetValue(data));
 

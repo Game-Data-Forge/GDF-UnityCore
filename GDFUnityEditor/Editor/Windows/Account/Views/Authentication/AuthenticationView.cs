@@ -1,4 +1,5 @@
 using GDFFoundation;
+using UnityEngine.UIElements;
 
 namespace GDFUnity.Editor.ServiceProviders
 {
@@ -21,20 +22,19 @@ namespace GDFUnity.Editor.ServiceProviders
             _view.Add(_view.environment);
             if (NeedCountry)
             {
-                _view.Add(_view.country);
             }
+            _view.Add(_view.country);
 
             OnActivate(window, _view);
 
-            if (NeedConsent)
-            {
-                _view.Add(_view.consent);
-            }
+            _view.Add(_view.consent);
+
+            Update();
         }
         public void OnDeactivate(AccountWindow window, WindowView<AccountWindow> view)
         {
             if (view != _view) return;
-            
+
             OnDeactivate(window, _view);
         }
 
@@ -44,6 +44,14 @@ namespace GDFUnity.Editor.ServiceProviders
         public void Load(IJob job)
         {
             _view.Load(job, null);
+        }
+
+        public void Update()
+        {
+            _view.country.style.display = NeedCountry ? DisplayStyle.Flex : DisplayStyle.None;
+            _view.consent.style.display = NeedConsent ? DisplayStyle.Flex : DisplayStyle.None;
+            
+            _view.Update();
         }
     }
 }

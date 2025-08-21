@@ -23,60 +23,74 @@ namespace GDFFoundation
     {
         #region Static fields and properties
 
-        private static readonly List<IGDFAssemblyInfo> AssemblyInfoList = new List<IGDFAssemblyInfo>();
-
-        /// <summary>
-        ///     Represents a private, static, and readonly dictionary that stores information about
-        ///     installed items and the user or entity responsible for their installation.
-        ///     The key of the dictionary indicates the installed item, while the value
-        ///     corresponds to the installer identifier.
-        /// </summary>
+        private static readonly List<GDFAssemblyInformation> AssemblyInfoList = new List<GDFAssemblyInformation>();
         private static readonly Dictionary<string, string> Installed = new Dictionary<string, string>();
-
+        private static readonly Dictionary<Assembly, GDFAssemblyInformation> DicoToRename = new Dictionary<Assembly, GDFAssemblyInformation>();
         private static readonly List<Assembly> InstalledAssemblies = new List<Assembly>();
 
         #endregion
 
         #region Static methods
 
-        public static void AddAssembly(Assembly assembly)
+        public static GDFAssemblyInformation GetForFoundation()
         {
-            if (!InstalledAssemblies.Contains(assembly))
+            return GetForAssembly(typeof(GDFFoundation.GDFConstants).Assembly);
+        }
+
+        public static GDFAssemblyInformation GetForExecuting()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            return GetForAssembly(assembly);
+        }
+
+        public static GDFAssemblyInformation GetForAssembly(Assembly assembly)
+        {
+            if (DicoToRename.ContainsKey(assembly))
             {
-                InstalledAssemblies.Add(assembly);
+                return DicoToRename[assembly];
+            }
+            else
+            {
+                return AddAssemblyInfo(assembly);
             }
         }
 
-        public static void AddAssemblyInfo(IGDFAssemblyInfo info)
+        public static GDFAssemblyInformation AddAssemblyInfo(Assembly assembly)
         {
+            if (!InstalledAssemblies.Contains(assembly))
+            {
+                Type? versionType = assembly.GetTypes()
+                    .FirstOrDefault(t => t.Name == nameof(GDFAssemblyInfo) && typeof(GDFAssemblyInformation).IsAssignableFrom(t));
+                if (versionType == null)
+                {
+                    throw new InvalidOperationException($"{nameof(GDFAssemblyInfo)} not found in {assembly.FullName}");
+                }
+                GDFAssemblyInformation result = (GDFAssemblyInformation)Activator.CreateInstance(versionType)!;
+                result.Information(assembly);
+                InstalledAssemblies.Add(assembly);
+                AssemblyInfoList.Add(result);
+                DicoToRename.TryAdd(assembly, result);
+
+                result.ConsolePrint();
+            }
+
+            return DicoToRename[assembly];
+        }
+
+        public static GDFAssemblyInformation AddAssemblyInfo(GDFAssemblyInformation info)
+        {
+            Assembly assembly = info.GetType().Assembly;
+            info.Information(assembly);
             if (!InstalledAssemblies.Contains(info.GetType().Assembly))
             {
                 InstalledAssemblies.Add(info.GetType().Assembly);
                 AssemblyInfoList.Add(info);
-                if (info.Printed == false)
-                {
-                    info.Printed = true;
-                    if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Logo))
-                    {
-                        info.PrintLogo();
-                    }
+                DicoToRename.TryAdd(assembly, info);
 
-                    if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Version))
-                    {
-                        info.PrintVersion();
-                    }
-
-                    if (GDFFoundation.GDFConstants.PrintAscii.HasFlag(PrintAsciiKind.Information))
-                    {
-                        info.PrintInformation();
-                    }
-                }
+                info.ConsolePrint();
             }
-        }
 
-        public static void AddType(Type type)
-        {
-            AddAssembly(Assembly.GetAssembly(type));
+            return info;
         }
 
         public static string ExtractMethodName(Expression<Action> expr)
@@ -94,16 +108,15 @@ namespace GDFFoundation
             throw new ArgumentException("Expression must be a method call", nameof(expr));
         }
 
-        public static List<IGDFAssemblyInfo> GetVersionDllList()
+        public static List<GDFAssemblyInformation> GetVersionDllList()
         {
-            return new List<IGDFAssemblyInfo>(AssemblyInfoList);
+            return new List<GDFAssemblyInformation>(AssemblyInfoList);
         }
 
         public static bool SetModuleInstalledByExpression(Expression<Action> expr, string who, string optional = "")
         {
             if (expr.Body is MethodCallExpression call)
             {
-                // string methodName = call.Method.Name;
                 string methodName = ExtractMethodName(expr);
                 return SetModuleInstalledByInternal(methodName, who, optional);
             }

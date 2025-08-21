@@ -38,8 +38,15 @@ namespace GDFRuntime
 
         public interface IRuntimeCredentials : IEnumerable<GDFAccountSign>
         {
+            public interface IRuntimeEmailPassword
+            {
+                public Job EditPassword(Country country, long reference, string email, string password, string newPassword);
+            }
+
             public List<GDFAccountSign> Credentials { get; }
             public Job Refresh();
+            
+            public IRuntimeEmailPassword EmailPassword { get; }
         }
 
         public bool IsAuthenticated { get; }

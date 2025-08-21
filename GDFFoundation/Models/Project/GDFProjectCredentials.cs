@@ -31,8 +31,13 @@ namespace GDFFoundation
         public string EmailFrom { get; set; } = string.Empty;
         public ProjectEnvironment Environment { set; get; } = ProjectEnvironment.Development;
 
+        [GDFDbLength(128)]
         public string Game { get; set; } = "Game Name";
-        public string GameLogo { get; set; }
+        
+        [GDFDbLength(24)]
+        public string GameLogoFormat { get; set; }
+        [GDFDbFlavor(GDFDbType.Image)]
+        public byte[] GameLogoBase64 { get; set; }
 
         [GDFDbUnique(constraintName = "PublicKey")]
         [GDFDbLength(128)]

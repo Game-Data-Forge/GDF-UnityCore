@@ -31,6 +31,7 @@ namespace GDFFoundation
         /// <remarks>
         ///     This property represents the name of the GDFAccountInvoice object.
         /// </remarks>
+        [GDFDbLength(256)]
         public string Name { set; get; } = string.Empty;
 
         /// <summary>
@@ -39,6 +40,8 @@ namespace GDFFoundation
         /// <remarks>
         ///     The payload can be any additional data that needs to be associated with the invoice. It is stored as a string.
         /// </remarks>
+        
+        [GDFDbLength(1024)]
         public string Payload { set; get; } = string.Empty;
 
         /// Url property of GDFAccountInvoice
@@ -46,6 +49,8 @@ namespace GDFFoundation
         /// <p>It is used to store and retrieve the URL of a specific invoice.</p>
         /// @see GDFAccountInvoice
         /// /
+        
+        [GDFDbLength(1024)]
         public string Url { set; get; } = string.Empty;
 
         #endregion

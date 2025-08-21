@@ -39,8 +39,6 @@ namespace GDFUnity
                     handler.StepAmount = 3;
                     long projectId = _engine.Configuration.Reference;
 
-                    _manager.ResetToken(handler.Split());
-                    string bearer;
                     EmailPasswordSignUpExchange payload = new EmailPasswordSignUpExchange()
                     {
                         Channel = _engine.Configuration.Channel,
@@ -55,8 +53,7 @@ namespace GDFUnity
                     Debug.LogWarning("Game consent is hard written to 1.0.0 !");
 
                     string url = _manager.GenerateURL(country, "/api/v1/authentication/email-password/sign-up");
-                    bearer = _manager.Post<string>(handler.Split(), url, payload);
-                    _manager.SetToken(handler.Split(), new TokenStorage(country, bearer));
+                    _manager.Post<string>(handler.Split(), url, payload);
                 }, "Email/password register");
 
                 return _manager.job;
